@@ -1,7 +1,7 @@
 # 🛠️ Entorno de Desarrollo - Grupo 1 (Estadística y Optimización)
 
 ## ⚠️ AVISO PARA EL EQUIPO
-Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La arquitectura del proyecto, la integración de la interfaz (Streamlit) y el motor de formateo ya han sido desarrolladores por el Coordinador (Rubén Gámez). 
+Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La arquitectura del proyecto, la integración de la interfaz (Streamlit) y el motor de formateo ya ha sido desarrollado.
 
 **Vuestro objetivo es completar la lógica estadística de los archivos asignados para que el proyecto sea 100% funcional.**
 
