@@ -9,18 +9,19 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
 
 ## 🚀 Cómo empezar a trabajar en Local
 
-1. **Clonar la rama de desarrollo**:
+1. **Requisito de Python**: Se requiere **Python 3.9 o superior** (Recomendado: **3.12**).
+2. **Clonar la rama de desarrollo**:
    ```bash
-   git clone -b dev [URL_DEL_REPOSITORIO]
+   git clone -b dev https://github.com/RubenGamezTorrijos/EstadisticaGrupo1.git
    cd proyecto_estadistica
    ```
 
-2. **Instalar dependencias**:
+3. **Instalar dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Ejecutar la App (para ver cambios en tiempo real)**:
+4. **Ejecutar la App (para ver cambios en tiempo real)**:
    ```bash
    streamlit run app.py
    ```
@@ -28,30 +29,36 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
 
 ---
 
-## 📝 Instrucciones de Contribución
+## 📝 Equipo y Asignación de Archivos
 
-Cada integrante debe completar el **90% de la lógica** en sus archivos respectivos. Buscad los comentarios marcados como `TODO` dentro de cada archivo.
+| Integrante | Rol | Archivos Desarrollados |
+| :--- | :--- | :--- |
+| **Rafael Rodriguez** | Data Manager | `analisis/estadisticos.py`, archivos CSV en `datos/` |
+| **Bryann Vallejo** | Analista Inferencial | `analisis/inferencial.py`, tablas CSV en `outputs/tablas/` |
+| **Leslie Ross** | Analista y Visualización | `analisis/graficos.py`, `generate_plots.py`, gráficos PNG en `outputs/graficos/` |
+| **Ruben Gamez** | Coordinación y Desarrollo | `app.py`, `setup_data.py`, `requirements.txt`, `.gitignore` |
 
-### 1. Rafael Rodriguez (Data Manager)
-*   **Archivo**: `analisis/estadisticos.py`
-*   **Tarea**: Implementar la limpieza de datos y las funciones de estadística descriptiva (media, mediana, moda, etc.).
-*   **Archivo**: `app.py` (Sección Escritorio General)
-*   **Tarea**: Reconstruir la visualización de métricas generales siguiendo las instrucciones en el código.
+### Detalle de Tareas:
 
-### 2. Leslie Ross (Visualization Expert)
-*   **Archivo**: `analisis/graficos.py`
-*   **Tarea**: Implementar las funciones de gráficas usando Seaborn y Matplotlib (Histogramas, Boxplots y Regresión).
+#### 1. Rafael Rodriguez
+*   **Lógica**: Implementar limpieza de datos y estadísticos (media, mediana, moda, etc.) en `analisis/estadisticos.py`.
+*   **UI**: Reconstruir la visualización de métricas en la sección "Escritorio General" de `app.py`.
 
-### 3. Bryann Vallejo (Inferential Analyst)
-*   **Archivo**: `analisis/inferencial.py`
-*   **Tarea**: Implementar el cálculo de Intervalos de Confianza (95%) y la lógica del contraste de hipótesis (T-test).
+#### 2. Bryann Vallejo
+*   **Inferencia**: Implementar Intervalos de Confianza (95%) y T-tests en `analisis/inferencial.py`.
+*   **Output**: Asegurar la correcta generación de tablas de resultados en `outputs/tablas/`.
+
+#### 3. Leslie Ross
+*   **Gráficos**: Desarrollar funciones para Histogramas, Boxplots y Regresión en `analisis/graficos.py`.
+*   **Scripts**: Mantener `generate_plots.py` para la generación masiva de recursos visuales.
 
 ---
 
 ## 🏛️ Reglas del Proyecto
-*   **No modificar `app.py`** fuera de las zonas marcadas para Rafael, salvo autorización del Coordinador.
+*   **No modificar `app.py`** fuera de las zonas marcadas, salvo autorización del Coordinador.
 *   **Formato**: Mantened el estilo de codificación y usad comentarios para explicar vuestras fórmulas.
 *   **Commits**: Realizad mensajes de commit descriptivos (ej: `feat(stats): implementada limpieza de outliers`).
 
 ---
 *Cualquier duda técnica, consultad con el Coordinador (Rubén Gámez).*
+
