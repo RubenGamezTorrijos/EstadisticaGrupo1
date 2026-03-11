@@ -54,6 +54,18 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
 
 ---
 
+## 📸 Capturas de la Aplicación
+
+| Escritorio General | Estadísticos Descriptivos |
+| :---: | :---: |
+| ![Captura 1](capturas/captura_1_app_streamlit_escritorio_general.jpg) | ![Captura 2](capturas/captura_2_app_streamlit_analisis_descriptivo_estadisticos.jpg) |
+| **Visualizaciones** | **Regresión Lineal** |
+| ![Captura 3](capturas/captura_3_app_streamlit_analisis_descriptivo_visualizaciones.jpg) | ![Captura 4](capturas/captura_4_app_streamlit_analisis_descriptivo_regresion.jpg) |
+| **Estadística Inferencial** | **Equipo Grupo 1** |
+| ![Captura 5](capturas/captura_5_app_streamlit_estadistica_inferencial.jpg) | ![Captura 6](capturas/captura_6_app_streamlit_equipo_del_grupo1.jpg) |
+
+---
+
 ## 🏛️ Reglas del Proyecto
 *   **No modificar `app.py`** fuera de las zonas marcadas, salvo autorización del Coordinador.
 *   **Formato**: Mantened el estilo de codificación y usad comentarios para explicar vuestras fórmulas.
