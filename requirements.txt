@@ -1,0 +1,8 @@
+# PROYECTO: Estadística para Ingeniería
+# ARQUITECTURA Y DEPENDENCIAS: RUBEN GAMEZ TORRIJOS (Desarrollador y Coordinador)
+pandas>=2.1.0
+numpy>=1.26.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+scipy>=1.12.0
+streamlit>=1.31.0

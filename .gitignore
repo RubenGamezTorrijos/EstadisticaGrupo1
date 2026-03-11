@@ -1,0 +1,22 @@
+# PROYECTO: Estadística para Ingeniería
+# CONTROL DE VERSIONES Y ARQUITECTURA REPOSITORIO: RUBEN GAMEZ TORRIJOS (Desarrollador y Coordinador)
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Streamlit
+.streamlit/
+
+# Datos y Salidas
+outputs/graficos/*.png
+outputs/tablas/*.csv
+datos/dataset_limpio.csv
+
+# IDEs
+.vscode/
+.idea/
+.gemini/
