@@ -27,6 +27,18 @@ import pandas as pd
 import numpy as np
 import os
 
+# Mapeo de variables para etiquetas legibles
+VAR_LABELS = {
+    'work_year': 'Año de Trabajo',
+    'experience_level': 'Nivel de Experiencia',
+    'employment_type': 'Tipo de Empleo',
+    'job_title': 'Titulo de Empleo',
+    'salary': 'Salario (EUR)',
+    'salary_currency': 'Moneda',
+    'salary_in_usd': 'Salario (USD)',
+    'job_category': 'Categoria de Puesto',
+    'work_setting': 'Modalidad de Trabajo'
+}
 
 def limpiar_datos(df):
     """
@@ -132,7 +144,7 @@ def calcular_estadisticos(df):
         desv = series.std()
 
         resultados.append({
-            'Variable': col,
+            'Variable': VAR_LABELS.get(col, col),
             'N': len(series),
             'Media': media,
             'Mediana': series.median(),

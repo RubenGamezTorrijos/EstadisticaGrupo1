@@ -55,6 +55,43 @@ def configurar_estilo():
     plt.rcParams['font.size'] = 12
 
 
+# Mapeo de variables para etiquetas legibles
+VAR_LABELS = {
+    'work_year': 'Año de Trabajo',
+    'experience_level': 'Nivel de Experiencia',
+    'employment_type': 'Tipo de Empleo',
+    'job_title': 'Titulo de Empleo',
+    'salary': 'Salario (EUR)',
+    'salary_currency': 'Moneda',
+    'salary_in_usd': 'Salario (USD)',
+    'employee_residence': 'Residencia Empleado',
+    'remote_ratio': 'Ratio Remoto',
+    'company_location': 'Ubicacion Empresa',
+    'company_size': 'Tamaño Empresa',
+    'job_category': 'Categoria de Puesto',
+    'work_setting': 'Modalidad de Trabajo'
+}
+
+def sanitize_pdf_text(text):
+    """Limpia caracteres que rompen la fuente Helvetica estándar de FPDF"""
+    if not isinstance(text, str):
+        text = str(text)
+    replacements = {
+        '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4',
+        'µ': 'mu', 'μ': 'mu', 'σ': 'sigma', 'π': 'pi',
+        '²': '^2', '±': '+/-', '≥': '>=', '≤': '<=', '≠': '!='
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    try:
+        return text.encode('latin-1', 'replace').decode('latin-1')
+    except:
+        return text
+
+def obtener_label(col):
+    """Retorna la etiqueta legible para una columna."""
+    return VAR_LABELS.get(col, col.replace('_', ' ').title())
+
 def guardar_grafico(fig, nombre, ruta='outputs/graficos/'):
     """
     LESLIE ROSS - Guarda un gráfico como PNG.
@@ -123,13 +160,8 @@ def crear_histograma(df, columna, titulo='Histograma', bins=30,
     ax.axvline(q1, color='orange', linestyle=':', linewidth=2, label=f'Q1 (25%): {q1:,.2f}')
     ax.axvline(q3, color='orange', linestyle=':', linewidth=2, label=f'Q3 (75%): {q3:,.2f}')
 
-    label_col = columna
-    if columna == 'salary_in_usd': label_col = 'Salario (USD)'
-    elif columna == 'salary': label_col = 'Salario (EUR)'
-    elif columna == 'work_year': label_col = 'Año de Trabajo'
-
-    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
-    ax.set_xlabel(label_col, fontsize=14)
+    ax.set_title(sanitize_pdf_text(titulo), fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(obtener_label(columna), fontsize=14)
     ax.set_ylabel('Frecuencia', fontsize=14)
     ax.xaxis.set_major_formatter(formatter)
     ax.legend(fontsize=12, frameon=True, shadow=True)
@@ -183,9 +215,9 @@ def crear_boxplot(df, num, cat, titulo='Boxplot',
 
     sns.boxplot(data=df, x=cat, y=num, ax=ax, palette='Set2', hue=cat, legend=False, showfliers=True)
     
-    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
-    ax.set_xlabel(cat, fontsize=14)
-    ax.set_ylabel(num, fontsize=14)
+    ax.set_title(sanitize_pdf_text(titulo), fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(obtener_label(cat), fontsize=14)
+    ax.set_ylabel(obtener_label(num), fontsize=14)
     plt.xticks(rotation=45)
     ax.yaxis.set_major_formatter(formatter)
 
@@ -237,9 +269,9 @@ def crear_violin_plot(df, x, y, titulo='Violin Plot',
 
     sns.violinplot(data=df, x=x, y=y, ax=ax, palette='muted', inner='quartile', hue=x, legend=False)
     
-    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
-    ax.set_xlabel(x, fontsize=14)
-    ax.set_ylabel(y, fontsize=14)
+    ax.set_title(sanitize_pdf_text(titulo), fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(obtener_label(x), fontsize=14)
+    ax.set_ylabel(obtener_label(y), fontsize=14)
     plt.xticks(rotation=45)
     ax.yaxis.set_major_formatter(formatter)
 
@@ -315,9 +347,9 @@ def crear_scatter_regresion(df, x_col, y_col, titulo='Dispersión y Regresión',
     ax.text(0.05, 0.95, info_text, transform=ax.transAxes, verticalalignment='top',
             bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': 'gray'}, fontsize=12)
 
-    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
-    ax.set_xlabel(x_col, fontsize=14)
-    ax.set_ylabel(y_col, fontsize=14)
+    ax.set_title(sanitize_pdf_text(titulo), fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(obtener_label(x_col), fontsize=14)
+    ax.set_ylabel(obtener_label(y_col), fontsize=14)
     ax.yaxis.set_major_formatter(formatter)
     ax.legend(fontsize=12)
 
