@@ -27,43 +27,48 @@ VAR_LABELS = {
     'work_setting': 'Modalidad de Trabajo'
 }
 
-# Estilo Blue (#0B84F4)
+# Estilo Blue (#0B84F4) Adaptativo
 st.markdown(f"""
     <style>
-    .main {{ background-color: #0f172a; color: #f8fafc; }}
-    .stMetric {{ background-color: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #0B84F4; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }}
-    .stTable {{ background-color: #1e293b; border-radius: 8px; }}
-    
-    /* Selector de radio (Botón de selector) */
-    div[data-testid="stSidebarNav"] {{ background-color: transparent !important; }}
-    [data-testid="stSidebar"] {{ background-color: #111827; }}
-    
-    /* Estilo para los botones de opción y acentos */
-    .stRadio [data-baseweb="radio"] div[aria-checked="true"] > div:first-child {{
-        background-color: #0B84F4 !important;
-        border-color: #0B84F4 !important;
+    /* Estilo para las métricas - Adaptativo */
+    [data-testid="stMetric"] {{
+        background-color: rgba(11, 132, 244, 0.05);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #0B84F4;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }}
     
-    .stButton>button {{
-        background-color: #0B84F4;
-        color: white;
+    /* Contenedores de tablas */
+    [data-testid="stTable"] {{
+        background-color: transparent;
         border-radius: 8px;
-        border: none;
     }}
     
+    /* Barra lateral */
+    [data-testid="stSidebar"] {{
+        border-right: 1px solid rgba(11, 132, 244, 0.2);
+    }}
+    
+    /* Títulos y acentos */
+    h1, h2, h3 {{ 
+        color: #0B84F4 !important; 
+        font-weight: 700; 
+    }}
+    
+    /* Configuración de Pestañas (Tabs) - Adaptativo */
     .stTabs [data-baseweb="tab-list"] {{ 
-        gap: 24px; 
-        padding: 5px 0px;
+        gap: 10px; 
     }}
     .stTabs [data-baseweb="tab"] {{ 
-        height: 50px; 
-        white-space: pre-wrap; 
-        background-color: #1e293b; 
-        border-radius: 4px; 
-        color: #cbd5e1;
-        padding: 0 30px !important;
+        height: 45px; 
+        background-color: rgba(11, 132, 244, 0.05); 
+        border-radius: 8px 8px 0 0; 
+        color: inherit;
+        padding: 0 20px !important;
         font-weight: 500;
         border: 1px solid transparent;
+        transition: all 0.3s;
     }}
     .stTabs [data-baseweb="tab"]:hover {{
         border-color: #0B84F4;
@@ -72,9 +77,27 @@ st.markdown(f"""
     .stTabs [aria-selected="true"] {{ 
         background-color: #0B84F4 !important; 
         color: white !important;
+        border-bottom: 2px solid #0B84F4;
     }}
     
-    h1, h2, h3 {{ color: #0B84F4; font-weight: 700; }}
+    /* Botones y Selectores */
+    .stButton>button {{
+        background-color: #0B84F4;
+        color: white;
+        border-radius: 8px;
+        border: none;
+        width: 100%;
+    }}
+    
+    .stRadio [data-baseweb="radio"] div[aria-checked="true"] > div:first-child {{
+        background-color: #0B84F4 !important;
+        border-color: #0B84F4 !important;
+    }}
+
+    /* Ajuste para inputs en modo claro */
+    .stSelectbox div[data-baseweb="select"] {{
+        border-radius: 8px;
+    }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -134,11 +157,11 @@ def get_data():
 
 def main():
     # Header de la barra lateral (Arquitectura Rubén)
-    st.sidebar.markdown("""
-        <div style="text-align: center; padding: 10px; border-radius: 50%; background-color: #1e293b; border: 2px solid #0B84F4; width: 60px; height: 60px; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center;">
+    st.sidebar.markdown(f"""
+        <div style="text-align: center; padding: 10px; border-radius: 50%; background-color: rgba(11, 132, 244, 0.1); border: 2px solid #0B84F4; width: 60px; height: 60px; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center;">
             <span style="font-size: 30px;">📊</span>
         </div>
-        <h2 style="text-align: center; color: white; margin-bottom: 25px;">Estadística y Optimización <br> Grupo 1</h2>
+        <h2 style="text-align: center; color: #0B84F4; margin-bottom: 25px;">Estadística y Optimización <br> Grupo 1</h2>
     """, unsafe_allow_html=True)
     st.sidebar.markdown("---")
     menu = st.sidebar.radio(
