@@ -52,8 +52,13 @@ Este documento organiza el trabajo en 3 fases clave, adaptadas a la estructura d
 
 ### 👤 Bryann
 #### **Tarea 3.3: Contraste Hipótesis (Variable 1)**
-- [ ] **3.3.1. H0 y H1**: Definición de hipótesis nula y alternativa para comparar niveles de experiencia.
+- [ ] **3.3.1. H0 y H1**: Definición de hipótesis nula y alternativa (ej: Senior vs Mid-level).
 - [ ] **3.3.2. Calcular p-valor**: Ejecución de la prueba estadística y obtención de significancia.
+
+### 👤 Leslie
+#### **Tarea 3.4: Contraste Hipótesis (Variable 2)**
+- [ ] **3.4.1. H0 y H1**: Definición de hipótesis (ej: Remoto vs Presencial).
+- [ ] **3.4.2. Calcular p-valor**: Ejecución del test para la segunda variable de interés.
 
 ### 👥 Rafael y Bryann
 #### **Tarea 3.5: Justificación métodos elegidos**
