@@ -25,13 +25,13 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
    ```bash
    .venv\Scripts\activate
    ```
-   > [!IMPORTANT]: Si no tienes un entorno virtual, créalo con `python -m venv .venv` y actívalo con `.venv\Scripts\activate`
+   > [!IMPORTANT] Si no tienes un entorno virtual, créalo con `python -m venv .venv` y actívalo con `.venv\Scripts\activate`
 
 5. **Ejecutar la App (para ver cambios en tiempo real)**:
    ```bash
    streamlit run app.py
    ```
-   > [!WARNING]: Inicialmente veréis advertencias amarillas en la app.
+   > [!WARNING] Inicialmente veréis advertencias amarillas en la app.
    > Estas desaparecerán a medida que completéis vuestro código.*
 
 ---
