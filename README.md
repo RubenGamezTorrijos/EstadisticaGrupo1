@@ -78,5 +78,6 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
 *   **Commits**: Realizad mensajes de commit descriptivos (ej: `feat(stats): implementada limpieza de outliers`).
 
 ---
-*Cualquier duda técnica, consultad con el Coordinador (Rubén Gámez).*
+> [!CAUTION]
+> Cualquier duda técnica, consultad con el Coordinador (Rubén Torrijos).
 
