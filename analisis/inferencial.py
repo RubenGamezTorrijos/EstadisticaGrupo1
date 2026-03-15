@@ -71,24 +71,21 @@ def calcular_ic_95(data, confianza=0.95):
     # ╚═══════════════════════════════════════════════════════╝
 
     data = data.dropna()
-    n     = len(data)
+    n = len(data)
+    if n < 2: return {}
     media = data.mean()
-
-    # TODO: Calcular std, se, t_critico, margen_error, ic_inferior, ic_superior
-    std          = 0  # TODO: reemplazar
-    se           = 0  # TODO: reemplazar
-    t_critico    = 0  # TODO: reemplazar
-    margen_error = 0  # TODO: reemplazar
-    ic_inferior  = 0  # TODO: reemplazar
-    ic_superior  = 0  # TODO: reemplazar
+    std = data.std()
+    se = std / np.sqrt(n)
+    t_critico = t.ppf((1 + confianza) / 2, df=n - 1)
+    margen_error = t_critico * se
+    ic_inferior = media - margen_error
+    ic_superior = media + margen_error
 
     return {
-        # Keys para app.py (formato con mayúsculas)
         'Media': media,
         'Inferior': ic_inferior,
         'Superior': ic_superior,
         'Margen Error': margen_error,
-        # Keys compatibilidad qwen3 (minúsculas)
         'media': media,
         'ic_inferior': ic_inferior,
         'ic_superior': ic_superior,
@@ -134,29 +131,27 @@ def contraste_hipotesis_1_muestra(data, mu0, alternativa='two-sided', alfa=0.05)
     # ║  ¡IMPLEMENTA AQUÍ EL T-TEST 1 MUESTRA!              ║
     # ╚══════════════════════════════════════════════════════╝
 
-    data  = data.dropna()
+    data = data.dropna()
     media = data.mean()
-    std   = data.std()
-    n     = len(data)
+    std = data.std()
+    n = len(data)
 
-    # TODO: Llamar a ttest_1samp y calcular rechaza_h0 y cohen_d
-    t_stat     = 0  # TODO: reemplazar
-    p_valor    = 1  # TODO: reemplazar
-    rechaza_h0 = False  # TODO: reemplazar
-    cohen_d    = 0  # TODO: reemplazar
+    t_stat, p_valor = ttest_1samp(data, mu0, alternative=alternativa)
+    rechaza_h0 = p_valor < alfa
+    cohen_d = (media - mu0) / std if std != 0 else 0
 
     return {
-        'Hipótesis Nula': f'μ = {mu0:,.0f}',
+        'Hipótesis Nula': f'mu = {mu0:,.0f}',
         'Media Muestral': media,
         'mu0': mu0,
-        'T-Stat': t_stat,
-        'P-Valor': p_valor,
-        'Decisión': 'Rechazar H₀' if rechaza_h0 else 'No Rechazar H₀',
-        'Conclusión': f'La media ES significativamente diferente de ${mu0:,.0f}' if rechaza_h0 else f'La media NO es diferente de ${mu0:,.0f}',
-        'Cohen d': round(cohen_d, 4),
-        'rechaza_h0': rechaza_h0,
-        'p_valor': p_valor,
-        't_statistic': t_stat
+        'T-Stat': float(t_stat),
+        'P-Valor': float(p_valor),
+        'Decisión': 'Rechazar H0' if rechaza_h0 else 'No Rechazar H0',
+        'Conclusión': f'La media ES significativamente diferente de {mu0:,.0f}' if rechaza_h0 else f'La media NO es diferente de {mu0:,.0f}',
+        'Cohen d': np.round(float(cohen_d), 4),
+        'rechaza_h0': bool(rechaza_h0),
+        'p_valor': float(p_valor),
+        't_statistic': float(t_stat)
     }
 
 
@@ -205,33 +200,34 @@ def contraste_hipotesis(grupo1, grupo2, label1="G1", label2="G2", alfa=0.05):
     grupo1 = grupo1.dropna()
     grupo2 = grupo2.dropna()
 
-    n1, n2         = len(grupo1), len(grupo2)
+    n1, n2 = len(grupo1), len(grupo2)
     media1, media2 = grupo1.mean(), grupo2.mean()
-    std1, std2     = grupo1.std(), grupo2.std()
+    std1, std2 = grupo1.std(), grupo2.std()
 
-    # TODO: Calcular t_stat, p_valor, diferencia, cohen_d, rechaza_h0
-    t_stat     = 0    # TODO: reemplazar
-    p_valor    = 1    # TODO: reemplazar
-    diferencia = 0    # TODO: reemplazar
-    cohen_d    = 0    # TODO: reemplazar
-    rechaza_h0 = False  # TODO: reemplazar
+    t_stat, p_valor = ttest_ind(grupo1, grupo2, equal_var=False)
+    diferencia = media1 - media2
+    
+    # Cohen's d (pooled std)
+    denom = np.sqrt(((n1 - 1) * std1**2 + (n2 - 1) * std2**2) / (n1 + n2 - 2)) if (n1+n2-2) > 0 else 0
+    cohen_d = diferencia / denom if denom != 0 else 0
+    rechaza_h0 = p_valor < alfa
 
     return {
         'Comparación': f'{label1} vs {label2}',
         'Media G1': media1,
         'Media G2': media2,
         'Diferencia Medias': diferencia,
-        'T-Stat': t_stat,
-        'P-Valor': p_valor,
-        'Decisión': 'Rechazar H₀' if rechaza_h0 else 'No Rechazar H₀',
+        'T-Stat': float(t_stat),
+        'P-Valor': float(p_valor),
+        'Decisión': 'Rechazar H0' if rechaza_h0 else 'No Rechazar H0',
         'Conclusión': f'Hay diferencia significativa entre {label1} y {label2}' if rechaza_h0 else f'No hay diferencia significativa entre {label1} y {label2}',
-        'Cohen d': round(cohen_d, 4),
+        'Cohen d': np.round(float(cohen_d), 4),
         'media_grupo1': media1,
         'media_grupo2': media2,
         'diferencia_medias': diferencia,
-        'rechaza_h0': rechaza_h0,
-        'p_valor': p_valor,
-        't_statistic': t_stat
+        'rechaza_h0': bool(rechaza_h0),
+        'p_valor': float(p_valor),
+        't_statistic': float(t_stat)
     }
 
 
@@ -261,6 +257,7 @@ def anova_one_way(df, columna_numerica, columna_grupo, alfa=0.05):
     CLAVES REQUERIDAS EN EL DICT DE RETORNO:
     'Hipótesis Nula', 'F-Stat', 'P-Valor', 'Decisión', 'Conclusión',
     'Estadísticos por Grupo', 'f_statistic', 'p_valor', 'rechaza_h0', 'conclusion'
+            bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': 'gray'}, fontsize=12)
 
     Args:
         df: DataFrame limpio
@@ -277,25 +274,27 @@ def anova_one_way(df, columna_numerica, columna_grupo, alfa=0.05):
     # ║  ¡IMPLEMENTA AQUÍ EL ANOVA F-TEST!    ║
     # ╚════════════════════════════════════════╝
 
-    f_stat     = 0    # TODO: reemplazar
-    p_valor    = 1    # TODO: reemplazar
-    rechaza_h0 = False  # TODO: reemplazar
+    grupos = [grupo[columna_numerica].dropna() for _, grupo in df.groupby(columna_grupo)]
+    if len(grupos) < 2: return {}
+    
+    f_stat, p_valor = f_oneway(*grupos)
+    rechaza_h0 = p_valor < alfa
 
     estadisticos_grupos = df.groupby(columna_grupo)[columna_numerica].agg(
         ['count', 'mean', 'std', 'min', 'max']
     ).round(2)
 
     return {
-        'Hipótesis Nula': 'Todas las medias son iguales',
-        'F-Stat': f_stat,
-        'P-Valor': p_valor,
-        'Decisión': 'Rechazar H₀' if rechaza_h0 else 'No Rechazar H₀',
+        'Hipótesis Nula': 'Todas las medias son iguales (mu1 = mu2 = ...)',
+        'F-Stat': float(f_stat),
+        'P-Valor': float(p_valor),
+        'Decisión': 'Rechazar H0' if rechaza_h0 else 'No Rechazar H0',
         'Conclusión': 'Hay diferencias significativas entre grupos' if rechaza_h0 else 'No hay diferencias significativas entre grupos',
         'Estadísticos por Grupo': estadisticos_grupos,
-        'f_statistic': f_stat,
-        'p_valor': p_valor,
-        'rechaza_h0': rechaza_h0,
-        'conclusion': 'Rechazar H₀' if rechaza_h0 else 'No Rechazar H₀'
+        'f_statistic': float(f_stat),
+        'p_valor': float(p_valor),
+        'rechaza_h0': bool(rechaza_h0),
+        'conclusion': 'Rechazar H0' if rechaza_h0 else 'No Rechazar H0'
     }
 
 
@@ -334,9 +333,14 @@ def verificar_supuestos_normalidad(data):
     # ╚══════════════════════════════════════════════════╝
 
     data = data.dropna()
-    prueba    = 'Shapiro-Wilk'  # TODO: determinar qué prueba usar según n
-    stat      = 0  # TODO: reemplazar
-    p_valor   = 1  # TODO: reemplazar
+    n = len(data)
+    if n <= 5000:
+        stat, p_valor = shapiro(data)
+        prueba = 'Shapiro-Wilk'
+    else:
+        stat, p_valor = stats.kstest(data, 'norm', args=(data.mean(), data.std()))
+        prueba = 'Kolmogorov-Smirnov'
+
     es_normal = p_valor > 0.05
 
     return {
@@ -345,9 +349,9 @@ def verificar_supuestos_normalidad(data):
         'P-Valor': p_valor,
         'Es Normal': es_normal,
         'Conclusión': 'Los datos siguen una distribución normal' if es_normal else 'Los datos NO siguen una distribución normal',
-        'estadistico': stat,
-        'p_valor': p_valor,
-        'es_normal': es_normal,
+        'estadistico': float(stat),
+        'p_valor': float(p_valor),
+        'es_normal': bool(es_normal),
         'conclusion': 'Los datos siguen distribución normal' if es_normal else 'Los datos NO siguen distribución normal'
     }
 
@@ -379,8 +383,7 @@ def verificar_homocedasticidad(grupo1, grupo2):
     # ║  ¡IMPLEMENTA AQUÍ EL TEST DE HOMOCEDASTICIDAD!   ║
     # ╚══════════════════════════════════════════════════╝
 
-    stat              = 0  # TODO: reemplazar
-    p_valor           = 1  # TODO: reemplazar
+    stat, p_valor = levene(grupo1.dropna(), grupo2.dropna())
     varianzas_iguales = p_valor > 0.05
 
     return {
@@ -389,9 +392,9 @@ def verificar_homocedasticidad(grupo1, grupo2):
         'P-Valor': p_valor,
         'Varianzas Iguales': varianzas_iguales,
         'Conclusión': 'Varianzas iguales (homocedasticidad cumplida)' if varianzas_iguales else 'Varianzas diferentes (heterocedasticidad)',
-        'estadistico': stat,
-        'p_valor': p_valor,
-        'varianzas_iguales': varianzas_iguales,
+        'estadistico': float(stat),
+        'p_valor': float(p_valor),
+        'varianzas_iguales': bool(varianzas_iguales),
         'conclusion': 'Varianzas iguales' if varianzas_iguales else 'Varianzas diferentes'
     }
 

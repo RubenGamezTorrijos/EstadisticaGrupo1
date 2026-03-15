@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from analisis.estadisticos import limpiar_datos, calcular_estadisticos
 from analisis.graficos import crear_histograma, crear_boxplot, crear_scatter_regresion, crear_bar_chart
-from analisis.inferencial import calcular_ic_95, contraste_hipotesis, verificar_supuestos
+from analisis.inferencial import calcular_ic_95, contraste_hipotesis, verificar_supuestos, verificar_homocedasticidad
 import io
 from fpdf import FPDF
 
@@ -398,25 +398,20 @@ def main():
         st.title("🚀 Escritorio de Salarios en IT")
         st.markdown("Bienvenido al centro de control del análisis estadístico de salarios en Data Science.")
         
-        # TODO (Rafael): Implementar las 4 métricas principales del Escritorio.
-        # Usa st.columns(4) y st.metric() para mostrar:
-        # 1. Total de registros (len(df))
-        # 2. Media Salarial en USD (df['salary_in_usd'].mean())
-        # 3. Último Año (df['work_year'].max())
-        # 4. Total de Categorías distintas (df['job_category'].nunique())
-        
-        # --- Tu código aquí (aprox. 10 líneas) ---
-        st.info("💡 **Zona de trabajo para Rafael:** Sustituye este mensaje por las 4 columnas de métricas (st.columns y st.metric).")
+        # Implementación de métricas principales (Rafael Rodriguez)
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Total Registros", f"{len(df):,}")
+        m2.metric("Media Salarial", f"${df['salary_in_usd'].mean():,.0f} USD")
+        m3.metric("Año más reciente", df['work_year'].max())
+        m4.metric("Categorías Puesto", df['job_category'].nunique())
 
+        st.markdown("---")
         st.markdown("### 📋 Vista Previa de Datos (Rafael Rodriguez)")
         
-        # TODO (Rafael): Mostrar las primeras 10 filas del DataFrame 'df' renombrando las columnas.
-        # 1. Extrae las primeras 10 filas: df.head(10)
-        # 2. Renombra las columnas o simplemente dale formato si aplicas VAR_LABELS.
-        # 3. Muestra la tabla usando st.dataframe().
-        
-        # --- Tu código aquí (aprox. 5 líneas) ---
-        st.warning("⚠️ Renderizar la vista previa de datos aquí usando st.dataframe.")
+        # Vista previa de datos con etiquetas legibles
+        df_preview = df.head(10).copy()
+        df_preview.columns = [VAR_LABELS.get(col, col) for col in df_preview.columns]
+        st.dataframe(df_preview, use_container_width=True)
 
     elif menu == "Análisis Descriptivo":
         st.title("📈 Análisis Descriptivo")
@@ -493,20 +488,39 @@ def main():
         sal_senior = df[df['experience_level'] == 'Senior']['salary_in_usd']
         sal_mid = df[df['experience_level'] == 'Mid-level']['salary_in_usd']
         
+        # Diagnósticos previos
+        c_dg1, c_dg2 = st.columns(2)
+        with c_dg1:
+            norm = verificar_supuestos(df['salary_in_usd'])
+            st.write(f"**Test Normalidad ({norm['Prueba']}):**")
+            st.code(f"Stat={norm['estadistico']:.4f}, p={norm['p_valor']:.4e}")
+            st.caption(norm['Conclusión'])
+        with c_dg2:
+            homo = verificar_homocedasticidad(sal_senior, sal_mid)
+            st.write("**Test Homocedasticidad (Levene):**")
+            st.code(f"Stat={homo['estadistico']:.4f}, p={homo['p_valor']:.4e}")
+            st.caption(homo['Conclusión'])
+
+        st.info("💡 **Justificación Teórica:** Dado que el tamaño de muestra es elevado (>1.000), el **Teorema del Límite Central (TLC)** permite usar tests paramétricos incluso si la normalidad no es perfecta, ya que la distribución de la media muestral tiende a la normalidad.")
+
         res_test = contraste_hipotesis(sal_senior, sal_mid, "Nivel Senior", "Nivel Mid")
         
         c1, c2 = st.columns(2)
         with c1:
-            if res_test['P-Valor'] < 0.0001:
-                p_display = "< 0,0001"
-            else:
-                p_display = f"{res_test['P-Valor']:.4f}".replace(".", ",")
+            p_val = res_test['P-Valor']
+            p_display = f"{p_val:.4f}".replace(".", ",") if p_val >= 0.0001 else "< 0,0001"
             st.metric("P-Valor Obtenido", p_display)
         with c2:
             st.metric("Decisión Estadística", res_test['Decisión'])
             
         st.warning(f"**Conclusión:** {res_test['Conclusión']}")
-        st.caption(f"Valor p exacto: {res_test['P-Valor']:.2e}")
+        
+        with st.expander("📚 Explicación de Conceptos"):
+            st.markdown("""
+            *   **P-Valor:** Probabilidad de observar los datos si la hipótesis nula fuera cierta. Si p < 0,05, rechazamos H0.
+            *   **Tamaño del Efecto (Cohen's d):** Indica la magnitud de la diferencia. Valores > 0,8 sugieren un efecto grande.
+            *   **Teorema del Límite Central:** Fundamental en inferencia. Asegura que la media de una muestra grande sigue una distribución normal independientemente de la forma de la población original.
+            """)
 
     elif menu == "Sobre el Equipo":
         st.title("👥 Equipo de Desarrollo")

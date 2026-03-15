@@ -111,11 +111,29 @@ def crear_histograma(df, columna, titulo='Histograma', bins=30,
     configurar_estilo()
     fig, ax = plt.subplots(figsize=(14, 8))
 
-    # TODO: Añadir histograma con KDE
-    # TODO: Añadir líneas verticales estadísticos
-    # TODO: Configurar ejes, título, leyenda
+    media = df[columna].mean()
+    mediana = df[columna].median()
+    q1 = df[columna].quantile(0.25)
+    q3 = df[columna].quantile(0.75)
 
-    ax.set_title(f'{titulo} (TODO: implementar)', fontsize=16)
+    sns.histplot(data=df, x=columna, bins=bins, kde=True, ax=ax, color='skyblue', edgecolor='white')
+    
+    ax.axvline(media, color='red', linestyle='--', linewidth=2.5, label=f'Media: {media:,.2f}')
+    ax.axvline(mediana, color='green', linestyle='--', linewidth=2.5, label=f'Mediana: {mediana:,.2f}')
+    ax.axvline(q1, color='orange', linestyle=':', linewidth=2, label=f'Q1 (25%): {q1:,.2f}')
+    ax.axvline(q3, color='orange', linestyle=':', linewidth=2, label=f'Q3 (75%): {q3:,.2f}')
+
+    label_col = columna
+    if columna == 'salary_in_usd': label_col = 'Salario (USD)'
+    elif columna == 'salary': label_col = 'Salario (EUR)'
+    elif columna == 'work_year': label_col = 'Año de Trabajo'
+
+    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(label_col, fontsize=14)
+    ax.set_ylabel('Frecuencia', fontsize=14)
+    ax.xaxis.set_major_formatter(formatter)
+    ax.legend(fontsize=12, frameon=True, shadow=True)
+
     plt.tight_layout()
 
     if guardar:
@@ -163,10 +181,14 @@ def crear_boxplot(df, num, cat, titulo='Boxplot',
     configurar_estilo()
     fig, ax = plt.subplots(figsize=(14, 8))
 
-    # TODO: Añadir boxplot agrupado
-    # TODO: Configurar ejes, título
+    sns.boxplot(data=df, x=cat, y=num, ax=ax, palette='Set2', hue=cat, legend=False, showfliers=True)
+    
+    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(cat, fontsize=14)
+    ax.set_ylabel(num, fontsize=14)
+    plt.xticks(rotation=45)
+    ax.yaxis.set_major_formatter(formatter)
 
-    ax.set_title(f'{titulo} (TODO: implementar)', fontsize=16)
     plt.tight_layout()
 
     if guardar:
@@ -213,10 +235,14 @@ def crear_violin_plot(df, x, y, titulo='Violin Plot',
     configurar_estilo()
     fig, ax = plt.subplots(figsize=(14, 8))
 
-    # TODO: Añadir violin plot
-    # TODO: Configurar ejes, título
+    sns.violinplot(data=df, x=x, y=y, ax=ax, palette='muted', inner='quartile', hue=x, legend=False)
+    
+    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(x, fontsize=14)
+    ax.set_ylabel(y, fontsize=14)
+    plt.xticks(rotation=45)
+    ax.yaxis.set_major_formatter(formatter)
 
-    ax.set_title(f'{titulo} (TODO: implementar)', fontsize=16)
     plt.tight_layout()
 
     if guardar:
@@ -271,23 +297,40 @@ def crear_scatter_regresion(df, x_col, y_col, titulo='Dispersión y Regresión',
     configurar_estilo()
     fig, ax = plt.subplots(figsize=(14, 10))
 
-    # TODO: Añadir scatter plot
-    # TODO: Calcular recta de regresión con np.polyfit
-    # TODO: Trazar línea de regresión
-    # TODO: Añadir anotación con r, R², pendiente
+    sns.scatterplot(data=df, x=x_col, y=y_col, ax=ax, alpha=0.6, color='steelblue')
+    
+    # Calcular regresión
+    x_data = df[x_col].values
+    y_data = df[y_col].values
+    m, b = np.polyfit(x_data, y_data, 1)
+    correlation_matrix = np.corrcoef(x_data, y_data)
+    r = correlation_matrix[0, 1]
+    r_sq = r ** 2
+    
+    # Dibujar línea
+    ax.plot(x_data, m * x_data + b, color='red', linewidth=2.5, label=f'y = {m:.2f}x + {b:.2f}')
+    
+    # Anotación
+    info_text = f'r = {r:.4f}\nR² = {r_sq:.4f}\nPendiente = {m:.2f}'
+    ax.text(0.05, 0.95, info_text, transform=ax.transAxes, verticalalignment='top',
+            bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': 'gray'}, fontsize=12)
 
-    ax.set_title(f'{titulo} (TODO: implementar)', fontsize=16)
+    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
+    ax.set_xlabel(x_col, fontsize=14)
+    ax.set_ylabel(y_col, fontsize=14)
+    ax.yaxis.set_major_formatter(formatter)
+    ax.legend(fontsize=12)
+
     plt.tight_layout()
 
     if guardar:
         guardar_grafico(fig, f'scatter_{x_col}_{y_col}.png', ruta_guardado)
 
-    # IMPORTANTE: Devuelve la tupla con la figura Y el dict de estadísticos
     regresion_stats = {
-        'pendiente': 0,     # TODO: reemplazar
-        'intercepto': 0,    # TODO: reemplazar
-        'correlacion': 0,   # TODO: reemplazar
-        'r_cuadrado': 0     # TODO: reemplazar
+        'pendiente': m,
+        'intercepto': b,
+        'correlacion': r,
+        'r_cuadrado': r_sq
     }
 
     return fig, regresion_stats
@@ -333,11 +376,19 @@ def crear_bar_chart(df, cat, x=None, y=None, titulo='Diagrama de Barras',
         df.columns = [cat, 'count']
         x_col, y_col = cat, 'count'
 
-    # TODO: Añadir barplot con seaborn
-    # TODO: Configurar ejes según orientación
+    sns.barplot(data=df, x=x_col, y=y_col, ax=ax, palette='magma', orient=orientacion)
 
-    ax.set_title(titulo, fontsize=16, fontweight='bold')
-    plt.xticks(rotation=45)
+    if orientacion == 'v':
+        ax.set_xlabel(x_col, fontsize=14)
+        ax.set_ylabel(y_col, fontsize=14)
+        plt.xticks(rotation=45)
+        ax.yaxis.set_major_formatter(formatter)
+    else:
+        ax.set_xlabel(y_col, fontsize=14)
+        ax.set_ylabel(x_col, fontsize=14)
+        ax.xaxis.set_major_formatter(formatter)
+
+    ax.set_title(titulo, fontsize=18, fontweight='bold', pad=20)
     plt.tight_layout()
 
     if guardar:
@@ -377,9 +428,18 @@ def crear_grafico_interactivo(df, x, y, color=None, tipo='scatter'):
     if not PLOTLY_AVAILABLE:
         return None
 
-    # ╔══════════════════════════════════════════════════╗
-    # ║  ¡IMPLEMENTA AQUÍ LOS GRÁFICOS INTERACTIVOS!    ║
-    # ╚══════════════════════════════════════════════════╝
+    if tipo == 'scatter':
+        fig = px.scatter(df, x=x, y=y, color=color, hover_data=df.columns, template='plotly_white')
+    elif tipo == 'bar':
+        fig = px.bar(df, x=x, y=y, color=color, template='plotly_white')
+    elif tipo == 'box':
+        fig = px.box(df, x=x, y=y, color=color, template='plotly_white')
+    elif tipo == 'histogram':
+        fig = px.histogram(df, x=x, nbins=50, template='plotly_white')
+    elif tipo == 'violin':
+        fig = px.violin(df, x=x, y=y, color=color, box=True, points='all', template='plotly_white')
+    else:
+        return None
 
-    # TODO: Según 'tipo', crear el gráfico Plotly correspondiente
-    return None  # TODO: reemplazar con la figura Plotly
+    fig.update_layout(title=f"Gráfico Interactivo ({tipo})", margin=dict(l=20, r=20, t=50, b=20))
+    return fig

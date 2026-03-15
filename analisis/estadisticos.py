@@ -58,19 +58,23 @@ def limpiar_datos(df):
     df_limpio = df.copy()
 
     # --- PASO 1: Eliminar duplicados ---
-    # TODO: ...
+    df_limpio = df_limpio.drop_duplicates()
 
     # --- PASO 2: Eliminar nulos en columnas clave ---
-    # TODO: ...
+    df_limpio = df_limpio.dropna(subset=['salary_in_usd', 'experience_level', 'job_category'])
 
     # --- PASO 3: Asegurar tipos de datos ---
-    # TODO: ...
+    df_limpio['work_year'] = df_limpio['work_year'].astype(int)
+    df_limpio['salary_in_usd'] = df_limpio['salary_in_usd'].astype(float)
+    if 'salary' in df_limpio.columns:
+        df_limpio['salary'] = df_limpio['salary'].astype(float)
 
     # --- PASO 4: Resetear índice ---
-    # TODO: ...
+    df_limpio = df_limpio.reset_index(drop=True)
 
     # --- PASO 5: Guardar dataset limpio ---
-    # TODO: ...
+    # os.makedirs('datos', exist_ok=True)
+    # df_limpio.to_csv('datos/dataset_limpio.csv', index=False)
 
     return df_limpio
 
@@ -118,45 +122,32 @@ def calcular_estadisticos(df):
         if col not in df.columns:
             continue
 
-        # ╔════════════════════════════════════════════════╗
-        # ║  ¡IMPLEMENTA AQUÍ LOS ESTADÍSTICOS DEL LOOP!  ║
-        # ╚════════════════════════════════════════════════╝
+        series = df[col].dropna()
+        if series.empty: continue
 
-        data = df[col].dropna()
-
-        # TODO: Calcular media, mediana, moda, min, max, rango, Q1, Q3, IQR, std, var, CV%, skew, kurtosis
-        media = 0      # TODO: reemplazar
-        mediana = 0    # TODO: reemplazar
-        moda = 0       # TODO: reemplazar
-        minimo = 0     # TODO: reemplazar
-        maximo = 0     # TODO: reemplazar
-        rango = 0      # TODO: reemplazar
-        q1 = 0         # TODO: reemplazar
-        q3 = 0         # TODO: reemplazar
-        iqr = 0        # TODO: reemplazar
-        desv = 0       # TODO: reemplazar
-        varianza = 0   # TODO: reemplazar
-        cv = 0         # TODO: reemplazar
-        asimetria = 0  # TODO: reemplazar
-        curtosis = 0   # TODO: reemplazar
+        q1 = series.quantile(0.25)
+        q3 = series.quantile(0.75)
+        iqr = q3 - q1
+        media = series.mean()
+        desv = series.std()
 
         resultados.append({
             'Variable': col,
-            'N': len(data),
+            'N': len(series),
             'Media': media,
-            'Mediana': mediana,
-            'Moda': moda,
-            'Mínimo': minimo,
-            'Máximo': maximo,
-            'Rango': rango,
+            'Mediana': series.median(),
+            'Moda': series.mode().iloc[0] if not series.mode().empty else np.nan,
+            'Mínimo': series.min(),
+            'Máximo': series.max(),
+            'Rango': series.max() - series.min(),
             'Q1': q1,
             'Q3': q3,
             'IQR': iqr,
             'Desviación Típica': desv,
-            'Varianza': varianza,
-            'CV%': round(cv, 2),
-            'Asimetría': round(asimetria, 4),
-            'Curtosis': round(curtosis, 4)
+            'Varianza': series.var(),
+            'CV%': (desv / media * 100) if media != 0 else 0,
+            'Asimetría': series.skew(),
+            'Curtosis': series.kurtosis()
         })
 
     return pd.DataFrame(resultados)
@@ -187,18 +178,18 @@ def calcular_estadisticos_por_categoria(df, columna_numerica, columna_categoria)
     Returns:
         pd.DataFrame con estadísticos por cada categoría
     """
-    # TODO: COMPLETAR
-
-    # ╔══════════════════════════════════════════════════════╗
-    # ║  ¡IMPLEMENTA AQUÍ LOS ESTADÍSTICOS POR CATEGORÍA!  ║
-    # ╚══════════════════════════════════════════════════════╝
-
-    # PISTA para lambda de cuartiles:
-    # df.groupby(col_cat)[col_num].agg(['count','mean','median','std','min','max',
-    #                                    lambda x: x.quantile(0.25),
-    #                                    lambda x: x.quantile(0.75)]).round(2)
-
-    return pd.DataFrame()  # TODO: reemplazar con tu implementación
+    stats = df.groupby(columna_categoria)[columna_numerica].agg([
+        ('N', 'count'),
+        ('Media', 'mean'),
+        ('Mediana', 'median'),
+        ('Desv. Típica', 'std'),
+        ('Mínimo', 'min'),
+        ('Máximo', 'max'),
+        ('Q1', lambda x: x.quantile(0.25)),
+        ('Q3', lambda x: x.quantile(0.75))
+    ])
+    stats['IQR'] = stats['Q3'] - stats['Q1']
+    return stats.reset_index().round(2)
 
 
 def detectar_outliers_iqr(df, columna):
@@ -226,13 +217,26 @@ def detectar_outliers_iqr(df, columna):
     Returns:
         pd.DataFrame con una sola fila que resume los outliers encontrados
     """
-    # TODO: COMPLETAR
-
-    # ╔═════════════════════════════════════════════╗
-    # ║  ¡IMPLEMENTA AQUÍ LA DETECCIÓN DE OUTLIERS! ║
-    # ╚═════════════════════════════════════════════╝
-
-    return pd.DataFrame()  # TODO: reemplazar con tu implementación
+    q1 = df[columna].quantile(0.25)
+    q3 = df[columna].quantile(0.75)
+    iqr = q3 - q1
+    lim_inf = q1 - 1.5 * iqr
+    lim_sup = q3 + 1.5 * iqr
+    
+    outliers = df[(df[columna] < lim_inf) | (df[columna] > lim_sup)]
+    n_out = len(outliers)
+    pct_out = (n_out / len(df)) * 100 if len(df) > 0 else 0
+    
+    return pd.DataFrame([{
+        'Variable': columna,
+        'Q1': q1,
+        'Q3': q3,
+        'IQR': iqr,
+        'Límite Inferior': lim_inf,
+        'Límite Superior': lim_sup,
+        'N Outliers': n_out,
+        '% Outliers': np.round(float(pct_out), 2)
+    }])
 
 
 def exportar_tablas(df_stats, ruta):
