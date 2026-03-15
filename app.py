@@ -157,40 +157,87 @@ def get_data():
     return limpiar_datos(df)
 
 def create_excel(df):
-    """Genera un buffer de Excel a partir del DataFrame."""
+    """Genera un reporte Excel con tres pestañas: Datos, Estadísticos e Inferencia."""
     output = io.BytesIO()
+    
+    # Obtener cálculos de los módulos
+    df_stats = calcular_estadisticos(df)
+    ic_95 = calcular_ic_95(df['salary_in_usd'])
+    test_exp = contraste_hipotesis(
+        df[df['experience_level'] == 'Senior']['salary_in_usd'],
+        df[df['experience_level'] == 'Mid-level']['salary_in_usd'],
+        "Senior", "Mid-level"
+    )
+    
+    # Crear DataFrame para inferencia
+    df_inferencia = pd.DataFrame([
+        {'Concepto': 'Media Salarial', 'Valor': ic_95['Media']},
+        {'Concepto': 'IC 95% Inferior', 'Valor': ic_95['Inferior']},
+        {'Concepto': 'IC 95% Superior', 'Valor': ic_95['Superior']},
+        {'Concepto': 'P-Valor (Senior vs Mid)', 'Valor': test_exp['P-Valor']},
+        {'Concepto': 'Conclusión', 'Valor': test_exp['Conclusión']}
+    ])
+
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name='Datos_IT_Salaries')
+        df.to_excel(writer, index=False, sheet_name='1. Dataset Original')
+        df_stats.to_excel(writer, index=False, sheet_name='2. Estadisticos Descriptivos')
+        df_inferencia.to_excel(writer, index=False, sheet_name='3. Inferencia Estadistica')
+        
     return output.getvalue()
 
 def create_pdf(df):
-    """Genera un PDF resumen con las primeras filas y estadísticas básicas."""
+    """Genera un informe técnico completo en PDF."""
+    # Obtener cálculos
+    df_stats = calcular_estadisticos(df)
+    ic_95 = calcular_ic_95(df['salary_in_usd'])
+    
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("helvetica", 'B', 16)
-    pdf.cell(0, 10, "Resumen de Datos - Proyecto Estadistica", ln=True, align='C')
-    pdf.ln(5)
     
-    pdf.set_font("helvetica", 'B', 12)
-    pdf.cell(0, 10, f"Total de registros: {len(df)}", ln=True)
-    pdf.cell(0, 10, f"Media Salarial (USD): ${df['salary_in_usd'].mean():,.2f}", ln=True)
+    # Título Profesional
+    pdf.set_font("helvetica", 'B', 18)
+    pdf.set_text_color(11, 132, 244) # Azul Rubén
+    pdf.cell(0, 15, "INFORME TÉCNICO: ANÁLISIS DE SALARIOS IT", ln=True, align='C')
     pdf.ln(10)
     
+    # 1. Resumen Ejecutivo
+    pdf.set_font("helvetica", 'B', 14)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(0, 10, "1. Resumen Descriptivo", ln=True)
+    pdf.set_font("helvetica", size=10)
+    pdf.multi_cell(0, 7, f"El dataset analizado contiene un total de {len(df)} registros válidos. "
+                   f"La media salarial global se sitúa en los ${df['salary_in_usd'].mean():,.2f} USD.")
+    pdf.ln(5)
+    
+    # Tabla de Estadísticos
     pdf.set_font("helvetica", 'B', 10)
-    pdf.cell(0, 10, "Vista previa (Top 10 filas):", ln=True)
-    pdf.set_font("helvetica", size=8)
+    pdf.cell(50, 8, "Métrica", border=1)
+    pdf.cell(50, 8, "Valor (USD)", border=1, ln=True)
+    pdf.set_font("helvetica", size=9)
     
-    # Cabeceras
-    header = "Año | Experiencia | Puesto | Salario (USD)"
-    pdf.cell(0, 8, header, ln=True, border=1)
+    # Extraer datos de la fila de 'salary_in_usd' del df_stats
+    stats_row = df_stats[df_stats['Variable'] == 'salary_in_usd'].iloc[0]
+    for metric in ['Media', 'Mediana', 'Desviación Típica', 'Rango']:
+        pdf.cell(50, 7, metric, border=1)
+        pdf.cell(50, 7, f"{stats_row[metric]:,.2f}", border=1, ln=True)
+    pdf.ln(10)
     
-    # Filas
-    for i in range(min(10, len(df))):
-        row = df.iloc[i]
-        line = f"{row['work_year']} | {row['experience_level']} | {row['job_title'][:20]} | {row['salary_in_usd']}"
-        pdf.cell(0, 8, line.encode('latin-1', 'replace').decode('latin-1'), ln=True, border=1)
-        
-    return pdf.output()
+    # 2. Análisis Inferencial
+    pdf.set_font("helvetica", 'B', 14)
+    pdf.cell(0, 10, "2. Análisis Inferencial (IC 95%)", ln=True)
+    pdf.set_font("helvetica", size=10)
+    pdf.multi_cell(0, 7, f"Se ha calculado el Intervalo de Confianza para la media salarial real con un nivel del 95%. "
+                   f"Podemos afirmar que el salario medio poblacional se encuentra entre "
+                   f"${ic_95['Inferior']:,.2f} y ${ic_95['Superior']:,.2f} USD.")
+    pdf.ln(10)
+    
+    # Pie de página
+    pdf.set_y(-30)
+    pdf.set_font("helvetica", 'I', 8)
+    pdf.cell(0, 10, "Informe generado automáticamente - Universidad Europea - Grupo 1", align='C')
+    
+    # IMPORTANTE: Convertir bytearray a bytes para que Streamlit lo procese bien
+    return bytes(pdf.output())
 
 def main():
     # Header de la barra lateral (Arquitectura Rubén)
