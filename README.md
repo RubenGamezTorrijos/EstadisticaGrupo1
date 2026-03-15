@@ -81,3 +81,5 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
 > [!CAUTION]
 > Cualquier duda técnica, consultad con el Coordinador (Rubén Torrijos).
 
+---
+*© 2026 - Universidad Europea - Grado en Ingeniería - Estadística y Optimización*
