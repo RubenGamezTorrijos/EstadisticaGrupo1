@@ -12,8 +12,10 @@ venv/
 .streamlit/
 
 # documentación e informes
-# documentacion/
-# informes/
+documentacion/
+informes/
+plan/
+
 
 # Logs y csv en raiz
 *.csv
