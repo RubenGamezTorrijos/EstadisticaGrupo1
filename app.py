@@ -52,7 +52,6 @@ st.markdown(f"""
     
     /* Títulos y acentos */
     h1, h2, h3 {{ 
-        color: #0B84F4 !important; 
         font-weight: 700; 
     }}
     
@@ -161,7 +160,7 @@ def main():
         <div style="text-align: center; padding: 10px; border-radius: 50%; background-color: rgba(11, 132, 244, 0.1); border: 2px solid #0B84F4; width: 60px; height: 60px; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center;">
             <span style="font-size: 30px;">📊</span>
         </div>
-        <h2 style="text-align: center; color: #0B84F4; margin-bottom: 25px;">Estadística y Optimización <br> Grupo 1</h2>
+        <h2 style="text-align: center; margin-bottom: 25px;">Estadística y Optimización <br> Grupo 1</h2>
     """, unsafe_allow_html=True)
     st.sidebar.markdown("---")
     menu = st.sidebar.radio(
