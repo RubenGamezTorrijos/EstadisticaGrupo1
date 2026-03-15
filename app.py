@@ -167,18 +167,18 @@ def create_pdf(df):
     """Genera un PDF resumen con las primeras filas y estadísticas básicas."""
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
+    pdf.set_font("helvetica", 'B', 16)
     pdf.cell(0, 10, "Resumen de Datos - Proyecto Estadistica", ln=True, align='C')
     pdf.ln(5)
     
-    pdf.set_font("Arial", 'B', 12)
+    pdf.set_font("helvetica", 'B', 12)
     pdf.cell(0, 10, f"Total de registros: {len(df)}", ln=True)
     pdf.cell(0, 10, f"Media Salarial (USD): ${df['salary_in_usd'].mean():,.2f}", ln=True)
     pdf.ln(10)
     
-    pdf.set_font("Arial", 'B', 10)
+    pdf.set_font("helvetica", 'B', 10)
     pdf.cell(0, 10, "Vista previa (Top 10 filas):", ln=True)
-    pdf.set_font("Arial", size=8)
+    pdf.set_font("helvetica", size=8)
     
     # Cabeceras
     header = "Año | Experiencia | Puesto | Salario (USD)"
@@ -235,7 +235,7 @@ def main():
                 use_container_width=True
             )
         except Exception as e:
-            st.error("Error PDF")
+            st.error(f"Error PDF: {str(e)}")
 
     if menu == "Escritorio General":
         st.title("🚀 Escritorio de Salarios en IT")
