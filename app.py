@@ -217,9 +217,22 @@ def create_pdf(df):
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, "PROYECTO: ESTADÍSTICA Y OPTIMIZACIÓN", ln=True, align='C')
     pdf.cell(0, 10, "Análisis de Salarios en el Sector IT", ln=True, align='C')
-    pdf.ln(40)
-    pdf.set_font("helvetica", 'I', 12)
-    pdf.cell(0, 10, "Coordinador: Rubén Gámez Torrijos", ln=True, align='C')
+    pdf.ln(30)
+    
+    # Listado de intervinientes en la portada
+    pdf.set_font("helvetica", 'B', 12)
+    pdf.set_text_color(11, 132, 244)
+    pdf.cell(0, 10, "Integrantes del Equipo:", ln=True, align='C')
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font("helvetica", size=10)
+    
+    pdf.cell(0, 7, "Rafael Rodriguez - Data Manager", ln=True, align='C')
+    pdf.cell(0, 7, "Bryann Vallejo - Analista Inferencial", ln=True, align='C')
+    pdf.cell(0, 7, "Leslie Ross - Analista Descriptivo", ln=True, align='C')
+    pdf.cell(0, 7, "Rubén Gámez - Coordinador e Integrador", ln=True, align='C')
+    
+    pdf.ln(20)
+    pdf.set_font("helvetica", 'I', 11)
     pdf.cell(0, 10, "Grupo 1 - Universidad Europea", ln=True, align='C')
     
     # --- PÁGINA 2: ESCRITORIO Y DESCRIPTIVA ---
