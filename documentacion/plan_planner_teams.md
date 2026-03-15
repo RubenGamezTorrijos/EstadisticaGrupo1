@@ -11,7 +11,7 @@ Este documento organiza el trabajo en 3 fases clave, adaptadas a la estructura d
 - [x] **1.1.1. Repositorio GitHub**: Creación de ramas `main` y `dev` con protección de ramas.
 - [x] **1.1.2. Base del Código**: Estructura de carpetas, `requirements.txt` y configuración `.gitignore`.
 - [x] **1.1.3. Streamlit Core**: Desarrollo de `app.py` con navegación, sidebar adaptativo y formateo numérico.
-- [x] **1.1.4. Exportación de Datos**: Implementación de botones de descarga Excel y PDF en la barra lateral.
+- [x] **1.1.4. Exportación de Datos Avanzada**: Implementación de informes PDF técnicos y Excel multi-pestaña con resultados estadísticos.
 
 ---
 
