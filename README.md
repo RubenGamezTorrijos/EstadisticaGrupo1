@@ -64,11 +64,11 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
 
 | Escritorio General | Estadísticos Descriptivos |
 | :---: | :---: |
-| ![Captura 1](capturas/captura_1_app_streamlit_escritorio_general.jpg) | ![Captura 2](capturas/captura_2_app_streamlit_analisis_descriptivo_estadisticos.jpg) |
+| ![Captura 1](capturas/captura_1_app_streamlit_escritorio_general.jpg?v=2) | ![Captura 2](capturas/captura_2_app_streamlit_analisis_descriptivo_estadisticos.jpg?v=2) |
 | **Visualizaciones** | **Regresión Lineal** |
-| ![Captura 3](capturas/captura_3_app_streamlit_analisis_descriptivo_visualizaciones.jpg) | ![Captura 4](capturas/captura_4_app_streamlit_analisis_descriptivo_regresion.jpg) |
+| ![Captura 3](capturas/captura_3_app_streamlit_analisis_descriptivo_visualizaciones.jpg?v=2) | ![Captura 4](capturas/captura_4_app_streamlit_analisis_descriptivo_regresion.jpg?v=2) |
 | **Estadística Inferencial** | **Equipo Grupo 1** |
-| ![Captura 5](capturas/captura_5_app_streamlit_estadistica_inferencial.jpg) | ![Captura 6](capturas/captura_6_app_streamlit_equipo_del_grupo1.jpg) |
+| ![Captura 5](capturas/captura_5_app_streamlit_estadistica_inferencial.jpg?v=2) | ![Captura 6](capturas/captura_6_app_streamlit_equipo_del_grupo1.jpg?v=2) |
 
 ---
 
