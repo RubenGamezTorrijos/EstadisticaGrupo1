@@ -4,6 +4,8 @@ import os
 from analisis.estadisticos import limpiar_datos, calcular_estadisticos
 from analisis.graficos import crear_histograma, crear_boxplot, crear_scatter_regresion, crear_bar_chart
 from analisis.inferencial import calcular_ic_95, contraste_hipotesis, verificar_supuestos
+import io
+from fpdf import FPDF
 
 """
 PROYECTO: Estadística para Ingeniería
@@ -154,6 +156,42 @@ def get_data():
     df = pd.read_csv('datos/dataset_crudo.csv')
     return limpiar_datos(df)
 
+def create_excel(df):
+    """Genera un buffer de Excel a partir del DataFrame."""
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Datos_IT_Salaries')
+    return output.getvalue()
+
+def create_pdf(df):
+    """Genera un PDF resumen con las primeras filas y estadísticas básicas."""
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Resumen de Datos - Proyecto Estadistica", ln=True, align='C')
+    pdf.ln(5)
+    
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, f"Total de registros: {len(df)}", ln=True)
+    pdf.cell(0, 10, f"Media Salarial (USD): ${df['salary_in_usd'].mean():,.2f}", ln=True)
+    pdf.ln(10)
+    
+    pdf.set_font("Arial", 'B', 10)
+    pdf.cell(0, 10, "Vista previa (Top 10 filas):", ln=True)
+    pdf.set_font("Arial", size=8)
+    
+    # Cabeceras
+    header = "Año | Experiencia | Puesto | Salario (USD)"
+    pdf.cell(0, 8, header, ln=True, border=1)
+    
+    # Filas
+    for i in range(min(10, len(df))):
+        row = df.iloc[i]
+        line = f"{row['work_year']} | {row['experience_level']} | {row['job_title'][:20]} | {row['salary_in_usd']}"
+        pdf.cell(0, 8, line.encode('latin-1', 'replace').decode('latin-1'), ln=True, border=1)
+        
+    return pdf.output()
+
 def main():
     # Header de la barra lateral (Arquitectura Rubén)
     st.sidebar.markdown(f"""
@@ -169,6 +207,35 @@ def main():
     )
 
     df = get_data()
+
+    # --- SECCIÓN DE EXPORTACIÓN (ARQUITECTURA RUBÉN) ---
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("📥 Exportar Datos")
+    
+    col1, col2 = st.sidebar.columns(2)
+    
+    with col1:
+        excel_data = create_excel(df)
+        st.download_button(
+            label="📊 Excel",
+            data=excel_data,
+            file_name="dataset_salarios_it.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
+        
+    with col2:
+        try:
+            pdf_data = create_pdf(df)
+            st.download_button(
+                label="📕 PDF",
+                data=pdf_data,
+                file_name="resumen_estadistico.pdf",
+                mime="application/pdf",
+                use_container_width=True
+            )
+        except Exception as e:
+            st.error("Error PDF")
 
     if menu == "Escritorio General":
         st.title("🚀 Escritorio de Salarios en IT")
