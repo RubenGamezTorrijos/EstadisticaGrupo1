@@ -18,6 +18,11 @@ def limpiar_datos(df):
     # 3. Guarda el dataset en 'datos/dataset_limpio.csv'
     
     # --- Tu código aquí (aprox. 5 líneas) ---
+    df = df.dropna(subset=['salary_in_usd', 'experience_level', 'work_year'])  
+    df['work_year'] = df['work_year'].astype(int)                               
+    df['salary_in_usd'] = df['salary_in_usd'].astype(float)                    
+    os.makedirs('datos', exist_ok=True)                                         
+    df.to_csv('datos/dataset_limpio.csv', index=False)                          
     
     return df
 
@@ -31,17 +36,25 @@ def calcular_estadisticos(df):
     
     for col in cols_num:
         # TODO (Rafael): Calcula los estadísticos utilizando pandas
-        # Ejemplo: df[col].mean() para la Media
-        
-        # --- Modifica los ceros por tus cálculos ---
+        if col not in df.columns:
+            continue
+
+        media = df[col].mean()
+        mediana = df[col].median()
+        moda = df[col].mode()
+        moda_val = moda.iloc[0] if not moda.empty else np.nan
+        rango = df[col].max() - df[col].min()
+        desviacion = df[col].std()
+        varianza = df[col].var()
+
         stats = {
             'Variable': col,
-            'Media': 0.0,
-            'Mediana': 0.0,
-            'Moda': 0.0,
-            'Rango': 0.0,
-            'Desviación Típica': 0.0,
-            'Varianza': 0.0
+            'Media': media,
+            'Mediana': mediana,
+            'Moda': moda_val,
+            'Rango': rango,
+            'Desviación Típica': desviacion,
+            'Varianza': varianza
         }
         resultados.append(stats)
     
@@ -56,4 +69,6 @@ def exportar_tablas(df_stats, ruta):
     # y guarda df_stats como CSV en 'ruta'
     
     # --- Tu código aquí (aprox. 2 líneas) ---
+    os.makedirs(os.path.dirname(ruta), exist_ok=True)
+    df_stats.to_csv(ruta, index=False)
     pass
