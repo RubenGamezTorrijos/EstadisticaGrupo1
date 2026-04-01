@@ -47,6 +47,17 @@ def calcular_estadisticos(df):
         desviacion = df[col].std()
         varianza = df[col].var()
 
+        # NUEVO (Rafael): Cálculo de estadísticos avanzados necesarios para la app
+        n = df[col].count()
+        minimo = df[col].min()
+        maximo = df[col].max()
+        q1 = df[col].quantile(0.25)
+        q3 = df[col].quantile(0.75)
+        iqr = q3 - q1
+        cv = (desviacion / media) * 100 if media != 0 else np.nan
+        asimetria = df[col].skew()
+        curtosis = df[col].kurtosis()
+
         stats = {
             'Variable': col,
             'Media': media,
@@ -54,11 +65,84 @@ def calcular_estadisticos(df):
             'Moda': moda_val,
             'Rango': rango,
             'Desviación Típica': desviacion,
-            'Varianza': varianza
+            'Varianza': varianza,
+
+            # NUEVO (Rafael): Variables adicionales solicitadas
+            'N': n,
+            'Mínimo': minimo,
+            'Máximo': maximo,
+            'Q1': q1,
+            'Q3': q3,
+            'IQR': iqr,
+            'CV%': cv,
+            'Asimetría': asimetria,
+            'Curtosis': curtosis
         }
         resultados.append(stats)
     
     return pd.DataFrame(resultados)
+
+
+def calcular_estadisticos_por_categoria(df, columna_numerica, columna_categoria):
+    """
+    RAFAEL RODRIGUEZ MENGUAL - Estadísticos por categoría
+    Agrupa por una variable categórica y calcula métricas descriptivas.
+    """
+    # NUEVO (Rafael): Agrupación por categoría usando groupby
+    grouped = df.groupby(columna_categoria)[columna_numerica]
+
+    resultado = grouped.agg([
+        'count',
+        'mean',
+        'median',
+        'std',
+        'min',
+        'max',
+        lambda x: x.quantile(0.25),
+        lambda x: x.quantile(0.75)
+    ])
+
+    # NUEVO (Rafael): Renombrar columnas para claridad
+    resultado.columns = ['N', 'Media', 'Mediana', 'Desv_Tipica', 'Minimo', 'Maximo', 'Q1', 'Q3']
+
+    # NUEVO (Rafael): Cálculo del IQR
+    resultado['IQR'] = resultado['Q3'] - resultado['Q1']
+
+    return resultado.reset_index()
+
+
+def detectar_outliers_iqr(df, columna):
+    """
+    RAFAEL RODRIGUEZ MENGUAL - Detección de Outliers
+    Detecta valores atípicos usando el método IQR.
+    """
+    # NUEVO (Rafael): Cálculo de Q1, Q3 e IQR
+    q1 = df[columna].quantile(0.25)
+    q3 = df[columna].quantile(0.75)
+    iqr = q3 - q1
+
+    # NUEVO (Rafael): Límites para detectar outliers
+    limite_inf = q1 - 1.5 * iqr
+    limite_sup = q3 + 1.5 * iqr
+
+    # NUEVO (Rafael): Filtrado de outliers
+    outliers = df[(df[columna] < limite_inf) | (df[columna] > limite_sup)]
+
+    n_outliers = outliers.shape[0]
+    total = df.shape[0]
+    porcentaje = (n_outliers / total) * 100
+
+    return pd.DataFrame([{
+        'Variable': columna,
+        'Q1': q1,
+        'Q3': q3,
+        'IQR': iqr,
+        'Limite Inferior': limite_inf,
+        'Limite Superior': limite_sup,
+        'N Outliers': n_outliers,
+        '% Outliers': porcentaje
+    }])
+
 
 def exportar_tablas(df_stats, ruta):
     """
