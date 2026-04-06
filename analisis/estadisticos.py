@@ -22,7 +22,7 @@ def limpiar_datos(df):
     df['work_year'] = df['work_year'].astype(int)                               
     df['salary_in_usd'] = df['salary_in_usd'].astype(float)                    
     os.makedirs('datos', exist_ok=True)                                         
-    df.to_csv('datos/dataset_limpio.csv', index=False)                          
+    df.to_csv('datos/dataset_limpio.csv', index=False, sep=';', encoding='utf-8')                          
     
     return df
 
@@ -154,5 +154,5 @@ def exportar_tablas(df_stats, ruta):
     
     # --- Tu código aquí (aprox. 2 líneas) ---
     os.makedirs(os.path.dirname(ruta), exist_ok=True)
-    df_stats.to_csv(ruta, index=False)
+    df_stats.to_csv(ruta, index=False, sep=';', encoding='utf-8')
     pass
