@@ -7,6 +7,12 @@ import pandas as pd
 import numpy as np
 import os
 
+# NUEVO (Rafael): Diccionario para nombres legibles en la app
+VAR_LABELS = {
+    'salary_in_usd': 'Salario (USD)',
+    'salary': 'Salario'
+}
+
 def limpiar_datos(df):
     """
     RAFAEL RODRIGUEZ MENGUAL - Data Manager
@@ -18,13 +24,22 @@ def limpiar_datos(df):
     # 3. Guarda el dataset en 'datos/dataset_limpio.csv'
     
     # --- Tu código aquí (aprox. 5 líneas) ---
+    df = df.copy()
+
     df = df.dropna(subset=['salary_in_usd', 'experience_level', 'work_year'])  
+
+    df = df.drop_duplicates()
+
     df['work_year'] = df['work_year'].astype(int)                               
     df['salary_in_usd'] = df['salary_in_usd'].astype(float)                    
+
     os.makedirs('datos', exist_ok=True)                                         
     df.to_csv('datos/dataset_limpio.csv', index=False, sep=';', encoding='utf-8')                          
+
+    df = df.reset_index(drop=True)
     
     return df
+
 
 def calcular_estadisticos(df):
     """
@@ -59,7 +74,7 @@ def calcular_estadisticos(df):
         curtosis = df[col].kurtosis()
 
         stats = {
-            'Variable': col,
+            'Variable': VAR_LABELS.get(col, col),
             'Media': media,
             'Mediana': mediana,
             'Moda': moda_val,
@@ -103,7 +118,7 @@ def calcular_estadisticos_por_categoria(df, columna_numerica, columna_categoria)
     ])
 
     # NUEVO (Rafael): Renombrar columnas para claridad
-    resultado.columns = ['N', 'Media', 'Mediana', 'Desv_Tipica', 'Minimo', 'Maximo', 'Q1', 'Q3']
+    resultado.columns = ['N', 'Media', 'Mediana', 'Desv. Típica', 'Mínimo', 'Máximo', 'Q1', 'Q3']
 
     # NUEVO (Rafael): Cálculo del IQR
     resultado['IQR'] = resultado['Q3'] - resultado['Q1']
