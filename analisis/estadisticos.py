@@ -27,17 +27,32 @@ import pandas as pd
 import numpy as np
 import os
 
+# Índice de coste de vida aproximado (USA = 100)
+COST_OF_LIVING_INDEX = {
+    'United States': 100, 'United Kingdom': 85, 'Canada': 90, 
+    'Spain': 70, 'Germany': 80, 'France': 80, 'Australia': 95, 
+    'Portugal': 65, 'Netherlands': 85, 'Brazil': 50, 
+    'Colombia': 40, 'Greece': 60, 'Italy': 75, 'Mexico': 45, 
+    'Poland': 60, 'Estonia': 65, 'Nigeria': 35, 'Ireland': 90, 
+    'India': 30, 'Russia': 40
+}
+
 # Mapeo de variables para etiquetas legibles
 VAR_LABELS = {
     'work_year': 'Año de Trabajo',
     'experience_level': 'Nivel de Experiencia',
     'employment_type': 'Tipo de Empleo',
-    'job_title': 'Titulo de Empleo',
-    'salary': 'Salario (EUR)',
+    'job_title': 'Título del Puesto',
+    'salary': 'Salario (Original)',
     'salary_currency': 'Moneda',
     'salary_in_usd': 'Salario (USD)',
-    'job_category': 'Categoria de Puesto',
-    'work_setting': 'Modalidad de Trabajo'
+    'employee_residence': 'Residencia Empleado',
+    'remote_ratio': 'Ratio Remoto',
+    'company_location': 'Localización Empresa',
+    'company_size': 'Tamaño Empresa',
+    'job_category': 'Categoría de Puesto',
+    'work_setting': 'Modalidad de Trabajo',
+    'cost_of_living_index': 'Índice de Coste de Vida'
 }
 
 def limpiar_datos(df):
@@ -81,7 +96,12 @@ def limpiar_datos(df):
     if 'salary' in df_limpio.columns:
         df_limpio['salary'] = df_limpio['salary'].astype(float)
 
-    # --- PASO 4: Resetear índice ---
+    # --- PASO 4: Nueva Variable de Coste de Vida ---
+    # Asignamos 70 (media estimada global) a los países que no estén en el Top 20
+    if 'company_location' in df_limpio.columns:
+        df_limpio['cost_of_living_index'] = df_limpio['company_location'].map(COST_OF_LIVING_INDEX).fillna(70)
+
+    # --- PASO 5: Resetear índice ---
     df_limpio = df_limpio.reset_index(drop=True)
 
     # --- PASO 5: Guardar dataset limpio ---
@@ -144,6 +164,7 @@ def calcular_estadisticos(df):
         desv = series.std()
 
         resultados.append({
+            'ID_Variable': col,
             'Variable': VAR_LABELS.get(col, col),
             'N': len(series),
             'Media': media,

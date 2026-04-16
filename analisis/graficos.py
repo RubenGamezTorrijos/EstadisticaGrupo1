@@ -60,16 +60,17 @@ VAR_LABELS = {
     'work_year': 'Año de Trabajo',
     'experience_level': 'Nivel de Experiencia',
     'employment_type': 'Tipo de Empleo',
-    'job_title': 'Titulo de Empleo',
-    'salary': 'Salario (EUR)',
+    'job_title': 'Título del Puesto',
+    'salary': 'Salario (Original)',
     'salary_currency': 'Moneda',
     'salary_in_usd': 'Salario (USD)',
     'employee_residence': 'Residencia Empleado',
     'remote_ratio': 'Ratio Remoto',
-    'company_location': 'Ubicacion Empresa',
+    'company_location': 'Localización Empresa',
     'company_size': 'Tamaño Empresa',
-    'job_category': 'Categoria de Puesto',
-    'work_setting': 'Modalidad de Trabajo'
+    'job_category': 'Categoría de Puesto',
+    'work_setting': 'Modalidad de Trabajo',
+    'cost_of_living_index': 'Índice de Coste de Vida'
 }
 
 def sanitize_pdf_text(text):
@@ -287,71 +288,36 @@ def crear_scatter_regresion(df, x_col, y_col, titulo='Dispersión y Regresión',
                             guardar=False, ruta_guardado='outputs/graficos/'):
     """
     LESLIE ROSS ARANIBAR POZO - Scatter Plot con Regresión Lineal
-
-    DEBE mostrar:
-    ✅ Puntos de dispersión (sns.scatterplot)
-    ✅ Línea de regresión ROJA calculada manualmente con numpy:
-        m, b = np.polyfit(df[x_col], df[y_col], 1)   ← pendiente e intercepto
-        r    = np.corrcoef(df[x_col], df[y_col])[0,1] ← correlación de Pearson
-        r_sq = r ** 2                                  ← coeficiente de determinación R²
-    ✅ Anotación de texto en el gráfico con: r, R², pendiente
-        ax.text(0.02, 0.98, f'r = {r:.4f}\\nR² = {r_sq:.4f}\\nPendiente = {m:.2f}',
-                transform=ax.transAxes, verticalalignment='top',
-                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
-    ✅ Leyenda con la ecuación de la recta
-
-    RETORNO:
-    ─────────
-    Esta función debe retornar UNA TUPLA (figura, dict_estadisticos):
-    return fig, {
-        'pendiente': m,
-        'intercepto': b,
-        'correlacion': r,
-        'r_cuadrado': r_sq
-    }
-
-    Args:
-        df: DataFrame con los datos
-        x_col: columna para el eje X (ej: 'work_year')
-        y_col: columna para el eje Y (ej: 'salary_in_usd')
-        titulo: título del gráfico
-        guardar: Si True, guarda el gráfico como PNG
-
-    Returns:
-        Tupla: (matplotlib.figure.Figure, dict con r, r², pendiente, intercepto)
     """
-    # TODO: COMPLETAR
-
-    # ╔══════════════════════════════════════════════════════════╗
-    # ║  ¡IMPLEMENTA AQUÍ EL SCATTER + REGRESIÓN + ESTADÍSTICOS! ║
-    # ╚══════════════════════════════════════════════════════════╝
-
     configurar_estilo()
     fig, ax = plt.subplots(figsize=(14, 10))
 
-    sns.scatterplot(data=df, x=x_col, y=y_col, ax=ax, alpha=0.6, color='steelblue')
+    df_clean = df.dropna(subset=[x_col, y_col])
+    x_data = df_clean[x_col].values
+    y_data = df_clean[y_col].values
     
-    # Calcular regresión
-    x_data = df[x_col].values
-    y_data = df[y_col].values
-    m, b = np.polyfit(x_data, y_data, 1)
-    correlation_matrix = np.corrcoef(x_data, y_data)
-    r = correlation_matrix[0, 1]
-    r_sq = r ** 2
-    
-    # Dibujar línea
-    ax.plot(x_data, m * x_data + b, color='red', linewidth=2.5, label=f'y = {m:.2f}x + {b:.2f}')
-    
-    # Anotación
-    info_text = f'r = {r:.4f}\nR² = {r_sq:.4f}\nPendiente = {m:.2f}'
-    ax.text(0.05, 0.95, info_text, transform=ax.transAxes, verticalalignment='top',
-            bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': 'gray'}, fontsize=12)
+    if len(x_data) > 1:
+        m, b = np.polyfit(x_data, y_data, 1)
+        correlation_matrix = np.corrcoef(x_data, y_data)
+        r = correlation_matrix[0, 1]
+        r_sq = r ** 2
+        
+        sns.scatterplot(data=df_clean, x=x_col, y=y_col, ax=ax, alpha=0.6, color='steelblue')
+        ax.plot(x_data, m * x_data + b, color='red', linewidth=2.5, label=f'y = {m:.2f}x + {b:.2f}')
+        
+        info_text = f'r = {r:.4f}\nR² = {r_sq:.4f}\nPendiente = {m:.2f}'
+        ax.text(0.05, 0.95, info_text, transform=ax.transAxes, verticalalignment='top',
+                bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': 'gray'}, fontsize=12)
+    else:
+        m, b, r, r_sq = 0, 0, 0, 0
 
     ax.set_title(sanitize_pdf_text(titulo), fontsize=18, fontweight='bold', pad=20)
     ax.set_xlabel(obtener_label(x_col), fontsize=14)
     ax.set_ylabel(obtener_label(y_col), fontsize=14)
     ax.yaxis.set_major_formatter(formatter)
-    ax.legend(fontsize=12)
+    
+    if len(x_data) > 1:
+        ax.legend(fontsize=12)
 
     plt.tight_layout()
 
@@ -474,4 +440,34 @@ def crear_grafico_interactivo(df, x, y, color=None, tipo='scatter'):
         return None
 
     fig.update_layout(title=f"Gráfico Interactivo ({tipo})", margin=dict(l=20, r=20, t=50, b=20))
+    return fig
+
+def crear_grafico_comparativo_ic(df, x_col, y_col, titulo='Comparativa de Intervalos de Confianza (95%)'):
+    """
+    LESLIE ROSS - Gráfico de comparación de medias con barras de error (IC).
+    Ideal para visualización inferencial.
+    """
+    configurar_estilo()
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Filtrar solo las categorías que tienen datos suficientes
+    counts = df[x_col].value_counts()
+    valid_cats = counts[counts > 1].index
+    df_plot = df[df[x_col].isin(valid_cats)]
+    
+    if not df_plot.empty:
+        # sns.barplot con errorbar=('ci', 95) calcula automáticamente el IC
+        sns.barplot(data=df_plot, x=x_col, y=y_col, ax=ax, palette='viridis', 
+                    errorbar=('ci', 95), capsize=.1, hue=x_col, legend=False)
+        
+        ax.set_title(sanitize_pdf_text(titulo), fontsize=15, fontweight='bold')
+        ax.set_xlabel(obtener_label(x_col))
+        ax.set_ylabel(obtener_label(y_col))
+        ax.yaxis.set_major_formatter(formatter)
+        
+        # Añadir nota explicativa
+        ax.text(0.5, -0.15, sanitize_pdf_text("Las barras negras representan el Intervalo de Confianza al 95%."), 
+                transform=ax.transAxes, ha='center', fontsize=10, style='italic')
+    
+    plt.tight_layout()
     return fig

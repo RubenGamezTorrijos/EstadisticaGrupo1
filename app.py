@@ -1,17 +1,17 @@
-import streamlit as st
-import pandas as pd
-import os
-from analisis.estadisticos import limpiar_datos, calcular_estadisticos
-from analisis.graficos import crear_histograma, crear_boxplot, crear_scatter_regresion, crear_bar_chart
-from analisis.inferencial import calcular_ic_95, contraste_hipotesis, verificar_supuestos, verificar_homocedasticidad
-import io
-from fpdf import FPDF
-
 """
 PROYECTO: Estadística para Ingeniería
 INTEGRACIÓN Y UI: RUBEN GAMEZ TORRIJOS (Coordinador y Desarrollador)
 App principal de Streamlit para visualizar el análisis estadístico.
 """
+import streamlit as st
+import pandas as pd
+import os
+from analisis.estadisticos import limpiar_datos, calcular_estadisticos
+from analisis.graficos import crear_histograma, crear_boxplot, crear_scatter_regresion, crear_bar_chart, crear_grafico_comparativo_ic
+from analisis.inferencial import calcular_ic_95, contraste_hipotesis, verificar_supuestos, verificar_homocedasticidad
+import io
+from fpdf import FPDF
+
 # Configuración de página RUBEN
 st.set_page_config(
     page_title="Estadística - Salarios en IT",
@@ -23,10 +23,18 @@ st.set_page_config(
 VAR_LABELS = {
     'work_year': 'Año de Trabajo',
     'experience_level': 'Nivel de Experiencia',
-    'salary_in_usd': 'Salario (Moneda Dollar US)',
-    'salary': 'Salario (Moneda Euro)',
+    'employment_type': 'Tipo de Empleo',
+    'job_title': 'Título del Puesto',
+    'salary': 'Salario (Local)',
+    'salary_currency': 'Moneda',
+    'salary_in_usd': 'Salario (USD)',
+    'employee_residence': 'Residencia Empleado',
+    'remote_ratio': 'Ratio Remoto',
+    'company_location': 'Localización Empresa',
+    'company_size': 'Tamaño Empresa',
     'job_category': 'Categoría de Puesto',
-    'work_setting': 'Modalidad de Trabajo'
+    'work_setting': 'Modalidad de Trabajo',
+    'cost_of_living_index': 'Índice de Coste de Vida'
 }
 
 # Estilo Blue (#0B84F4) Adaptativo
@@ -102,6 +110,18 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
+# Mapeo de nombres de moneda para mayor claridad (Requerimiento Rubén)
+CURRENCY_DISPLAY = {
+    'EUR': 'Euro (€)',
+    'USD': 'Dólar ($)',
+    'GBP': 'Libra (£)',
+    'CAD': 'Dólar Can. (CAD)',
+    'AUD': 'Dólar Aus. (AUD)',
+    'BRL': 'Real (BRL)',
+    'PLN': 'Zloty (PLN)',
+    'CHF': 'Franco Suizo (CHF)'
+}
+
 # Localización de números EUR / USD y Abreviaturas
 def abbreviate_number(val):
     if val >= 1_000_000:
@@ -174,14 +194,29 @@ def create_excel(df):
     
     # 3. Datos para Inferencia (Ejemplo de IC)
     ic_95 = calcular_ic_95(df['salary_in_usd'])
-    df_inf = pd.DataFrame([
-        {'Métrica': 'Media Salarial', 'Valor': ic_95['Media']},
-        {'Métrica': 'IC 95% Inferior', 'Valor': ic_95['Inferior']},
-        {'Métrica': 'IC 95% Superior', 'Valor': ic_95['Superior']},
-        {'Métrica': 'Margen de Error', 'Valor': ic_95['Margen Error']}
+    if ic_95 and 'media' in ic_95:
+        df_inf = pd.DataFrame([
+            {'Métrica': 'Media Salarial', 'Valor': ic_95['media']},
+            {'Métrica': 'IC 95% Inferior', 'Valor': ic_95['ic_inferior']},
+            {'Métrica': 'IC 95% Superior', 'Valor': ic_95['ic_superior']},
+            {'Métrica': 'Margen de Error', 'Valor': ic_95['margen_error']}
+        ])
+    else:
+        df_inf = pd.DataFrame([{'Métrica': 'Aviso', 'Valor': 'Datos insuficientes para inferencia'}])
+
+    # 4. Análisis de Regresión (NUEVO)
+    # Calculamos regresión básica para el Excel
+    fig_r, stats_reg = crear_scatter_regresion(df, 'cost_of_living_index', 'salary_in_usd')
+    df_reg = pd.DataFrame([
+        {'Métrica': 'Variable X', 'Valor': 'Índice de Coste de Vida'},
+        {'Métrica': 'Variable Y', 'Valor': 'Salario (USD)'},
+        {'Métrica': 'Coeficiente Correlación (r)', 'Valor': stats_reg['correlacion']},
+        {'Métrica': 'Coeficiente Determinación (R²)', 'Valor': stats_reg['r_cuadrado']},
+        {'Métrica': 'Pendiente', 'Valor': stats_reg['pendiente']},
+        {'Métrica': 'Interpretación', 'Valor': 'Tendencia positiva' if stats_reg['pendiente'] > 0 else 'Tendencia negativa'}
     ])
 
-    # 4. Datos del Equipo
+    # 5. Datos del Equipo
     df_equipo = pd.DataFrame([
         {'Nombre': 'Rafael Rodriguez', 'Rol': 'Data Manager'},
         {'Nombre': 'Bryann Vallejo', 'Rol': 'Analista Inferencial'},
@@ -193,8 +228,33 @@ def create_excel(df):
         df_resumen.to_excel(writer, index=False, sheet_name='1. Resumen Ejecutivo')
         df_stats.to_excel(writer, index=False, sheet_name='2. Descriptiva')
         df_inf.to_excel(writer, index=False, sheet_name='3. Inferencia')
-        df_equipo.to_excel(writer, index=False, sheet_name='4. Equipo')
-        df.to_excel(writer, index=False, sheet_name='5. Datos Brutos')
+        df_reg.to_excel(writer, index=False, sheet_name='4. Regresion')
+        df_equipo.to_excel(writer, index=False, sheet_name='5. Equipo')
+        df.to_excel(writer, index=False, sheet_name='6. Datos Brutos')
+
+        # --- INSERCIÓN DE GRÁFICOS EN EXCEL (Requerimiento Rubén) ---
+        from openpyxl.drawing.image import Image
+        import tempfile
+
+        # Gráfico Descriptivo (Histograma)
+        fig_hist = crear_histograma(df, 'salary_in_usd')
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+            fig_hist.savefig(tmp.name, format='png', bbox_inches='tight')
+            img_hist = Image(tmp.name)
+            writer.sheets['2. Descriptiva'].add_image(img_hist, 'H2')
+
+        # Gráfico Inferencial (IC)
+        fig_inf = crear_grafico_comparativo_ic(df, 'experience_level', 'salary_in_usd')
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+            fig_inf.savefig(tmp.name, format='png', bbox_inches='tight')
+            img_inf = Image(tmp.name)
+            writer.sheets['3. Inferencia'].add_image(img_inf, 'H2')
+
+        # Gráfico Regresión
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+            fig_r.savefig(tmp.name, format='png', bbox_inches='tight')
+            img_reg = Image(tmp.name)
+            writer.sheets['4. Regresion'].add_image(img_reg, 'H2')
 
     return output.getvalue()
 
@@ -227,9 +287,14 @@ def create_pdf(df):
     pdf.cell(0, 10, sanitize_pdf_text("ANÁLISIS ESTADÍSTICO: SALARIOS EN IT"), ln=True, align='C')
     pdf.ln(30)
     
-    pdf.set_font("helvetica", 'B', 12)
+    # Detectar país para el título del PDF
+    monedas_unicas = df['salary_currency'].unique()
+    ubicacion = "Global" if len(df['company_location'].unique()) > 1 else df['company_location'].iloc[0]
+    
+    pdf.set_font("helvetica", 'B', 20)
     pdf.set_text_color(11, 132, 244)
-    pdf.cell(0, 10, "Integrantes del Equipo:", ln=True, align='C')
+    pdf.cell(0, 20, f"Informe Estadistico IT - {ubicacion}", ln=True, align='C')
+    pdf.ln(10)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("helvetica", size=10)
     pdf.cell(0, 7, "Rafael Rodriguez - Data Manager", ln=True, align='C')
@@ -250,7 +315,22 @@ def create_pdf(df):
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("helvetica", size=11)
     stats_df = calcular_estadisticos(df)
-    salario_stats = stats_df[stats_df['Variable'] == 'salary_in_usd'].iloc[0]
+    
+    # Búsqueda robusta por ID_Variable para evitar errores de indexación
+    try:
+        salario_stats = stats_df[stats_df['ID_Variable'] == 'salary_in_usd'].iloc[0]
+    except (IndexError, KeyError):
+        if not stats_df.empty:
+            salario_stats = stats_df.iloc[0]
+        else:
+            # Si no hay datos, generar una página de aviso
+            pdf.add_page()
+            pdf.set_font("helvetica", 'B', 16)
+            pdf.cell(0, 10, "Aviso: Datos insuficientes", ln=True)
+            pdf.set_font("helvetica", size=12)
+            pdf.multi_cell(0, 10, "No se han encontrado registros suficientes para generar el análisis detallado para el filtro seleccionado.")
+            return bytes(pdf.output())
+
     
     desc_text = (
         f"Se han analizado {len(df)} registros de salarios. "
@@ -266,6 +346,14 @@ def create_pdf(df):
     img_hist = io.BytesIO()
     fig_hist.savefig(img_hist, format='png', bbox_inches='tight', dpi=100)
     pdf.image(img_hist, x=15, w=180)
+    pdf.ln(5)
+    
+    # Gráfico 2: Boxplot (NUEVO)
+    fig_box = crear_boxplot(df, 'salary_in_usd', 'experience_level')
+    img_box = io.BytesIO()
+    fig_box.savefig(img_box, format='png', bbox_inches='tight', dpi=100)
+    pdf.ln(5)
+    pdf.image(img_box, x=15, w=180)
     
     # --- PÁGINA 3: ESTADÍSTICA INFERENCIAL ---
     pdf.add_page()
@@ -274,33 +362,49 @@ def create_pdf(df):
     pdf.cell(0, 10, "2. Estadistica Inferencial", ln=True)
     pdf.ln(5)
     
-    pdf.set_text_color(0, 0, 0)
-    pdf.set_font("helvetica", size=11)
+    # Intervalo de Confianza con protección
     ic_95 = calcular_ic_95(df['salary_in_usd'])
-    inf_text = (
-        "Aplicando la distribucion T de Student (confianza 95%), estimamos que la media "
-        f"poblacional se encuentra entre ${ic_95['Inferior']:,.2f} y ${ic_95['Superior']:,.2f} USD. "
-        f"El margen de error es de +/- ${ic_95['Margen Error']:,.2f} USD."
-    )
-    pdf.multi_cell(0, 7, sanitize_pdf_text(inf_text))
+    if ic_95 and 'media' in ic_95:
+        inf_text = (
+            "Aplicando la distribucion T de Student (confianza 95%), estimamos que la media "
+            f"poblacional se encuentra entre ${ic_95['ic_inferior']:,.2f} y ${ic_95['ic_superior']:,.2f} USD. "
+            f"El margen de error es de +/- ${ic_95['margen_error']:,.2f} USD."
+        )
+        pdf.multi_cell(0, 7, sanitize_pdf_text(inf_text))
+        
+        # Gráfico de apoyo inferencial (NUEVO)
+        fig_ic = crear_grafico_comparativo_ic(df, 'experience_level', 'salary_in_usd')
+        img_ic = io.BytesIO()
+        fig_ic.savefig(img_ic, format='png', bbox_inches='tight', dpi=100)
+        pdf.image(img_ic, x=15, w=180)
+        pdf.ln(5)
+    else:
+        pdf.set_text_color(255, 0, 0)
+        pdf.cell(0, 10, "Aviso: Muestra insuficiente para calculos inferenciales.", ln=True)
+        pdf.set_text_color(0, 0, 0)
+    
     pdf.ln(10)
     
-    # Contraste de Hipótesis
+    # Contraste de Hipótesis con protección
     pdf.set_font("helvetica", 'B', 14)
     pdf.cell(0, 10, "Contraste de Hipotesis (Senior vs Mid-level)", ln=True)
-    res_test = contraste_hipotesis(
-        df[df['experience_level'] == 'Senior']['salary_in_usd'],
-        df[df['experience_level'] == 'Mid-level']['salary_in_usd'],
-        "Senior", "Mid-level"
-    )
-    pdf.set_font("helvetica", size=11)
-    test_text = (
-        f"Hipotesis Nula (H0): Las medias son iguales.\n"
-        f"P-Valor: {res_test['P-Valor']:.4f}\n"
-        f"Decision: {res_test['Decisión']}\n"
-        f"Conclusion: {res_test['Conclusión']}"
-    )
-    pdf.multi_cell(0, 7, sanitize_pdf_text(test_text))
+    
+    sal_senior = df[df['experience_level'] == 'Senior']['salary_in_usd']
+    sal_mid = df[df['experience_level'] == 'Mid-level']['salary_in_usd']
+    
+    if len(sal_senior) > 1 and len(sal_mid) > 1:
+        res_test = contraste_hipotesis(sal_senior, sal_mid, "Senior", "Mid-level")
+        pdf.set_font("helvetica", size=11)
+        test_text = (
+            f"Hipotesis Nula (H0): Las medias son iguales.\n"
+            f"P-Valor: {res_test['P-Valor']:.4f}\n"
+            f"Decision: {res_test['Decisión']}\n"
+            f"Conclusion: {res_test['Conclusión']}"
+        )
+        pdf.multi_cell(0, 7, sanitize_pdf_text(test_text))
+    else:
+        pdf.set_font("helvetica", size=10)
+        pdf.cell(0, 10, "No hay suficientes datos comparativos entre Senior y Mid-level en esta zona.", ln=True)
     
     # --- PÁGINA 4: REGRESIÓN LINEAL ---
     pdf.add_page()
@@ -343,6 +447,36 @@ def main():
 
     df = get_data()
 
+    # --- FILTRO GEOGRÁFICO GLOBAL (REQUERIMIENTO RUBÉN) ---
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("🌐 Filtro Geográfico")
+    paises_disp = sorted(df['company_location'].unique().tolist())
+    selected_countries = st.sidebar.multiselect(
+        "Seleccione Países (Sede):", 
+        options=paises_disp, 
+        default=None,
+        help="Si no selecciona ningún país, se mostrarán resultados para TODO el mundo."
+    )
+    
+    if selected_countries:
+        df = df[df['company_location'].isin(selected_countries)].copy()
+        sufijo_titulo = f" - {', '.join(selected_countries)}"
+    else:
+        sufijo_titulo = " - Global"
+
+    # --- DETECCIÓN DINÁMICA DE MONEDA (REQUERIMIENTO RUBÉN) ---
+    monedas_unicas = df['salary_currency'].unique()
+    if len(monedas_unicas) == 1:
+        m_code = monedas_unicas[0]
+        m_display = CURRENCY_DISPLAY.get(m_code, m_code)
+        VAR_LABELS['salary'] = f"Salario ({m_display})"
+        moneda_actual = m_code
+    else:
+        # Si hay varias, listamos las 3 principales o usamos un término más claro que "Local"
+        m_list = ", ".join(list(monedas_unicas)[:3])
+        VAR_LABELS['salary'] = f"Salario (Divisas: {m_list})"
+        moneda_actual = "Varias"
+
     # --- SECCIÓN DE EXPORTACIÓN (ARQUITECTURA RUBÉN) ---
     st.sidebar.markdown("---")
     st.sidebar.subheader("📥 Exportar Datos")
@@ -373,14 +507,22 @@ def main():
             st.error(f"Error PDF: {str(e)}")
 
     if menu == "Escritorio General":
-        st.title("🚀 Escritorio de Salarios en IT")
+        st.title(f"🚀 Escritorio de Salarios en IT{sufijo_titulo}")
         st.markdown("Bienvenido al centro de control del análisis estadístico de salarios en Data Science.")
         
         # Implementación de métricas principales (Rafael Rodriguez)
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Total Registros", f"{len(df):,}")
-        m2.metric("Media Salarial", f"${df['salary_in_usd'].mean():,.0f} USD")
-        m3.metric("Año más reciente", df['work_year'].max())
+        
+        # Mostrar media en USD siempre
+        m2.metric("Media (USD)", f"${df['salary_in_usd'].mean():,.0f}")
+        
+        # Mostrar media en moneda local si hay una sola
+        if len(monedas_unicas) == 1:
+            m3.metric(f"Media ({moneda_actual})", f"{df['salary'].mean():,.0f} {moneda_actual}")
+        else:
+            m3.metric("Año más reciente", df['work_year'].max())
+            
         m4.metric("Categorías Puesto", df['job_category'].nunique())
 
         st.markdown("---")
@@ -402,8 +544,12 @@ def main():
             df_stats = calcular_estadisticos(df)
             if not df_stats.empty:
                 # Estilos condicionales por fila
+                df_format = df_stats.copy()
+                cols_to_format = ['Media', 'Mediana', 'Moda', 'Rango', 'Desviación Típica', 'Varianza']
+                
+                # Usar ID_Variable para el formato y mapeo de etiquetas
                 def formato_fila(row):
-                    if row['Variable'] == 'salary_in_usd':
+                    if row['ID_Variable'] == 'salary_in_usd':
                         fmt_func = fmt_usd
                     else:
                         fmt_func = fmt_eur
@@ -413,13 +559,15 @@ def main():
                         fmt_func(row['Moda']), fmt_func(row['Rango']),
                         fmt_func(row['Desviación Típica']), fmt_func(row['Varianza'])
                     ], index=['Media', 'Mediana', 'Moda', 'Rango', 'Desviación Típica', 'Varianza'])
-                
-                df_format = df_stats.copy()
-                cols_to_format = ['Media', 'Mediana', 'Moda', 'Rango', 'Desviación Típica', 'Varianza']
+
                 df_format[cols_to_format] = df_format.apply(formato_fila, axis=1)
                 
-                # Renombrar variables
-                df_format['Variable'] = df_format['Variable'].map(VAR_LABELS).fillna(df_format['Variable'])
+                # Sincronizar etiqueta de la variable usando el diccionario dinámico de app.py
+                df_format['Variable'] = df_format['ID_Variable'].map(VAR_LABELS).fillna(df_format['Variable'])
+                
+                # Quitar ID_Variable antes de mostrar al usuario
+                df_format = df_format.drop(columns=['ID_Variable'])
+                
                 st.table(df_format)
             
         with tab2:
@@ -428,17 +576,20 @@ def main():
             with col_var:
                 var_sel = st.selectbox("Seleccione Variable Numérica:", ['salary_in_usd', 'salary'], format_func=lambda x: VAR_LABELS.get(x, x))
             with col_cat:
-                cat_sel = st.selectbox("Dividir por Categoría:", ['experience_level', 'job_category', 'work_setting'], format_func=lambda x: VAR_LABELS.get(x, x))
+                cat_sel = st.selectbox("Dividir por Categoría:", ['experience_level', 'job_category', 'work_setting', 'company_location'], format_func=lambda x: VAR_LABELS.get(x, x))
             
             c1, c2 = st.columns(2)
             with c1:
                 st.pyplot(crear_histograma(df, var_sel))
             with c2:
                 st.pyplot(crear_boxplot(df, var_sel, cat_sel))
-                
+
+        with tab3:
             st.subheader("Relación y Regresión (Leslie Ross)")
-            st.markdown("Analizando la evolución salarial a lo largo de los años.")
-            fig_reg, stats_reg = crear_scatter_regresion(df, 'work_year', 'salary_in_usd')
+            st.markdown("Analizando factores predictivos del salario.")
+            
+            sel_x = st.selectbox("Seleccione Variable Predictora (X):", ['work_year', 'cost_of_living_index'], format_func=lambda x: VAR_LABELS.get(x, x))
+            fig_reg, stats_reg = crear_scatter_regresion(df, sel_x, 'salary_in_usd')
             st.pyplot(fig_reg)
             
             # Mostrar métricas de regresión debajo
@@ -453,17 +604,21 @@ def main():
 
         st.subheader("1. Intervalos de Confianza (95%)")
         var_ic = st.selectbox("Variable para IC:", ['salary_in_usd', 'salary'], format_func=lambda x: VAR_LABELS.get(x, x))
-        ic = calcular_ic_95(df[var_ic])
         
-        moneda = "USD" if var_ic == 'salary_in_usd' else "EUR"
-        
-        c_ic1, c_ic2 = st.columns([2, 1])
-        with c_ic1:
-            st.success(f"Deducción para **{VAR_LABELS[var_ic]}**:")
-            st.info(f"👉 **[{format_currency(ic['Inferior'], var_ic)}  —  {format_currency(ic['Superior'], var_ic)}] {moneda}**")
-        with c_ic2:
-            st.metric("Margen de Error", f"± {format_currency(ic['Margen Error'], var_ic)} {moneda}")
-            st.metric("Media Muestral", f"{format_currency(ic['Media'], var_ic)} {moneda}")
+        datos_ic = df[var_ic].dropna()
+        if len(datos_ic) > 1:
+            ic = calcular_ic_95(datos_ic)
+            moneda = "USD" if var_ic == 'salary_in_usd' else ""
+            
+            c_ic1, c_ic2 = st.columns([2, 1])
+            with c_ic1:
+                st.success(f"Deducción para **{VAR_LABELS[var_ic]}**:")
+                st.info(f"👉 **[{format_currency(ic['ic_inferior'], var_ic)}  —  {format_currency(ic['ic_superior'], var_ic)}] {moneda}**")
+            with c_ic2:
+                st.metric("Margen de Error", f"± {format_currency(ic['margen_error'], var_ic)} {moneda}")
+                st.metric("Media Muestral", f"{format_currency(ic['media'], var_ic)} {moneda}")
+        else:
+            st.warning("⚠️ No hay suficientes datos para calcular el intervalo de confianza (se requieren al menos 2 registros).")
 
         st.markdown("---")
         st.subheader("2. Contraste de Hipótesis")
@@ -518,6 +673,9 @@ def main():
         | **Leslie Ross** | Vis. Experta | `analisis/graficos.py`, `generate_plots.py`, gráficos PNG en `outputs/graficos/` |
         | **Ruben Gamez** | Desarrollador y Coordinador | `app.py`, `setup_data.py`, `requirements.txt`, `.gitignore` |
         """)
+        
+        # Espaciado extra para que el recuadro no esté pegado (Requerimiento Rubén)
+        st.markdown("<br><br>", unsafe_allow_html=True)
         
         st.info("💡 **Nota del Coordinador:** El proyecto cumple con todos los requisitos: muestra > 100, variables continuas/discretas/categóricas y análisis bivariable.")
 
