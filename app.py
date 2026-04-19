@@ -249,8 +249,8 @@ def render_visualizaciones(df, key, sym):
         st.pyplot(fig_bar)
 
 def render_regresion(df, key, sym):
-    st.title("📉 Modelo de Regresión Lineal")
-    st.write("**Hipótesis (Mejora 2):** ¿Influye el coste de vida del país de la empresa en el salario ofrecido?")
+    st.title("📈 Análisis de Regresión Lineal (COLI vs Salario)")
+    st.write("**Mejora 2:** ¿Influye el coste de vida del país de la empresa en el salario ofrecido?")
     
     fig_reg, stats = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs COLI")
     st.pyplot(fig_reg)
@@ -263,56 +263,88 @@ def render_regresion(df, key, sym):
     st.info(f"Interpretación: Un coeficiente de {stats['correlacion']:.4f} indica una correlación {'fuerte' if abs(stats['correlacion']) > 0.7 else 'moderada' if abs(stats['correlacion']) > 0.4 else 'débil'} entre el coste de vida y el salario.")
 
 def render_inferencial(df, key, sym):
-    st.title("🧪 Estadística Inferencial")
+    st.title("🧪 Estadística Inferencial y Contrastes")
+    st.write("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios IT.")
     
-    st.subheader(f"1. Intervalo de Confianza (95%) - {sym}")
+    # --- SECCIÓN 1: INTERVALOS DE CONFIANZA ---
+    st.markdown("### 1. Estimación por Intervalos (Confianza 95%)")
     ic_results = calcular_ic_95(df[key])
     
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Media Muestral", f"{ic_results['Media']:,.2f} {sym}")
-    c2.metric("Límite Inferior", f"{ic_results['Inferior']:,.2f} {sym}")
-    c3.metric("Límite Superior", f"{ic_results['Superior']:,.2f} {sym}")
-    
-    st.write(f"Con un 95% de confianza, la media poblacional del salario en {sym} se encuentra entre **{ic_results['Inferior']:,.2f}** y **{ic_results['Superior']:,.2f}**.")
+    with st.container():
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
+        c2.metric("Límite Inferior", f"{ic_results['Inferior']:,.2f} {sym}")
+        c3.metric("Límite Superior", f"{ic_results['Superior']:,.2f} {sym}")
+        
+    st.info(f"💡 **Interpretación:** Con un 95% de confianza, estimamos que el salario medio real de la población se encuentra en el rango de **{ic_results['Inferior']:,.2f} {sym} a {ic_results['Superior']:,.2f} {sym}**.")
     
     st.markdown("---")
-    st.subheader("2. Intervalos de Confianza (95%) - Índice Coste de Vida (COLI)")
-    ic_coli = calcular_ic_95(df['cost_of_living_index'])
-    c1_c, c2_c, c3_c = st.columns(3)
-    c1_c.metric("Media COLI", f"{ic_coli['Media']:,.2f}")
-    c2_c.metric("Límite Inferior", f"{ic_coli['Inferior']:,.2f}")
-    c3_c.metric("Límite Superior", f"{ic_coli['Superior']:,.2f}")
+    
+    # --- SECCIÓN 2: CONTRASTE 1 (EXPERIENCIA) ---
+    st.markdown("### 2. Contraste de Hipótesis: ¿Influye la Experiencia?")
+    
+    col_left, col_right = st.columns([1, 1.5])
+    
+    with col_left:
+        st.markdown("**Planteamiento del Test:**")
+        st.warning("**H₀ (Nula):** No hay diferencia de salario entre niveles 'Senior' y 'Mid-level'.")
+        st.info("**H₁ (Alternativa):** El nivel 'Senior' percibe un salario significativamente distinto.")
+        
+        g1 = df[df['experience_level'] == 'Senior'][key]
+        g2 = df[df['experience_level'] == 'Mid-level'][key]
+        
+        if len(g1) > 1 and len(g2) > 1:
+            test_res = contraste_hipotesis(g1, g2, "Senior", "Mid-level")
+            
+            # Tarjetas de resultados
+            c_a, c_b = st.columns(2)
+            c_a.metric("p-valor", f"{test_res['p_valor']:.4f}", delta="Significativo" if test_res['rechaza_h0'] else "No Sig.", delta_color="normal")
+            c_b.metric("Estadístico T", f"{test_res['estadistico_t']:.2f}")
+            
+            if test_res['rechaza_h0']:
+                st.success("✅ **Conclusión:** Existe evidencia suficiente para **RECHAZAR H₀**. La diferencia salarial es real.")
+            else:
+                st.error("⚠️ **Conclusión:** No hay evidencia para rechazar H₀. Las diferencias observadas pueden ser azarosas.")
+                
+    with col_right:
+        # Gráfico Comparativo de IC para este test
+        df_comp = df[df['experience_level'].isin(['Senior', 'Mid-level'])]
+        fig_ic_exp = crear_grafico_comparativo_ic(df_comp, 'experience_level', key, "Comparativa IC 95%: Senior vs Mid-level")
+        st.pyplot(fig_ic_exp)
 
     st.markdown("---")
-    st.subheader("3. Contraste de Hipótesis: Nivel de Experiencia")
-    st.write("**H0:** No hay diferencia de salario entre puestos 'Senior' y 'Mid-level'.")
-    st.write("**H1:** Existe una diferencia significativa (Welch T-test).")
     
-    g1 = df[df['experience_level'] == 'Senior'][key]
-    g2 = df[df['experience_level'] == 'Mid-level'][key]
+    # --- SECCIÓN 3: CONTRASTE 2 (MODALIDAD) ---
+    st.markdown("### 3. Contraste de Hipótesis: ¿Importa la Modalidad?")
     
-    if len(g1) > 1 and len(g2) > 1:
-        test_res = contraste_hipotesis(g1, g2, "Senior", "Mid-level")
-        st.json(test_res)
-        if test_res['rechaza_h0']:
-            st.success("✅ **Resultado:** Rechazamos H0. La diferencia es significativa.")
-        else:
-            st.warning("⚠️ **Resultado:** No podemos rechazar H0.")
+    cl, cr = st.columns([1, 1.5])
     
-    st.markdown("---")
-    st.subheader("4. Contraste de Hipótesis: Modalidad de Trabajo")
-    st.write("**Pregunta:** ¿Difieren los salarios entre trabajos 'Remote' y 'In-person'?")
-    
-    r1 = df[df['work_setting'] == 'Remote'][key]
-    r2 = df[df['work_setting'] == 'In-person'][key]
-    
-    if len(r1) > 1 and len(r2) > 1:
-        test_remoto = contraste_hipotesis(r1, r2, "Remoto", "Presencial")
-        st.json(test_remoto)
-        if test_remoto['rechaza_h0']:
-            st.success("✅ **Resultado:** La modalidad de trabajo SI influye significativamente en el salario.")
-        else:
-            st.warning("⚠️ **Resultado:** No existe evidencia suficiente para afirmar que la modalidad afecte al salario.")
+    with cl:
+        st.markdown("**Planteamiento del Test:**")
+        st.warning("**H₀ (Nula):** El salario es igual para trabajos 'Remote' y 'In-person'.")
+        st.info("**H₁ (Alternativa):** La modalidad de trabajo afecta significativamente a la remuneración.")
+        
+        r1 = df[df['work_setting'] == 'Remote'][key]
+        r2 = df[df['work_setting'] == 'In-person'][key]
+        
+        if len(r1) > 1 and len(r2) > 1:
+            test_remoto = contraste_hipotesis(r1, r2, "Remoto", "Presencial")
+            
+            # Tarjetas de resultados
+            res1, res2 = st.columns(2)
+            res1.metric("p-valor", f"{test_remoto['p_valor']:.4f}", delta="Significativo" if test_remoto['rechaza_h0'] else "No Sig.", delta_color="normal")
+            res2.metric("Estadístico T", f"{test_remoto['estadistico_t']:.2f}")
+            
+            if test_remoto['rechaza_h0']:
+                st.success("✅ **Conclusión:** Existe una diferencia significativa según la modalidad.")
+            else:
+                st.error("⚠️ **Conclusión:** La modalidad de trabajo NO parece ser un factor determinante en el salario.")
+                
+    with cr:
+        # Gráfico Comparativo de IC para este test
+        df_mod = df[df['work_setting'].isin(['Remote', 'In-person'])]
+        fig_ic_mod = crear_grafico_comparativo_ic(df_mod, 'work_setting', key, "Comparativa IC 95%: Remoto vs Presencial")
+        st.pyplot(fig_ic_mod)
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
@@ -369,12 +401,18 @@ def handle_exports(df_filtered, currency_label, current_sym, divisa_key):
     # 2. Preparar PDF (Descarga Directa)
     # Generamos los gráficos necesarios para el informe
     with st.sidebar:
+        # Gráficos Dinámicos para el Informe
+        df_comp_exp = df_filtered[df_filtered['experience_level'].isin(['Senior', 'Mid-level'])]
+        df_comp_mod = df_filtered[df_filtered['work_setting'].isin(['Remote', 'In-person'])]
+        
         graficos_dict = {
             "Distribución Salarial (Histograma)": crear_histograma(df_filtered, divisa_key, "Distribución de Salarios"),
             "Comparativa por Experiencia (Boxplot)": crear_boxplot(df_filtered, divisa_key, "experience_level", "Salario por Nivel"),
             "Densidad Salarial (Violin Plot)": crear_violin_plot(df_filtered, 'experience_level', divisa_key, "Salario vs Experiencia"),
             "Top Categorías de Empleo (Barras)": crear_bar_chart(df_filtered, 'job_category', "Presencia en Mercado"),
-            "Regresión: Salario vs Coste Vida": crear_scatter_regresion(df_filtered, 'cost_of_living_index', divisa_key, "Influencia del COLI")[0]
+            "Regresión: Salario vs Coste Vida": crear_scatter_regresion(df_filtered, 'cost_of_living_index', divisa_key, "Influencia del COLI")[0],
+            "Evidencia Inferencial (Exp)": crear_grafico_comparativo_ic(df_comp_exp, 'experience_level', divisa_key, "Comparativa IC 95%: Senior vs Mid"),
+            "Evidencia Inferencial (Modalidad)": crear_grafico_comparativo_ic(df_comp_mod, 'work_setting', divisa_key, "Comparativa IC 95%: Remoto vs Presencial")
         }
         
         equipo_roles = {
