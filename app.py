@@ -264,24 +264,42 @@ def render_regresion(df, key, sym):
 
 def render_inferencial(df, key, sym):
     st.title("🧪 Estadística Inferencial y Contrastes")
-    st.write("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios IT.")
+    st.write("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios IT y el coste de vida.")
     
-    # --- SECCIÓN 1: INTERVALOS DE CONFIANZA ---
-    st.markdown("### 1. Estimación por Intervalos (Confianza 95%)")
+    # --- SECCIÓN 1: INTERVALO DE CONFIANZA SALARIO ---
+    st.markdown(f"### 1. Estimación Salarial (Confianza 95%) - {sym}")
     ic_results = calcular_ic_95(df[key])
     
     with st.container():
         c1, c2, c3 = st.columns(3)
-        c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
-        c2.metric("Límite Inferior", f"{ic_results['Inferior']:,.2f} {sym}")
-        c3.metric("Límite Superior", f"{ic_results['Superior']:,.2f} {sym}")
-        
-    st.info(f"💡 **Interpretación:** Con un 95% de confianza, estimamos que el salario medio real de la población se encuentra en el rango de **{ic_results['Inferior']:,.2f} {sym} a {ic_results['Superior']:,.2f} {sym}**.")
+        if 'Media' in ic_results:
+            c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
+            c2.metric("Límite Inferior", f"{ic_results['Inferior']:,.2f} {sym}")
+            c3.metric("Límite Superior", f"{ic_results['Superior']:,.2f} {sym}")
+            st.info(f"💡 **Interpretación Salario:** Con un 95% de confianza, estimamos que el salario medio real se encuentra entre **{ic_results['Inferior']:,.2f} {sym} y {ic_results['Superior']:,.2f} {sym}**.")
+        else:
+            st.warning("No hay datos suficientes para calcular el intervalo del salario.")
+
+    st.markdown("---")
+
+    # --- SECCIÓN 2: INTERVALO DE CONFIANZA COLI ---
+    st.markdown("### 2. Estimación Coste de Vida (Confianza 95%) - COLI")
+    ic_coli = calcular_ic_95(df['cost_of_living_index'])
     
+    with st.container():
+        cc1, cc2, cc3 = st.columns(3)
+        if 'Media' in ic_coli:
+            cc1.metric("Media COLI (μ)", f"{ic_coli['Media']:,.2f}")
+            cc2.metric("Límite Inferior", f"{ic_coli['Inferior']:,.2f}")
+            cc3.metric("Límite Superior", f"{ic_coli['Superior']:,.2f}")
+            st.info(f"💡 **Interpretación COLI:** El índice de coste de vida promedio poblacional se sitúa entre **{ic_coli['Inferior']:,.2f} y {ic_coli['Superior']:,.2f}**.")
+        else:
+            st.warning("No hay datos suficientes para calcular el intervalo del COLI.")
+
     st.markdown("---")
     
-    # --- SECCIÓN 2: CONTRASTE 1 (EXPERIENCIA) ---
-    st.markdown("### 2. Contraste de Hipótesis: ¿Influye la Experiencia?")
+    # --- SECCIÓN 3: CONTRASTE 1 (EXPERIENCIA) ---
+    st.markdown("### 3. Contraste de Hipótesis: ¿Influye la Experiencia?")
     
     col_left, col_right = st.columns([1, 1.5])
     
@@ -299,23 +317,26 @@ def render_inferencial(df, key, sym):
             # Tarjetas de resultados
             c_a, c_b = st.columns(2)
             c_a.metric("p-valor", f"{test_res['p_valor']:.4f}", delta="Significativo" if test_res['rechaza_h0'] else "No Sig.", delta_color="normal")
-            c_b.metric("Estadístico T", f"{test_res['estadistico_t']:.2f}")
+            c_b.metric("Estadístico T", f"{test_res['t_statistic']:.2f}")
             
             if test_res['rechaza_h0']:
                 st.success("✅ **Conclusión:** Existe evidencia suficiente para **RECHAZAR H₀**. La diferencia salarial es real.")
             else:
                 st.error("⚠️ **Conclusión:** No hay evidencia para rechazar H₀. Las diferencias observadas pueden ser azarosas.")
+        else:
+            st.warning("Muestras insuficientes para comparar Senior vs Mid-level.")
                 
     with col_right:
         # Gráfico Comparativo de IC para este test
         df_comp = df[df['experience_level'].isin(['Senior', 'Mid-level'])]
-        fig_ic_exp = crear_grafico_comparativo_ic(df_comp, 'experience_level', key, "Comparativa IC 95%: Senior vs Mid-level")
-        st.pyplot(fig_ic_exp)
+        if not df_comp.empty:
+            fig_ic_exp = crear_grafico_comparativo_ic(df_comp, 'experience_level', key, "Comparativa IC 95%: Senior vs Mid-level")
+            st.pyplot(fig_ic_exp)
 
     st.markdown("---")
     
-    # --- SECCIÓN 3: CONTRASTE 2 (MODALIDAD) ---
-    st.markdown("### 3. Contraste de Hipótesis: ¿Importa la Modalidad?")
+    # --- SECCIÓN 4: CONTRASTE 2 (MODALIDAD) ---
+    st.markdown("### 4. Contraste de Hipótesis: ¿Importa la Modalidad?")
     
     cl, cr = st.columns([1, 1.5])
     
@@ -333,18 +354,21 @@ def render_inferencial(df, key, sym):
             # Tarjetas de resultados
             res1, res2 = st.columns(2)
             res1.metric("p-valor", f"{test_remoto['p_valor']:.4f}", delta="Significativo" if test_remoto['rechaza_h0'] else "No Sig.", delta_color="normal")
-            res2.metric("Estadístico T", f"{test_remoto['estadistico_t']:.2f}")
+            res2.metric("Estadístico T", f"{test_remoto['t_statistic']:.2f}")
             
             if test_remoto['rechaza_h0']:
                 st.success("✅ **Conclusión:** Existe una diferencia significativa según la modalidad.")
             else:
                 st.error("⚠️ **Conclusión:** La modalidad de trabajo NO parece ser un factor determinante en el salario.")
+        else:
+            st.warning("Muestras insuficientes para comparar Remoto vs Presencial.")
                 
     with cr:
         # Gráfico Comparativo de IC para este test
         df_mod = df[df['work_setting'].isin(['Remote', 'In-person'])]
-        fig_ic_mod = crear_grafico_comparativo_ic(df_mod, 'work_setting', key, "Comparativa IC 95%: Remoto vs Presencial")
-        st.pyplot(fig_ic_mod)
+        if not df_mod.empty:
+            fig_ic_mod = crear_grafico_comparativo_ic(df_mod, 'work_setting', key, "Comparativa IC 95%: Remoto vs Presencial")
+            st.pyplot(fig_ic_mod)
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
