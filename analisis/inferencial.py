@@ -14,7 +14,14 @@ def calcular_ic_95(data):
         return {"Error": "Datos insuficientes"}
         
     media = np.mean(data)
-    # Plantilla de cálculo: Bryann debe implementar SE y Margen de Error
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # Para el cálculo manual:
+    # 1. std_err = data.std() / np.sqrt(len(data))
+    # 2. t_critico = stats.t.ppf((1 + 0.95) / 2., len(data) - 1)
+    # 3. margen_error = t_critico * std_err
+    # 4. retornar {'Media': media, 'Inferior': media - margen_error, ...}
+    
     std_err = stats.sem(data)
     dof = len(data) - 1
     h = std_err * stats.t.ppf((1 + 0.95) / 2., dof)
@@ -35,8 +42,11 @@ def contraste_hipotesis(g1, g2, label1="G1", label2="G2"):
     
     TODO: Implementar T-test de muestras independientes y Cohen's d.
     """
-    # Plantilla básica de T-test
-    # TODO: Bryann debe decidir si usar Welch (equal_var=False) o Student.
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # stats.ttest_ind(g1, g2, equal_var=False) 
+    # El p_valor < 0.05 indica que se rechaza H0 (hay diferencias).
+    
     t_stat, p_valor = stats.ttest_ind(g1, g2, equal_var=False)
     rechaza = p_valor < 0.05
     
@@ -53,5 +63,6 @@ def verificar_supuestos(data):
     """
     TODO: Bryann debe implementar verificación de normalidad (Shapiro-Wilk).
     """
+    # 💡 PISTA: stats.shapiro(data) -> devuelve (stat, p-value)
     stat, p = stats.shapiro(data)
     return {"Shapiro-p": p, "Normal": p > 0.05}

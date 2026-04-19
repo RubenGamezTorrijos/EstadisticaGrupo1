@@ -11,12 +11,13 @@ def ejecutar_regresion_simple(df, x_col, y_col):
     TODO: Implementar ajuste del modelo, obtención de coeficientes y R2.
     El dataframe ya viene filtrado y con la divisa correcta.
     """
-    # Preparar datos
-    X = df[[x_col]].values
-    y = df[y_col].values
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # 1. model = LinearRegression()
+    # 2. model.fit(X, y)
+    # 3. r2 = model.score(X, y)  o r2_score(y, model.predict(X))
     
     # Plantilla de modelo
-    # TODO: Leslie debe implementar el ajuste aquí
     modelo = LinearRegression()
     modelo.fit(X, y)
     

@@ -7,9 +7,11 @@ def crear_histograma(df, x_col, titulo="Distribución Salarial"):
     MODULO: Visualizaciones Descriptivas
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
     
-    TODO: Implementar histograma con curva de densidad (KDE) y estética premium.
-    Filtro por divisa ya aplicado en el dataframe de entrada.
-    """
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # sns.histplot(df[x_col], ax=ax, kde=True, color='#0b84f4')
+    # ax.set_xlabel("Salario (USD)")
+    
     fig, ax = plt.subplots(figsize=(10, 6))
     # Plantilla básica: implementar estilo v.2.1.4 aquí
     sns.histplot(df[x_col], ax=ax, color='#0b84f4')
@@ -21,8 +23,10 @@ def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
     MODULO: Visualizaciones Descriptivas
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
     
-    TODO: Implementar Boxplot comparativo con personalización de colores.
-    """
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="RdBu_r")
+    
     fig, ax = plt.subplots(figsize=(10, 6))
     # Plantilla básica
     sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="Blues")
@@ -77,17 +81,22 @@ def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"
     MODULO: Regresión Lineal
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
     
-    TODO: Implementar scatter plot con línea de regresión y cálculo de R2.
-    """
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # sns.regplot(data=df, x=x_col, y=y_col, ax=ax, 
+    #             scatter_kws={'alpha':0.5, 'color':'#0b84f4'},
+    #             line_kws={'color':'#ff4b4b', 'lw':3})
+    
     fig, ax = plt.subplots(figsize=(10, 6))
     # Plantilla básica
     sns.regplot(data=df, x=x_col, y=y_col, ax=ax, line_kws={'color': 'red'})
     ax.set_title(f"{titulo} [Leslie: Pendiente Refinar]")
     
-    # Placeholder de estadísticas
+    # Placeholder de estadísticas (Sincronizado con app.py)
     stats = {
-        'Coeficiente R2': 0.0,
-        'Pendiente': 0.0,
-        'Intercepto': 0.0
+        'correlacion': 0.0,
+        'r_cuadrado': 0.0,
+        'pendiente': 0.0,
+        'intercepto': 0.0
     }
     return fig, stats

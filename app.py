@@ -12,9 +12,9 @@ from analisis.graficos import (
     crear_scatter_regresion, crear_bar_chart, crear_grafico_comparativo_ic
 )
 from analisis.inferencial import (
-    calcular_ic_95, contraste_hipotesis, verificar_supuestos_normalidad
+    calcular_ic_95, contraste_hipotesis, verificar_supuestos
 )
-from analisis.modelo_regresion import render_regresion
+from analisis.modelo_regresion import ejecutar_regresion_simple
 from analisis.exportacion import generar_excel_multipestana, generar_pdf_profesional
 
 # Configuración de página
