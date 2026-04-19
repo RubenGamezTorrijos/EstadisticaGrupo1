@@ -77,9 +77,9 @@ def crear_grafico_comparativo_ic(df, x_col, y_col, titulo="Evidencia Inferencial
     return fig
 
 def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"):
-    """
     MODULO: Regresión Lineal
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """
     
     # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
     # ==========================================
