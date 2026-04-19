@@ -11,6 +11,7 @@ def crear_histograma(df, x_col, titulo="Distribución Salarial"):
     # ==========================================
     # sns.histplot(df[x_col], ax=ax, kde=True, color='#0b84f4')
     # ax.set_xlabel("Salario (USD)")
+    """
     
     fig, ax = plt.subplots(figsize=(10, 6))
     # Plantilla básica: implementar estilo v.2.1.4 aquí
@@ -26,6 +27,7 @@ def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
     # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
     # ==========================================
     # sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="RdBu_r")
+    """
     
     fig, ax = plt.subplots(figsize=(10, 6))
     # Plantilla básica
