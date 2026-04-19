@@ -36,9 +36,9 @@ class PDFReport(FPDF):
         
         self.set_font('Helvetica', 'B', 22)
         self.set_text_color(255, 255, 255)
-        self.cell(0, 15, sanitize_pdf_text('ESTADÍSTICA IT - INFORME FINAL'), 0, 1, 'C')
+        self.cell(0, 15, sanitize_pdf_text('ESTADÍSTICA Y OPTIMIZACIÓN - INFORME FINAL'), 0, 1, 'C')
         self.set_font('Helvetica', 'I', 11)
-        self.cell(0, 5, sanitize_pdf_text('Grupo 1: Solución de Referencia Profesional'), 0, 1, 'C')
+        self.cell(0, 5, sanitize_pdf_text('GRUPO DE TRABAJO 1: Solución de Producción'), 0, 1, 'C')
         self.ln(15)
 
     def footer(self):

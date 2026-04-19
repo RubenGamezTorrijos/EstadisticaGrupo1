@@ -55,19 +55,18 @@ st.markdown("""
         background-color: #0c1c30 !important;
     }
     
-    /* Títulos Adaptativos (Solución de visibilidad) */
+    /* Títulos Adaptativos y Robustos */
     h1, h2, h3 {
-        color: #0b84f4 !important; /* Azul base para asegurar visibilidad */
-        background: -webkit-linear-gradient(left, #0b84f4, #1e3a8a);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #0b84f4 !important; /* Azul cobalto para máxima legibilidad */
         font-weight: 800 !important;
-        padding-bottom: 10px;
+        padding-bottom: 5px;
+        margin-top: 20px;
+        letter-spacing: -0.01em;
     }
 
-    /* Forzar visibilidad en modo claro/oscuro si el gradiente falla */
-    [data-theme="light"] h1, [data-theme="light"] h2, [data-theme="light"] h3 {
-        -webkit-text-fill-color: #1e3a8a !important;
+    /* Asegurar que el texto normal no se pierda en ningún tema */
+    p, span, label, .stMarkdown {
+        color: var(--text-color) !important;
     }
 
     /* Botones y Selectores */
@@ -117,7 +116,14 @@ def main():
     # --- SIDEBAR: LOGO Y TÍTULO ---
     with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/2103/2103633.png", width=80)
-        st.title("ESTADÍSTICA IT - GRUPO 1")
+        st.markdown("""
+        <h2 style='color: white; font-size: 1.4rem; text-align: center; margin-bottom: 0;'>
+            ESTADÍSTICA Y OPTIMIZACIÓN
+        </h2>
+        <p style='color: #0b84f4; text-align: center; font-weight: 600; font-size: 0.9rem;'>
+            GRUPO DE TRABAJO 1
+        </p>
+        """, unsafe_allow_html=True)
         st.markdown("---")
         
         # 🟢 MEJORA: SELECTOR DE DIVISA GLOBAL
@@ -134,19 +140,11 @@ def main():
         
         st.markdown("---")
         
-        # 🟢 NAVEGACIÓN 6 SECCIONES
-        st.subheader("📍 Navegación")
-        menu = st.selectbox(
-            "Ir a:",
-            [
-                "🏠 Escritorio (Dashboard)",
-                "📊 Estadísticos Descriptivos",
-                "📈 Visualizaciones",
-                "📉 Regresión Lineal",
-                "🧪 Estadística Inferencial",
-                "👥 Equipo Grupo 1"
-            ],
-            index=0
+        # Navegación mejorada
+        opcion = st.radio(
+            "Navegación del Proyecto:",
+            ["Escritorio General", "Estadísticos Descriptivos", "Visualizaciones Gráficas", 
+             "Estadística Inferencial", "Regresión Lineal", "Equipo Grupo 1"]
         )
         
         st.markdown("---")
@@ -178,17 +176,17 @@ def main():
         handle_exports(df_filtered, divisa_label, simbolo, divisa_key)
 
     # --- LÓGICA DE SECCIONES ---
-    if "Escritorio" in menu:
+    if opcion == "Escritorio General":
         render_escritorio(df_filtered, divisa_key, simbolo)
-    elif "Estadísticos" in menu:
+    elif opcion == "Estadísticos Descriptivos":
         render_estadisticos(df_filtered, divisa_key, simbolo)
-    elif "Visualizaciones" in menu:
+    elif opcion == "Visualizaciones Gráficas":
         render_visualizaciones(df_filtered, divisa_key, simbolo)
-    elif "Regresión" in menu:
+    elif opcion == "Regresión Lineal":
         render_regresion(df_filtered, divisa_key, simbolo)
-    elif "Inferencial" in menu:
+    elif opcion == "Estadística Inferencial":
         render_inferencial(df_filtered, divisa_key, simbolo)
-    elif "Equipo" in menu:
+    elif opcion == "Equipo Grupo 1":
         render_equipo()
 
 def render_escritorio(df, key, sym):
@@ -249,8 +247,8 @@ def render_visualizaciones(df, key, sym):
         st.pyplot(fig_bar)
 
 def render_regresion(df, key, sym):
-    st.title("📈 Análisis de Regresión Lineal (COLI vs Salario)")
-    st.write("**Mejora 2:** ¿Influye el coste de vida del país de la empresa en el salario ofrecido?")
+    st.title("📈 Análisis de Inferencia Poblacional mediante Regresión")
+    st.write("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
     
     fig_reg, stats = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs COLI")
     st.pyplot(fig_reg)
@@ -392,7 +390,7 @@ def render_equipo():
         *   *TODO:* Sincronizar los 5+ gráficos finales en la rama `dev`.
     
     ---
-    *Sincronización: Este código en rama 'main' sirve de solución de referencia.*
+    *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (Producción).*
     """)
 
 def handle_exports(df_filtered, currency_label, current_sym, divisa_key):
