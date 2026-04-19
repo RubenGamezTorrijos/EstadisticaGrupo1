@@ -387,23 +387,31 @@ def render_equipo():
     ### Estructura y Responsabilidades Técnicas:
     
     *   **Rubén Gámez Torrijos (Coordinador y Arquitectura)**
+        *   **Descripción:** Liderazgo técnico, diseño estructural y orquestación del proyecto.
         *   **Responsabilidades:** Diseño de la arquitectura modular de la aplicación, sistema de estilos CSS adaptativos para temas Light/Dark y desarrollo del motor de exportación profesional (PDF/Excel).
         *   **Archivos clave:** `app.py` (Orquestación), `analisis/exportacion.py` (Generación de Reportes), `config/styles.py`.
+        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
         
     *   **Rafael Rodriguez Mengual (Data Manager)**
+        *   **Descripción:** Especialista en procesamiento, limpieza y análisis descriptivo de datos.
         *   **Responsabilidades:** Implementación del pipeline de limpieza de datos, integración de variables externas (Índice de coste de vida) y desarrollo de la lógica para estadísticos de tendencia central y dispersión.
         *   **Archivos clave:** `analisis/utils.py` (Limpieza), `analisis/estadisticos.py` (Motor estadístico).
+        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
         
     *   **Bryann Vallejo Luna (Analista Inferencial)**
+        *   **Descripción:** Experto en modelos probabilísticos y validación de hipótesis estadísticas.
         *   **Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.
         *   **Archivos clave:** `analisis/inferencial.py`, `app.py` (Sección Inferencia).
+        *   **Estado:** ✅ PRODUCCIÓN.
         
     *   **Leslie Ross Aranibar Pozo (Analista Descriptivo)**
+        *   **Descripción:** Especialista en visualización avanzada y modelado de correlación lineal.
         *   **Responsabilidades:** Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.
         *   **Archivos clave:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.
+        *   **Estado:** ✅ PRODUCCIÓN.
     
     ---
-    *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (Producción).*
+    *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.2.1).*
     """)
 
 def handle_exports(df_filtered, currency_label, current_sym, divisa_key):
