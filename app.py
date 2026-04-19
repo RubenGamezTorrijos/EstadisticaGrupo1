@@ -371,23 +371,23 @@ def render_inferencial(df, key, sym):
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
     st.markdown("""
-    ### Miembros y Roles Técnicos Actualizados (v.2.0.5):
+    ### Estructura y Responsabilidades Técnicas:
     
-    *   **Rubén Gámez Torrijos (Coordinador de Proyecto)**
-        *   **Tareas:** Estructura modular, UI Blue-Aesthetic, Selector de Divisa Global, Exportación técnica (PDF/Excel) y Control de Calidad.
-        *   *Estado:* Finalizado - Soporte multidivisa y Mejora 2 integrados.
+    *   **Rubén Gámez Torrijos (Coordinador y Arquitectura)**
+        *   **Responsabilidades:** Diseño de la arquitectura modular de la aplicación, sistema de estilos CSS adaptativos para temas Light/Dark y desarrollo del motor de exportación profesional (PDF/Excel).
+        *   **Archivos clave:** `app.py` (Orquestación), `analisis/exportacion.py` (Generación de Reportes), `config/styles.py`.
         
     *   **Rafael Rodriguez Mengual (Data Manager)**
-        *   **Tareas:** Limpieza de datos avanzada, integración de la mejora COLI y tabla de estadísticos unificada (N, media, mediana, moda, rango, etc.).
-        *   *Estado:* Finalizado - Motor estadístico 100% funcional.
+        *   **Responsabilidades:** Implementación del pipeline de limpieza de datos, integración de variables externas (Índice de coste de vida) y desarrollo de la lógica para estadísticos de tendencia central y dispersión.
+        *   **Archivos clave:** `analisis/utils.py` (Limpieza), `analisis/estadisticos.py` (Motor estadístico).
         
     *   **Bryann Vallejo Luna (Analista Inferencial)**
-        *   **Tareas:** Cálculo de Intervalos de Confianza (T-Student) y Contrastes de Hipótesis de 1 y 2 muestras.
-        *   *TODO:* Refinar las justificaciones de los contrastes en la rama `dev`.
+        *   **Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.
+        *   **Archivos clave:** `analisis/inferencial.py`, `app.py` (Sección Inferencia).
         
     *   **Leslie Ross Aranibar Pozo (Analista Descriptivo)**
-        *   **Tareas:** Visualizaciones estadísticas de alta resolución (Histogramas, Boxplots, Violin Plots) y Análisis de Regresión Lineal.
-        *   *TODO:* Sincronizar los 5+ gráficos finales en la rama `dev`.
+        *   **Responsabilidades:** Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.
+        *   **Archivos clave:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.
     
     ---
     *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (Producción).*
