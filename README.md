@@ -7,6 +7,30 @@ Este repositorio está configurado como la **base de desarrollo (SKELETON)**. La
 
 ---
 
+## 👥 Equipo y Roles Técnicos (Grupo 1)
+
+### 👤 Rubén Gámez Torrijos (Coordinador)
+- [x] **Arquitectura Core**: Desarrollo de `app.py` y sistema de navegación modular.
+- [x] **Multidivisa**: Implementación del selector global USD/EUR.
+- [x] **Exportación**: Sistema de reportes dinámicos en PDF y Excel.
+
+### 👤 Rafael Rodriguez Mengual (Data Manager)
+- [x] **Limpieza de Datos**: Script de procesamiento en `analisis/estadisticos.py`.
+- [x] **Mejora COLI**: Integración del Índice de Coste de Vida por país.
+- [x] **Estadísticos**: Generación de la tabla unificada de medidas de tendencia y dispersión.
+
+### 👤 Bryann Vallejo Luna (Analista Inferencial)
+- [x] **Intervalos de Confianza**: Implementación de IC 95% para Salario y COLI.
+- [/] **Contrastes de Hipótesis**: Test de medias para Experiencia y Modalidad (En revisión en rama `dev`).
+- [ ] **Justificación**: Redacción técnica de p-valores.
+
+### 👤 Leslie Ross Aranibar Pozo (Analista Descriptivo)
+- [x] **Visualizaciones**: Implementación de Histogramas, Boxplots y Violin Plots.
+- [x] **Regresión**: Modelo lineal Salario vs COLI con coeficiente Pearson.
+- [/] **Calidad**: Exportación de gráficos en alta resolución (Rama `dev`).
+
+---
+
 ## 🚀 Cómo empezar a trabajar en Local
 
 1. **Requisito de Python**: Se requiere **Python 3.9 o superior** (Recomendado: **3.12**).

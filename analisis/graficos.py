@@ -63,7 +63,8 @@ VAR_LABELS = {
     'job_title': 'Título del Puesto',
     'salary': 'Salario (Original)',
     'salary_currency': 'Moneda',
-    'salary_in_usd': 'Salario (USD)',
+    'salary_in_usd': 'Salario (USD $)',
+    'salary_in_eur': 'Salario (EUR €)',
     'employee_residence': 'Residencia Empleado',
     'remote_ratio': 'Ratio Remoto',
     'company_location': 'Localización Empresa',
@@ -154,12 +155,14 @@ def crear_histograma(df, columna, titulo='Histograma', bins=30,
     q1 = df[columna].quantile(0.25)
     q3 = df[columna].quantile(0.75)
 
+    sym = "$" if "usd" in columna.lower() else "€"
+    
     sns.histplot(data=df, x=columna, bins=bins, kde=True, ax=ax, color='skyblue', edgecolor='white')
     
-    ax.axvline(media, color='red', linestyle='--', linewidth=2.5, label=f'Media: {media:,.2f}')
-    ax.axvline(mediana, color='green', linestyle='--', linewidth=2.5, label=f'Mediana: {mediana:,.2f}')
-    ax.axvline(q1, color='orange', linestyle=':', linewidth=2, label=f'Q1 (25%): {q1:,.2f}')
-    ax.axvline(q3, color='orange', linestyle=':', linewidth=2, label=f'Q3 (75%): {q3:,.2f}')
+    ax.axvline(media, color='red', linestyle='--', linewidth=2.5, label=f'Media: {media:,.0f} {sym}')
+    ax.axvline(mediana, color='green', linestyle='--', linewidth=2.5, label=f'Mediana: {mediana:,.0f} {sym}')
+    ax.axvline(q1, color='orange', linestyle=':', linewidth=2, label=f'Q1 (25%): {q1:,.0f} {sym}')
+    ax.axvline(q3, color='orange', linestyle=':', linewidth=2, label=f'Q3 (75%): {q3:,.0f} {sym}')
 
     ax.set_title(sanitize_pdf_text(titulo), fontsize=18, fontweight='bold', pad=20)
     ax.set_xlabel(obtener_label(columna), fontsize=14)
@@ -374,7 +377,7 @@ def crear_bar_chart(df, cat, x=None, y=None, titulo='Diagrama de Barras',
         df.columns = [cat, 'count']
         x_col, y_col = cat, 'count'
 
-    sns.barplot(data=df, x=x_col, y=y_col, ax=ax, palette='magma', orient=orientacion)
+    sns.barplot(data=df, x=x_col, y=y_col, ax=ax, palette='magma', orient=orientacion, hue=x_col, legend=False)
 
     if orientacion == 'v':
         ax.set_xlabel(x_col, fontsize=14)

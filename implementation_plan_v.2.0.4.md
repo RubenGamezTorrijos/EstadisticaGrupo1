@@ -1,6 +1,6 @@
 # Plan de Consolidación de Rama Main (v.2.0.4)
 
-Este plan detalla los pasos para convertir la rama `main` en la versión de referencia (Solucionario) 100% funcional, integrando la mejora de multidivisa y asegurando el cumplimiento de la rúbrica.
+Este plan detalla los pasos para convertir la rama `main` en la versión de referencia (Solucionario) 100% funcional, integrando la mejora de multidivisa traducido y asegurando el cumplimiento de la rúbrica junto con la nueva funcionalidad de la variable COLI.
 
 ## Análisis de Estado Actual vs "enunciado_practica.md"
 

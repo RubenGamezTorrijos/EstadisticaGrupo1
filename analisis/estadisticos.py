@@ -46,6 +46,7 @@ VAR_LABELS = {
     'salary': 'Salario (Original)',
     'salary_currency': 'Moneda',
     'salary_in_usd': 'Salario (USD)',
+    'salary_in_eur': 'Salario (EUR)',
     'employee_residence': 'Residencia Empleado',
     'remote_ratio': 'Ratio Remoto',
     'company_location': 'Localización Empresa',
@@ -93,10 +94,14 @@ def limpiar_datos(df):
     # --- PASO 3: Asegurar tipos de datos ---
     df_limpio['work_year'] = df_limpio['work_year'].astype(int)
     df_limpio['salary_in_usd'] = df_limpio['salary_in_usd'].astype(float)
-    if 'salary' in df_limpio.columns:
-        df_limpio['salary'] = df_limpio['salary'].astype(float)
+    
+    # --- PASO 4: Multidivisa (EUR) ---
+    # Usamos un cambio base de 0.92 si no existe la columna
+    if 'salary_in_eur' not in df_limpio.columns:
+        df_limpio['salary_in_eur'] = df_limpio['salary_in_usd'] * 0.92
+    df_limpio['salary_in_eur'] = df_limpio['salary_in_eur'].astype(float)
 
-    # --- PASO 4: Nueva Variable de Coste de Vida ---
+    # --- PASO 5: Nueva Variable de Coste de Vida (Mejora 2) ---
     # Asignamos 70 (media estimada global) a los países que no estén en el Top 20
     if 'company_location' in df_limpio.columns:
         df_limpio['cost_of_living_index'] = df_limpio['company_location'].map(COST_OF_LIVING_INDEX).fillna(70)
@@ -147,7 +152,7 @@ def calcular_estadisticos(df):
         pd.DataFrame con una fila por variable analizada
     """
     # TODO: COMPLETAR
-    cols_num = ['salary_in_usd', 'salary']
+    cols_num = ['salary_in_usd', 'salary_in_eur', 'work_year', 'cost_of_living_index']
     resultados = []
 
     for col in cols_num:
