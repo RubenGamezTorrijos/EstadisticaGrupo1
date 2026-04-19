@@ -1,7 +1,18 @@
+"""
+PROYECTO: Estadística para Ingeniería
+INFRAESTRUCTURA Y VISUALIZACIÓN
+AUTORES: RUBEN GAMEZ TORRIJOS (Coordinador) / RAFAEL RODRIGUEZ
+ROL ASIGNADO (Lógica Gráfica): Leslie Ross Aranibar Pozo
+"""
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
+
+# =================================================================
+# SECCIÓN: VISUALIZACIONES DESCRIPTIVAS (RESPONSABLE: LESLIE ROSS)
+# =================================================================
 
 def crear_histograma(df, x_col, titulo="Distribución Salarial"):
     """
@@ -10,15 +21,13 @@ def crear_histograma(df, x_col, titulo="Distribución Salarial"):
     
     # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
     # ==========================================
+    # fig, ax = plt.subplots(figsize=(10, 6))
     # sns.histplot(df[x_col], ax=ax, kde=True, color='#0b84f4')
-    # ax.set_xlabel("Salario (USD)")
+    # ax.set_title(f"{titulo}")
+    # return fig
     """
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Plantilla básica: implementar estilo v.2.1.4 aquí
-    sns.histplot(df[x_col], ax=ax, color='#0b84f4')
-    ax.set_title(f"{titulo} [Leslie: Pendiente Refinar]")
-    return fig
+    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    return None
 
 def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
     """
@@ -27,85 +36,78 @@ def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
     
     # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
     # ==========================================
+    # fig, ax = plt.subplots(figsize=(10, 6))
     # sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="RdBu_r")
+    # plt.xticks(rotation=45)
+    # return fig
     """
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Plantilla básica
-    sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="Blues")
-    ax.set_title(f"{titulo} [Leslie: Pendiente Refinar]")
-    plt.xticks(rotation=45)
-    return fig
+    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    return None
 
 def crear_violin_plot(df, x_col, y_col, titulo="Densidad Salarial"):
     """
     MODULO: Visualizaciones Descriptivas
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
     
-    TODO: Implementar Violin Plot para mostrar densidad de probabilidad.
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # fig, ax = plt.subplots(figsize=(10, 6))
+    # sns.violinplot(data=df, x=x_col, y=y_col, ax=ax, color='#1e3a8a')
+    # return fig
     """
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Plantilla básica
-    sns.violinplot(data=df, x=x_col, y=y_col, ax=ax, color='#1e3a8a')
-    ax.set_title(f"{titulo} [Leslie: Pendiente Refinar]")
-    return fig
+    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    return None
 
 def crear_bar_chart(df, col, titulo="Presencia en Mercado"):
     """
     MODULO: Visualizaciones Descriptivas
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
     
-    TODO: Implementar gráfico de barras para variables categóricas (Top 10).
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # counts = df[col].value_counts().head(10)
+    # fig, ax = plt.subplots(figsize=(10, 6))
+    # counts.plot(kind='bar', ax=ax, color='#0b84f4')
+    # return fig
     """
-    counts = df[col].value_counts().head(10)
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Plantilla básica
-    counts.plot(kind='bar', ax=ax, color='#0b84f4')
-    ax.set_title(f"{titulo} [Leslie: Pendiente Refinar]")
-    plt.xticks(rotation=45)
-    return fig
+    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    return None
 
 def crear_grafico_comparativo_ic(df, x_col, y_col, titulo="Evidencia Inferencial"):
     """
     MODULO: Evidencia Inferencial
     ROL ASIGNADO: Leslie Ross Aranibar Pozo (En colaboración con Bryann)
     
-    TODO: Implementar gráfico de barras de error (Barplot con errorbars=95).
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # fig, ax = plt.subplots(figsize=(10, 6))
+    # sns.barplot(data=df, x=x_col, y=y_col, ax=ax, errorbar=('ci', 95), palette="Blues")
+    # return fig
     """
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Plantilla básica
-    if not df.empty:
-        sns.barplot(data=df, x=x_col, y=y_col, ax=ax, errorbar=('ci', 95), palette="Blues")
-    ax.set_title(f"{titulo} [Leslie: Pendiente Refinar]")
-    return fig
+    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    return None
 
 def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"):
     """
     MODULO: Regresión Lineal
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    """
     
     # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
     # ==========================================
-    # sns.regplot(data=df, x=x_col, y=y_col, ax=ax, 
-    #             scatter_kws={'alpha':0.5, 'color':'#0b84f4'},
-    #             line_kws={'color':'#ff4b4b', 'lw':3})
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Plantilla básica
-    sns.regplot(data=df, x=x_col, y=y_col, ax=ax, line_kws={'color': 'red'})
-    ax.set_title(f"{titulo} [Leslie: Pendiente Refinar]")
-    
-    # Placeholder de estadísticas (Sincronizado con app.py)
-    stats = {
-        'correlacion': 0.0,
-        'r_cuadrado': 0.0,
-        'pendiente': 0.0,
-        'intercepto': 0.0
-    }
-    return fig, stats
+    # fig, ax = plt.subplots(figsize=(10, 6))
+    # sns.regplot(data=df, x=x_col, y=y_col, ax=ax, line_kws={'color':'red'})
+    # stats = {'r_cuadrado': 0.85, ...} # Calcular en modelo_regresion
+    # return fig, stats
+    """
+    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    return None, None
 
-# --- UTILIDADES DE INFRAESTRUCTURA (RESTAURADAS DE MAIN) ---
+# =================================================================
+# SECCIÓN: INFRAESTRUCTURA DE APOYO (RESPONSABLES: RUBEN / RAFAEL)
+# =================================================================
+
+# Diccionario de traducción de variables para etiquetas de gráficos
+# Mantenido por RUBEN para asegurar consistencia en la UI
 VAR_LABELS = {
     'salary_in_usd': 'Salario (USD)',
     'experience_level': 'Nivel de Experiencia',
@@ -120,7 +122,10 @@ VAR_LABELS = {
 }
 
 def sanitize_pdf_text(text):
-    """Limpia caracteres que rompen la fuente Helvetica estándar de FPDF"""
+    """
+    DESARROLLADO POR RAFAEL: Limpia caracteres que rompen la fuente Helvetica en el PDF.
+    Soporta símbolos estadísticos comunes.
+    """
     if not isinstance(text, str):
         text = str(text)
     replacements = {
@@ -136,14 +141,18 @@ def sanitize_pdf_text(text):
         return text
 
 def obtener_label(col):
-    """Retorna la etiqueta legible para una columna."""
+    """
+    DESARROLLADO POR RUBEN: Retorna la etiqueta legible para una columna.
+    Usa VAR_LABELS como base de datos.
+    """
     return VAR_LABELS.get(col, col.replace('_', ' ').title())
 
 def guardar_grafico(fig, nombre, ruta='outputs/graficos/'):
     """
-    LESLIE ROSS - Guarda un gráfico como PNG.
-    (Esta función ya está implementada, no la modifiques)
+    DESARROLLADO POR RAFAEL: Guarda un gráfico como PNG de forma segura.
+    Esta utilidad es consumida por el generador de informes.
     """
+    if fig is None: return None
     os.makedirs(ruta, exist_ok=True)
     ruta_completa = os.path.join(ruta, nombre)
     fig.savefig(ruta_completa, bbox_inches='tight', dpi=150)

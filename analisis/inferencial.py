@@ -1,38 +1,37 @@
+"""
+PROYECTO: Estadística para Ingeniería
+ANÁLISIS INFERENCIAL Y PRUEBAS DE HIPÓTESIS
+AUTORES: RUBEN GAMEZ TORRIJOS / RAFAEL RODRIGUEZ
+ROL ASIGNADO (Lógica Estadística): Bryann Vallejo Luna
+"""
+
 import numpy as np
 from scipy import stats
 import pandas as pd
+
+# =================================================================
+# SECCIÓN: INFERENCIA POBLACIONAL (RESPONSABLE: BRYANN VALLEJO)
+# =================================================================
 
 def calcular_ic_95(data):
     """
     MODULO: Inferencia Poblacional
     ROL ASIGNADO: Bryann Vallejo Luna
     
-    TODO: Implementar cálculo de Intervalo de Confianza (T-Student) al 95%.
-    Debe devolver un diccionario con: Media, Inferior, Superior.
-    """
-    if len(data) < 2:
-        return {"Error": "Datos insuficientes"}
-        
-    media = np.mean(data)
     # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
     # ==========================================
-    # Para el cálculo manual:
-    # 1. std_err = data.std() / np.sqrt(len(data))
-    # 2. t_critico = stats.t.ppf((1 + 0.95) / 2., len(data) - 1)
-    # 3. margen_error = t_critico * std_err
-    # 4. retornar {'Media': media, 'Inferior': media - margen_error, ...}
-    
-    std_err = stats.sem(data)
-    dof = len(data) - 1
-    h = std_err * stats.t.ppf((1 + 0.95) / 2., dof)
-    
+    # media = np.mean(data)
+    # std_err = stats.sem(data)
+    # dof = len(data) - 1
+    # h = std_err * stats.t.ppf((1 + 0.95) / 2., dof)
+    # return {'Media': media, 'Inferior': media - h, 'Superior': media + h}
+    """
+    # IMPLEMENTACIÓN PENDIENTE POR BRYANN
     return {
-        'Media': media,
-        'Inferior': media - h,
-        'Superior': media + h,
-        'N': len(data),
-        'Margen Error': h,
-        'Estado': '[Bryann: Pendiente Validar Fórmulas]'
+        'Media': 0.0,
+        'Inferior': 0.0,
+        'Superior': 0.0,
+        'Estado': 'PENDIENTE'
     }
 
 def contraste_hipotesis(g1, g2, label1="G1", label2="G2"):
@@ -40,29 +39,32 @@ def contraste_hipotesis(g1, g2, label1="G1", label2="G2"):
     MODULO: Contrastes de Hipótesis
     ROL ASIGNADO: Bryann Vallejo Luna
     
-    TODO: Implementar T-test de muestras independientes y Cohen's d.
-    """
     # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
     # ==========================================
-    # stats.ttest_ind(g1, g2, equal_var=False) 
-    # El p_valor < 0.05 indica que se rechaza H0 (hay diferencias).
-    
-    t_stat, p_valor = stats.ttest_ind(g1, g2, equal_var=False)
-    rechaza = p_valor < 0.05
-    
+    # t_stat, p_valor = stats.ttest_ind(g1, g2, equal_var=False)
+    # return {'p_valor': p_valor, 'rechaza_h0': p_valor < 0.05}
+    """
+    # IMPLEMENTACIÓN PENDIENTE POR BRYANN
     return {
-        'p_valor': p_valor,
-        't_statistic': t_stat,
-        'rechaza_h0': rechaza,
-        'Conclusión': "[Bryann: Pendiente desarrollar análisis crítico]",
-        'Media G1': np.mean(g1),
-        'Media G2': np.mean(g2)
+        'p_valor': 1.0,
+        't_statistic': 0.0,
+        'rechaza_h0': False,
+        'Estado': 'PENDIENTE'
     }
 
 def verificar_supuestos(data):
     """
-    TODO: Bryann debe implementar verificación de normalidad (Shapiro-Wilk).
+    MODULO: Verificación de Supuestos
+    ROL ASIGNADO: Bryann Vallejo Luna
+    
+    # 💡 PISTA: stat, p = stats.shapiro(data)
     """
-    # 💡 PISTA: stats.shapiro(data) -> devuelve (stat, p-value)
-    stat, p = stats.shapiro(data)
-    return {"Shapiro-p": p, "Normal": p > 0.05}
+    # IMPLEMENTACIÓN PENDIENTE POR BRYANN
+    return {"Shapiro-p": 0.0, "Normal": False, "Estado": "PENDIENTE"}
+
+# =================================================================
+# SECCIÓN: UTILIDADES DE INTEGRACIÓN (RESPONSABLES: RUBEN / RAFAEL)
+# =================================================================
+
+# Nota: Las funciones de integración de reportes se gestionan en exportacion.py
+# para mantener la arquitectura MVC limpia y desacoplada.

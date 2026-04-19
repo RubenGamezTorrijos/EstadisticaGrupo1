@@ -1,3 +1,14 @@
+"""
+PROYECTO: Estadística para Ingeniería
+COMPONENTE: Motor de Exportación Profesional (PDF/Excel)
+RESPONSABLE: Rubén Gámez Torrijos (Coordinador)
+
+ESTADO: FINALIZADO Y VERIFICADO (v.2.2.1)
+========================================
+Este módulo gestiona la generación de reportes multiplataforma.
+Integración con FPDF para informes técnicos y OpenPyXL para hojas de cálculo.
+"""
+
 import pandas as pd
 import io
 import os
@@ -112,6 +123,10 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label,
     pdf.cell(0, 15, sanitize_pdf_text('4. Visualizaciones y Gráficos del Proyecto'), 0, 1, 'L')
     
     for i, (nombre_graf, fig) in enumerate(graficos_figs.items()):
+        # Si el gráfico no ha sido implementado (es None), lo saltamos
+        if fig is None:
+            continue
+            
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
             tmp_path = tmpfile.name
             fig.savefig(tmp_path, format='png', dpi=120, bbox_inches='tight')

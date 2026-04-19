@@ -189,8 +189,21 @@ def main():
     elif opcion == "Equipo Grupo 1":
         render_equipo()
 
+    # --- PIE DE PÁGINA GLOBAL (RUBÉN) ---
+    render_footer()
+
+def render_footer():
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown(
+        "<div style='text-align: center; color: #888; font-size: 0.85rem; font-style: italic;'>"
+        "Rubén: Coordinador y arquitectura de la aplicación Python y Streamlit"
+        "</div>", 
+        unsafe_allow_html=True
+    )
+
 def render_escritorio(df, key, sym):
-    st.title("🏠 Escritorio de Control")
+    st.title("🏠 Escritorio de Control - Rafael Rodriguez")
     st.write("Resumen ejecutivo de la muestra actual analizada.")
     
     col1, col2, col3, col4 = st.columns(4)
@@ -207,7 +220,7 @@ def render_escritorio(df, key, sym):
     st.dataframe(df.head(10), use_container_width=True)
 
 def render_estadisticos(df, key, sym):
-    st.title("📊 Estadísticos Descriptivos")
+    st.title("📊 Estadísticos Descriptivos - Rafael Rodriguez")
     st.write("Análisis detallado de tendencia central, dispersión y forma.")
     
     # Tabla Unificada Profecional
@@ -222,64 +235,100 @@ def render_estadisticos(df, key, sym):
     st.table(cat_stats)
 
 def render_visualizaciones(df, key, sym):
-    st.title("📊 Visualizaciones Gráficas")
-    st.info("👩‍💻 **Espacio de Trabajo de Leslie Ross**: Implementación de histogramas, boxplots y violin plots premium.")
+    st.title("📊 Visualizaciones Gráficas - Leslie Ross")
     
+    # Verificación de implementación de Leslie
+    fig_hist = crear_histograma(df, key, f"Histograma de Salarios ({sym})")
+    fig_box = crear_boxplot(df, key, 'experience_level', f"Distribución de Salarios por Nivel ({sym})")
+    fig_violin = crear_violin_plot(df, 'experience_level', key, f"Violin Plot: Salario vs Experiencia ({sym})")
+    fig_bar = crear_bar_chart(df, 'job_category', titulo="Top Categorías de Empleo")
+
+    if all(v is None for v in [fig_hist, fig_box, fig_violin, fig_bar]):
+        st.info("""
+        ### 👩‍💻 Tareas de Leslie Ross (Visualización)
+        Para que esta vista funcione, Leslie debe implementar en el archivo `analisis/graficos.py`:
+        1. **Histograma**: Distribución de salarios con KDE.
+        2. **Boxplot**: Comparativa salarial por nivel de experiencia.
+        3. **Violin Plot**: Densidad de probabilidad.
+        4. **Bar Chart**: Frecuencia de categorías de puestos.
+        
+        *Utiliza las pistas (`# 💡 PISTA`) disponibles en el código.*
+        """)
+        return
+
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Distribución de Salarios")
-        fig_hist = crear_histograma(df, key, f"Histograma de Salarios ({sym})")
-        st.pyplot(fig_hist)
+        if fig_hist: st.pyplot(fig_hist)
+        else: st.warning("Leslie: Implementar Histograma en `graficos.py`")
         
     with col2:
         st.subheader("Dispersión por Experiencia")
-        fig_box = crear_boxplot(df, key, 'experience_level', f"Distribución de Salarios por Nivel ({sym})")
-        st.pyplot(fig_box)
+        if fig_box: st.pyplot(fig_box)
+        else: st.warning("Leslie: Implementar Boxplot en `graficos.py`")
         
     st.markdown("---")
     col3, col4 = st.columns(2)
     with col3:
         st.subheader("Distribución de Densidad (Violin)")
-        fig_violin = crear_violin_plot(df, 'experience_level', key, f"Violin Plot: Salario vs Experiencia ({sym})")
-        st.pyplot(fig_violin)
+        if fig_violin: st.pyplot(fig_violin)
+        else: st.warning("Leslie: Implementar Violin Plot en `graficos.py`")
     with col4:
         st.subheader("Presencia por Categoría")
-        fig_bar = crear_bar_chart(df, 'job_category', titulo="Top Categorías de Empleo")
-        st.pyplot(fig_bar)
+        if fig_bar: st.pyplot(fig_bar)
+        else: st.warning("Leslie: Implementar Bar Chart en `graficos.py`")
 
 def render_regresion(df, key, sym):
-    st.title("📈 Análisis de Inferencia Poblacional mediante Regresión")
-    st.warning("👩‍💻 **Módulo en Desarrollo (Leslie Ross)**: Enlace entre COLI y Salario mediante regresión lineal.")
+    st.title("📈 Regresión Lineal - Leslie Ross")
     st.write("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
     
-    fig_reg, stats = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs COLI")
+    # Verificación de implementación de Leslie para Regresión
+    fig_reg, stats_reg = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs COLI")
+    resumen_modelo, modelo_obj = ejecutar_regresion_simple(df, 'cost_of_living_index', key)
+
+    if fig_reg is None or modelo_obj is None:
+        st.warning("""
+        ### 📈 Tareas de Leslie Ross (Regresión)
+        Para activar este análisis, Leslie debe completar:
+        1. **`analisis/graficos.py`**: Implementar `crear_scatter_regresion` usando `sns.regplot`.
+        2. **`analisis/modelo_regresion.py`**: Implementar `ejecutar_regresion_simple` usando `LinearRegression` de scikit-learn.
+        """)
+        return
+
     st.pyplot(fig_reg)
     
     c1, c2, c3 = st.columns(3)
-    c1.metric("Correlación (r)", f"{stats['correlacion']:.4f}")
-    c2.metric("Coef. Determinación (R²)", f"{stats['r_cuadrado']:.4f}")
-    c3.metric("Pendiente", f"{stats['pendiente']:.2f}")
+    c1.metric("Coeficiente R2", resumen_modelo['Coeficiente R2'])
+    c2.metric("Pendiente", resumen_modelo['Pendiente'])
+    c3.metric("Intercepto", resumen_modelo['Intercepto'])
     
-    st.info(f"Interpretación: Un coeficiente de {stats['correlacion']:.4f} indica una correlación {'fuerte' if abs(stats['correlacion']) > 0.7 else 'moderada' if abs(stats['correlacion']) > 0.4 else 'débil'} entre el coste de vida y el salario.")
+    st.info(f"**Conclusión Técnica:** {resumen_modelo['Conclusion']}")
 
 def render_inferencial(df, key, sym):
-    st.title("🧪 Estadística Inferencial y Contrastes")
-    st.info("👨‍💻 **Espacio de Trabajo de Bryann Vallejo**: Desarrollo de Intervalos de Confianza y Contrastes de Hipótesis.")
-    st.write("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios IT y el coste de vida.")
+    st.title("🧪 Estadística Inferencial - Bryann Vallejo")
+    st.write("Análisis de probabilidad para validar hipótesis poblacionales.")
     
-    # --- SECCIÓN 1: INTERVALO DE CONFIANZA SALARIO ---
-    st.markdown(f"### 1. Estimación Salarial (Confianza 95%) - {sym}")
     ic_results = calcular_ic_95(df[key])
     
+    if ic_results.get('Estado') == 'PENDIENTE':
+        st.info("""
+        ### 👨‍💻 Tareas de Bryann Vallejo (Estadística Inferencial)
+        Bryann debe completar la lógica matemática en el archivo `analisis/inferencial.py` para:
+        1. **Intervalos de Confianza**: Cálculo manual de grados de libertad, error estándar y T-crítico.
+        2. **Contrastes de Hipótesis**: Implementar `stats.ttest_ind` y analizar el P-valor.
+        3. **Supuestos**: Validar si los datos siguen una distribución normal.
+        
+        *Consulta las pistas en el código para las fórmulas de Numpy y Scipy.*
+        """)
+        return
+
+    # Si Bryann ya implementó algo, se muestra:
+    st.markdown(f"### 1. Estimación Salarial (Confianza 95%) - {sym}")
     with st.container():
         c1, c2, c3 = st.columns(3)
-        if 'Media' in ic_results:
-            c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
-            c2.metric("Límite Inferior", f"{ic_results['Inferior']:,.2f} {sym}")
-            c3.metric("Límite Superior", f"{ic_results['Superior']:,.2f} {sym}")
-            st.info(f"💡 **Interpretación Salario:** Con un 95% de confianza, estimamos que el salario medio real se encuentra entre **{ic_results['Inferior']:,.2f} {sym} y {ic_results['Superior']:,.2f} {sym}**.")
-        else:
-            st.warning("No hay datos suficientes para calcular el intervalo del salario.")
+        c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
+        c2.metric("Límite Inferior", f"{ic_results['Inferior']:,.2f} {sym}")
+        c3.metric("Límite Superior", f"{ic_results['Superior']:,.2f} {sym}")
 
     st.markdown("---")
 
@@ -377,22 +426,24 @@ def render_equipo():
     ### Estructura y Responsabilidades Técnicas:
     
     *   **Rubén Gámez Torrijos (Coordinador y Arquitectura)**
-        *   **Responsabilidades:** Diseño de la arquitectura modular de la aplicación, sistema de estilos CSS adaptativos para temas Light/Dark y desarrollo del motor de exportación profesional (PDF/Excel).
-        *   **Archivos clave:** `app.py` (Orquestación), `analisis/exportacion.py` (Generación de Reportes), `config/styles.py`.
+        *   **Tareas:** Liderar la integración MVC, estandarización de la UI y motor de exportación.
+        *   **Archivos:** `app.py`, `analisis/exportacion.py`, `config/settings.py`.
+        *   *Estado: Finalizado y Documentado.*
         
     *   **Rafael Rodriguez Mengual (Data Manager)**
-        *   **Responsabilidades:** Implementación del pipeline de limpieza de datos, integración de variables externas (Índice de coste de vida) y desarrollo de la lógica para estadísticos de tendencia central y dispersión.
-        *   **Archivos clave:** `analisis/utils.py` (Limpieza), `analisis/estadisticos.py` (Motor estadístico).
+        *   **Tareas:** Pipeline de limpieza de datos y motor de estadísticos descriptivos.
+        *   **Archivos:** `analisis/estadisticos.py`, `analisis/utils.py`.
+        *   *Estado: Finalizado y Documentado.*
         
     *   **Bryann Vallejo Luna (Analista Inferencial)**
-        *   **Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.
-        *   **Archivos clave:** `analisis/inferencial.py`.
-        *   **Estado:** *Plantilla Asignada - Pendiente Desarrollo Propio.*
+        *   **Tareas:** Implementar Intervalos de Confianza (T-Student) y Contrastes de Hipótesis (P-valor).
+        *   **Archivos:** `analisis/inferencial.py`.
+        *   *Estado: Tareas Pendientes Definiendo Cálculos.*
         
     *   **Leslie Ross Aranibar Pozo (Analista Descriptivo)**
-        *   **Responsabilidades:** Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.
-        *   **Archivos clave:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.
-        *   **Estado:** *Plantilla Asignada - Pendiente Desarrollo Propio.*
+        *   **Tareas:** Desarrollar catálogo de gráficos avanzados y modelo de regresión lineal.
+        *   **Archivos:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.
+        *   *Estado: Tareas Pendientes Definiendo Visualizaciones.*
     
     ---
     *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (Producción).*
