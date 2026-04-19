@@ -130,4 +130,5 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label,
         except:
             pass
 
+    # Asegurar que devolvemos bytes pura (evita RuntimeError en Streamlit)
     return bytes(pdf.output())
