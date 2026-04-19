@@ -189,8 +189,21 @@ def main():
     elif opcion == "Equipo Grupo 1":
         render_equipo()
 
+    # --- PIE DE PÁGINA GLOBAL (RUBÉN) ---
+    render_footer()
+
+def render_footer():
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown(
+        "<div style='text-align: center; color: #888; font-size: 0.85rem; font-style: italic;'>"
+        "Rubén: Coordinador y arquitectura de la aplicación Python y Streamlit"
+        "</div>", 
+        unsafe_allow_html=True
+    )
+
 def render_escritorio(df, key, sym):
-    st.title("🏠 Escritorio de Control")
+    st.title("🏠 Escritorio de Control - Rafael Rodriguez")
     st.write("Resumen ejecutivo de la muestra actual analizada.")
     
     col1, col2, col3, col4 = st.columns(4)
@@ -207,7 +220,7 @@ def render_escritorio(df, key, sym):
     st.dataframe(df.head(10), use_container_width=True)
 
 def render_estadisticos(df, key, sym):
-    st.title("📊 Estadísticos Descriptivos")
+    st.title("📊 Estadísticos Descriptivos - Rafael Rodriguez")
     st.write("Análisis detallado de tendencia central, dispersión y forma.")
     
     # Tabla Unificada Profecional
@@ -222,7 +235,7 @@ def render_estadisticos(df, key, sym):
     st.table(cat_stats)
 
 def render_visualizaciones(df, key, sym):
-    st.title("📈 Visualizaciones de Muestra")
+    st.title("📈 Visualizaciones de Muestra - Leslie Ross")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -247,7 +260,7 @@ def render_visualizaciones(df, key, sym):
         st.pyplot(fig_bar)
 
 def render_regresion(df, key, sym):
-    st.title("📈 Análisis de Inferencia Poblacional mediante Regresión")
+    st.title("📈 Regresión Lineal - Leslie Ross")
     st.write("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
     
     fig_reg, stats = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs COLI")
@@ -261,7 +274,7 @@ def render_regresion(df, key, sym):
     st.info(f"Interpretación: Un coeficiente de {stats['correlacion']:.4f} indica una correlación {'fuerte' if abs(stats['correlacion']) > 0.7 else 'moderada' if abs(stats['correlacion']) > 0.4 else 'débil'} entre el coste de vida y el salario.")
 
 def render_inferencial(df, key, sym):
-    st.title("🧪 Estadística Inferencial y Contrastes")
+    st.title("🧪 Estadística Inferencial - Bryann Vallejo")
     st.write("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios IT y el coste de vida.")
     
     # --- SECCIÓN 1: INTERVALO DE CONFIANZA SALARIO ---
