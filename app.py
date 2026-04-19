@@ -222,7 +222,8 @@ def render_estadisticos(df, key, sym):
     st.table(cat_stats)
 
 def render_visualizaciones(df, key, sym):
-    st.title("📈 Visualizaciones de Muestra")
+    st.title("📊 Visualizaciones Gráficas")
+    st.info("👩‍💻 **Espacio de Trabajo de Leslie Ross**: Implementación de histogramas, boxplots y violin plots premium.")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -248,6 +249,7 @@ def render_visualizaciones(df, key, sym):
 
 def render_regresion(df, key, sym):
     st.title("📈 Análisis de Inferencia Poblacional mediante Regresión")
+    st.warning("👩‍💻 **Módulo en Desarrollo (Leslie Ross)**: Enlace entre COLI y Salario mediante regresión lineal.")
     st.write("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
     
     fig_reg, stats = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs COLI")
@@ -262,6 +264,7 @@ def render_regresion(df, key, sym):
 
 def render_inferencial(df, key, sym):
     st.title("🧪 Estadística Inferencial y Contrastes")
+    st.info("👨‍💻 **Espacio de Trabajo de Bryann Vallejo**: Desarrollo de Intervalos de Confianza y Contrastes de Hipótesis.")
     st.write("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios IT y el coste de vida.")
     
     # --- SECCIÓN 1: INTERVALO DE CONFIANZA SALARIO ---
@@ -383,11 +386,13 @@ def render_equipo():
         
     *   **Bryann Vallejo Luna (Analista Inferencial)**
         *   **Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.
-        *   **Archivos clave:** `analisis/inferencial.py`, `app.py` (Sección Inferencia).
+        *   **Archivos clave:** `analisis/inferencial.py`.
+        *   **Estado:** *Plantilla Asignada - Pendiente Desarrollo Propio.*
         
     *   **Leslie Ross Aranibar Pozo (Analista Descriptivo)**
         *   **Responsabilidades:** Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.
         *   **Archivos clave:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.
+        *   **Estado:** *Plantilla Asignada - Pendiente Desarrollo Propio.*
     
     ---
     *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (Producción).*
