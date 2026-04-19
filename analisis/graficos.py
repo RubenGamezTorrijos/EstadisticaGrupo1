@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import os
 
 def crear_histograma(df, x_col, titulo="Distribución Salarial"):
     """
@@ -103,3 +104,48 @@ def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"
         'intercepto': 0.0
     }
     return fig, stats
+
+# --- UTILIDADES DE INFRAESTRUCTURA (RESTAURADAS DE MAIN) ---
+VAR_LABELS = {
+    'salary_in_usd': 'Salario (USD)',
+    'experience_level': 'Nivel de Experiencia',
+    'employment_type': 'Tipo de Contrato',
+    'job_title': 'Cargo',
+    'job_category': 'Categoría de Empleo',
+    'employee_residence': 'Residencia del Empleado',
+    'work_setting': 'Modalidad de Trabajo',
+    'company_location': 'Ubicación de la Empresa',
+    'company_size': 'Tamaño de la Empresa',
+    'cost_of_living_index': 'Índice del Coste de Vida (COLI)'
+}
+
+def sanitize_pdf_text(text):
+    """Limpia caracteres que rompen la fuente Helvetica estándar de FPDF"""
+    if not isinstance(text, str):
+        text = str(text)
+    replacements = {
+        '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4',
+        'µ': 'mu', 'μ': 'mu', 'σ': 'sigma', 'π': 'pi',
+        '²': '^2', '±': '+/-', '≥': '>=', '≤': '<=', '≠': '!='
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    try:
+        return text.encode('latin-1', 'replace').decode('latin-1')
+    except:
+        return text
+
+def obtener_label(col):
+    """Retorna la etiqueta legible para una columna."""
+    return VAR_LABELS.get(col, col.replace('_', ' ').title())
+
+def guardar_grafico(fig, nombre, ruta='outputs/graficos/'):
+    """
+    LESLIE ROSS - Guarda un gráfico como PNG.
+    (Esta función ya está implementada, no la modifiques)
+    """
+    os.makedirs(ruta, exist_ok=True)
+    ruta_completa = os.path.join(ruta, nombre)
+    fig.savefig(ruta_completa, bbox_inches='tight', dpi=150)
+    plt.close(fig)
+    return ruta_completa
