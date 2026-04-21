@@ -1,6 +1,6 @@
 # 📘 MANUAL DE DESARROLLO — Estadística para Ingeniería v.2.2.1
 > **Proyecto**: Análisis de Salarios en Ciencia de Datos (2020–2023)
-> **Equipo Grupo 1**: Rubén Martínez · Rafael Rodriguez · Leslie Ross · Bryann Vallejo
+> **Equipo Grupo 1**: Rubén Gámez · Rafael Rodriguez · Leslie Ross · Bryann Vallejo
 > **Documento interno** — Uso exclusivo del equipo.
 
 ---
@@ -667,7 +667,7 @@ git log --oneline -10
 
 | Miembro | Rol | Archivos | Estado |
 | :--- | :--- | :--- | :---: |
-| **Rubén Martínez** | Arquitecto / Coordinador | `app.py`, `exportacion.py`, `__init__.py` | ✅ FINALIZADO |
+| **Rubén Gámez** | Arquitecto / Coordinador | `app.py`, `exportacion.py`, `__init__.py` | ✅ FINALIZADO |
 | **Rafael Rodriguez** | Data Manager | `estadisticos.py` | ✅ FINALIZADO |
 | **Leslie Ross** | Analista Descriptivo | `graficos.py` | 🛠️ PENDIENTE |
 | **Bryann Vallejo** | Analista Inferencial | `inferencial.py` | 🛠️ PENDIENTE |
@@ -675,4 +675,4 @@ git log --oneline -10
 ---
 
 *Documento generado para el equipo de Estadística para Ingeniería — Grupo 1*
-*Arquitecto del sistema: Rubén Gámez Torrijos*
+*Arquitecto del sistema: Rubén Torrijos*
