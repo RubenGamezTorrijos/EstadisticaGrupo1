@@ -675,4 +675,4 @@ git log --oneline -10
 ---
 
 *Documento generado para el equipo de Estadística para Ingeniería — Grupo 1*
-*Arquitecto del sistema: Rubén Gámez Torrijos*
+*Arquitecto del sistema: Rubén Torrijos*
