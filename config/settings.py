@@ -18,9 +18,13 @@ ENRIQUECIDO_CSV = os.path.join(DATOS_DIR, "dataset_enriquecido.csv")
 
 # --- Columnas ---
 COL_SALARIO_USD = "salary_in_usd"
+COL_SALARIO_EUR = "salary_in_eur"
 COL_COLI = "cost_of_living_index"
 COL_PAIS = "company_location"
 COL_SALARIO_AJUSTADO = "salary_adjusted_coli"
+
+# --- Tasas de Cambio ---
+EUR_USD_RATE = 0.92 # 1 USD = 0.92 EUR (Aproximado)
 
 # --- Estética ---
 APP_TITLE = "Análisis de Salarios y Coste de Vida (2020-2023)"

@@ -19,15 +19,17 @@ def render_sidebar(df_full):
     """Renderiza el sidebar completo con navegación, filtros y exportaciones."""
     
     with st.sidebar:
-        # Logo y Título
-        st.image("https://cdn-icons-png.flaticon.com/512/2103/2103633.png", width=80)
+        # Logo y Título Centrados
         st.markdown("""
-        <h2 style='color: white; font-size: 1.4rem; text-align: center; margin-bottom: 0;'>
-            ESTADÍSTICA Y OPTIMIZACIÓN
-        </h2>
-        <p style='color: #0b84f4; text-align: center; font-weight: 600; font-size: 0.9rem;'>
-            GRUPO DE TRABAJO 1
-        </p>
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 15px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png" width="70">
+                <h2 style='color: white; font-size: 1.1rem; margin: 10px 0 0 0; text-align: center; line-height: 1.2;'>
+                    ESTADÍSTICA Y OPTIMIZACIÓN
+                </h2>
+                <p style='color: #0b84f4; font-weight: 600; font-size: 0.8rem; margin: 5px 0 0 0;'>
+                    GRUPO DE TRABAJO 1
+                </p>
+            </div>
         """, unsafe_allow_html=True)
         st.markdown("---")
         
@@ -40,7 +42,8 @@ def render_sidebar(df_full):
             help="Cambia todos los cálculos y gráficos a la moneda elegida."
         )
         
-        divisa_key = 'salary_in_usd' if "USD" in divisa_label else 'salary_in_eur'
+        from config.settings import COL_SALARIO_USD, COL_SALARIO_EUR
+        divisa_key = COL_SALARIO_USD if "USD" in divisa_label else COL_SALARIO_EUR
         simbolo = "$" if "USD" in divisa_label else "€"
         
         # --- NAVEGACIÓN ---

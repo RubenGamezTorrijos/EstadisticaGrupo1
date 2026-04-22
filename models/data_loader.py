@@ -39,6 +39,10 @@ def load_processed_data() -> pd.DataFrame:
     # Cálculo de salario ajustado
     df_merged[COL_SALARIO_AJUSTADO] = (df_merged[COL_SALARIO_USD] / df_merged[COL_COLI]) * 100
     
+    # Cálculo de salario en Euros (Nueva columna para frontend)
+    from config.settings import COL_SALARIO_EUR, EUR_USD_RATE
+    df_merged[COL_SALARIO_EUR] = df_merged[COL_SALARIO_USD] * EUR_USD_RATE
+    
     # Guardar para futuros usos
     df_merged.to_csv(ENRIQUECIDO_CSV, index=False)
     return df_merged
