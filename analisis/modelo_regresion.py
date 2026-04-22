@@ -15,25 +15,25 @@ from sklearn.metrics import r2_score
 # =================================================================
 
 def ejecutar_regresion_simple(df, x_col, y_col):
-    """
-    MODULO: Análisis de Regresión
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """Ejecuta un modelo de regresión lineal simple y devuelve métricas."""
+    if df.empty or len(df) < 2:
+        return {'Coeficiente R2': "0.0", 'Pendiente': "0.0", 'Intercepto': "0.0", 'Conclusion': "Datos insuficientes"}, None
+        
+    X = df[[x_col]].values
+    y = df[y_col].values
     
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # 1. modelo = LinearRegression()
-    # 2. X = df[[x_col]].values
-    # 3. y = df[y_col].values
-    # 4. modelo.fit(X, y)
-    # 5. r2 = r2_score(y, modelo.predict(X))
-    # 6. retornar resumen, modelo
-    """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    modelo = LinearRegression()
+    modelo.fit(X, y)
+    
+    r2 = r2_score(y, modelo.predict(X))
+    slope = modelo.coef_[0]
+    intercept = modelo.intercept_
+    
     resumen = {
-        'Coeficiente R2': "PENDIENTE",
-        'Pendiente': "0.0",
-        'Intercepto': "0.0",
-        'Conclusion': "Leslie debe implementar el ajuste del modelo."
+        'Coeficiente R2': f"{r2:.4f}",
+        'Pendiente': f"{slope:.2f}",
+        'Intercepto': f"{intercept:,.2f}",
+        'Conclusion': "Modelo ajustado correctamente."
     }
     
-    return resumen, None
+    return resumen, modelo
