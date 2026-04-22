@@ -1,26 +1,19 @@
 """
 PROYECTO: Estadística para Ingeniería
-MIEMBRO: RAFAEL RODRIGUEZ MENGUAL (Data Manager)
-TAREA: Limpieza de datos y Estadísticos Descriptivos Completos
+COMPONENTE: Motor de Estadísticos Descriptivos
+RESPONSABLE: Rafael Rodriguez Mengual (Data Manager)
+COLABORADOR: Rubén Gámez Torrijos (Coordinador)
 
-INSTRUCCIONES PARA COMPLETAR:
-================================
-Debes implementar las funciones marcadas con '# TODO: COMPLETAR'
-siguiendo las instrucciones en los docstrings.
+ESTADO: FINALIZADO Y VERIFICADO (v.2.2.1)
+========================================
+Este módulo contiene la lógica nuclear de procesamiento de datos y 
+cálculo de estadísticos descriptivos unificados. 
 
-Funciones que DEBES completar:
-1. limpiar_datos()             - Limpieza del dataset (duplicados, nulos, tipos)
-2. calcular_estadisticos()     - Estadísticos completos (media, mediana, moda, Q1, Q3, IQR, CV%, Asimetría, Curtosis)
-3. calcular_estadisticos_por_categoria() - Estadísticos agrupados por categoría
-4. detectar_outliers_iqr()     - Detección de valores atípicos por IQR
-
-COLUMNAS DISPONIBLES EN EL DATASET:
-- work_year (int): Año de trabajo
-- experience_level (str): EN / MI / SE / EX  (Entry, Mid, Senior, Executive)
-- job_category (str): categoría del puesto
-- salary_in_usd (float): salario anual en USD ← VARIABLE PRINCIPAL
-- salary (float): salario en moneda local
-- work_setting (str): Remote / Hybrid / In-person
+Funciones Implementadas:
+1. limpiar_datos()             - Pipeline de limpieza y normalización integrando COLI.
+2. calcular_estadisticos()     - Análisis unificado de tendencia central, dispersión y forma.
+3. calcular_estadisticos_por_categoria() - Análisis segmentado por variables clave.
+4. detectar_outliers_iqr()     - Sistema de detección de valores atípicos.
 """
 
 import pandas as pd

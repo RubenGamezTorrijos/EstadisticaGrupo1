@@ -1,41 +1,39 @@
-import streamlit as st
-from analisis.graficos import crear_scatter_regresion
+"""
+PROYECTO: Estadística para Ingeniería
+ANÁLISIS DE REGRESIÓN LINEAL
+COORDINADOR: RUBEN GAMEZ TORRIJOS
+ROL ASIGNADO (Lógica de Modelado): Leslie Ross Aranibar Pozo
+"""
 
-def render_regresion(df):
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+# =================================================================
+# SECCIÓN: MODELADO MATEMÁTICO (RESPONSABLE: LESLIE ROSS)
+# =================================================================
+
+def ejecutar_regresion_simple(df, x_col, y_col):
     """
-    Renders the Regression and Correlation analysis section.
-    Attributed to: Leslie Ross Aranibar Pozo (Analista Descriptivo)
+    MODULO: Análisis de Regresión
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    
+    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
+    # ==========================================
+    # 1. modelo = LinearRegression()
+    # 2. X = df[[x_col]].values
+    # 3. y = df[y_col].values
+    # 4. modelo.fit(X, y)
+    # 5. r2 = r2_score(y, modelo.predict(X))
+    # 6. retornar resumen, modelo
     """
-    st.title("📈 4. Análisis de Regresión y Correlación")
-    st.markdown("""
-    En esta sección analizamos la relación entre el **Salario** y el **Índice de Coste de Vida (COLI)**.
-    Buscamos responder: *¿Suben los salarios en países con mayor coste de vida?*
-    """)
+    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    resumen = {
+        'Coeficiente R2': "PENDIENTE",
+        'Pendiente': "0.0",
+        'Intercepto': "0.0",
+        'Conclusion': "Leslie debe implementar el ajuste del modelo."
+    }
     
-    # Determinar columna de salario según moneda
-    col_salario = "salary_in_usd" if "USD" in st.session_state.get('moneda', 'USD') else "salary_in_eur"
-    
-    st.subheader("Modelo de Regresión Lineal Simple")
-    
-    fig, stats = crear_scatter_regresion(df, "cost_of_living_index", col_salario, "Regresión: Salario vs COLI")
-    
-    st.pyplot(fig)
-    
-    st.markdown("---")
-    st.subheader("Métricas del Modelo")
-    
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Coef. Correlación (r)", f"{stats['correlacion']:.4f}")
-    c2.metric("Coef. Determinación (R²)", f"{stats['r_cuadrado']:.4f}")
-    c3.metric("Pendiente", f"{stats['pendiente']:.2f}")
-    
-    # Interpretación
-    st.info(f"**Interpretación:** La ecuación de la recta es:  \n"
-            f"**Salario = {stats['pendiente']:.2f} * COLI + {stats['intercepto']:.2f}**")
-    
-    if abs(stats['correlacion']) > 0.7:
-        st.success("✅ Existe una correlación FUERTE entre las variables.")
-    elif abs(stats['correlacion']) > 0.4:
-        st.warning("⚠️ Existe una correlación MODERADA.")
-    else:
-        st.error("❌ No existe una correlación clara entre el salario y el coste de vida en esta muestra.")
+    return resumen, None

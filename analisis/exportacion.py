@@ -1,3 +1,14 @@
+"""
+PROYECTO: Estadística para Ingeniería
+COMPONENTE: Motor de Exportación Profesional (PDF/Excel)
+RESPONSABLE: Rubén Gámez Torrijos (Coordinador)
+
+ESTADO: FINALIZADO Y VERIFICADO (v.2.2.1)
+========================================
+Este módulo gestiona la generación de reportes multiplataforma.
+Integración con FPDF para informes técnicos y OpenPyXL para hojas de cálculo.
+"""
+
 import pandas as pd
 import io
 import os
@@ -134,4 +145,5 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label,
         except:
             pass
 
+    # Asegurar que devolvemos bytes pura (evita RuntimeError en Streamlit)
     return bytes(pdf.output())
