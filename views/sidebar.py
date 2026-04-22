@@ -142,7 +142,13 @@ def handle_exports(df_filtered, currency_label, current_sym, divisa_key):
         "Leslie Ross Aranibar Pozo": "Analista Descriptivo"
     }
     
-    pdf_bytes = generar_pdf_profesional(df_filtered, df_stats, equipo_roles, graficos_dict, currency_label, "Filtros activos en esta muestra.")
+    filtros_data = {
+        'target_col': divisa_key,
+        'simbolo': current_sym,
+        'label': currency_label
+    }
+    
+    pdf_bytes = generar_pdf_profesional(df_filtered, df_stats, equipo_roles, graficos_dict, currency_label, filtros_data)
     
     st.sidebar.download_button(
         label="📄 Descargar Informe PDF",

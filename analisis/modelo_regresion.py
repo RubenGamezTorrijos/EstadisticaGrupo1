@@ -33,7 +33,7 @@ def ejecutar_regresion_simple(df, x_col, y_col):
         'Coeficiente R2': "PENDIENTE",
         'Pendiente': "0.0",
         'Intercepto': "0.0",
-        'Conclusion': "Leslie debe implementar el ajuste del modelo."
+        'Conclusion': "Leslie debe implementar el ajuste del modelo en la rama dev."
     }
     
     return resumen, None

@@ -1,126 +1,76 @@
 """
 PROYECTO: Estadística para Ingeniería
-INFRAESTRUCTURA Y VISUALIZACIÓN
-AUTORES: RUBEN GAMEZ TORRIJOS (Coordinador) / RAFAEL RODRIGUEZ
-ROL ASIGNADO (Lógica Gráfica): Leslie Ross Aranibar Pozo
+ANÁLISIS GRÁFICO Y VISUALIZACIÓN
+COORDINADOR: RUBEN GAMEZ TORRIJOS
+ROL ASIGNADO (Lógica Visual): Leslie Ross Aranibar Pozo
 """
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-import os
 
 # =================================================================
-# SECCIÓN: VISUALIZACIONES DESCRIPTIVAS (RESPONSABLE: LESLIE ROSS)
+# SECCIÓN: VISUALIZACIÓN DE DATOS (RESPONSABLE: LESLIE ROSS)
 # =================================================================
 
 def crear_histograma(df, x_col, titulo="Distribución Salarial"):
     """
-    MODULO: Visualizaciones Descriptivas
+    MODULO: Histogramas
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
     
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.histplot(df[x_col], ax=ax, kde=True, color='#0b84f4')
-    # ax.set_title(f"{titulo}")
-    # return fig
+    # 💡 PISTA (REFERENCIA MAIN):
+    # sns.histplot(df[x_col], kde=True, color='#2c3e50')
     """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    # PENDIENTE POR LESLIE
     return None
 
 def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
     """
-    MODULO: Visualizaciones Descriptivas
+    MODULO: Boxplots
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="RdBu_r")
-    # plt.xticks(rotation=45)
-    # return fig
     """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    # PENDIENTE POR LESLIE
     return None
 
 def crear_violin_plot(df, x_col, y_col, titulo="Densidad Salarial"):
     """
-    MODULO: Visualizaciones Descriptivas
+    MODULO: Violin Plots
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.violinplot(data=df, x=x_col, y=y_col, ax=ax, color='#1e3a8a')
-    # return fig
     """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    # PENDIENTE POR LESLIE
     return None
 
 def crear_bar_chart(df, col, titulo="Presencia en Mercado"):
     """
-    MODULO: Visualizaciones Descriptivas
+    MODULO: Bar Charts
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # counts = df[col].value_counts().head(10)
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # counts.plot(kind='bar', ax=ax, color='#0b84f4')
-    # return fig
     """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    # PENDIENTE POR LESLIE
     return None
 
 def crear_grafico_comparativo_ic(df, x_col, y_col, titulo="Evidencia Inferencial"):
     """
-    MODULO: Evidencia Inferencial
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo (En colaboración con Bryann)
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.barplot(data=df, x=x_col, y=y_col, ax=ax, errorbar=('ci', 95), palette="Blues")
-    # return fig
+    MODULO: Gráficos de Error (IC)
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
     """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
+    # PENDIENTE POR LESLIE
     return None
 
 def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"):
     """
-    MODULO: Regresión Lineal
+    MODULO: Dispersión con Regresión
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.regplot(data=df, x=x_col, y=y_col, ax=ax, line_kws={'color':'red'})
-    # return fig, stats
     """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
-    return None, None
-
-# =================================================================
-# SECCIÓN: INFRAESTRUCTURA DE APOYO (RESPONSABLES: RUBEN / RAFAEL)
-# =================================================================
-
-VAR_LABELS = {
-    'salary_in_usd': 'Salario (USD)',
-    'salary_in_eur': 'Salario (EUR)',
-    'experience_level': 'Nivel de Experiencia',
-    'job_category': 'Categoría de Empleo',
-    'company_location': 'Ubicación de la Empresa',
-    'cost_of_living_index': 'Índice del Coste de Vida (COLI)'
-}
+    # PENDIENTE POR LESLIE
+    return None, {'r_cuadrado': 0.0, 'pendiente': 0.0, 'intercepto': 0.0, 'p_valor': 0.0}
 
 def obtener_label(col):
-    return VAR_LABELS.get(col, col.replace('_', ' ').title())
+    """Devuelve una etiqueta legible para el gráfico."""
+    from analisis.estadisticos import VAR_LABELS
+    return VAR_LABELS.get(col, col)
 
-def guardar_grafico(fig, nombre, ruta='outputs/graficos/'):
-    if fig is None: return None
-    os.makedirs(ruta, exist_ok=True)
-    ruta_completa = os.path.join(ruta, nombre)
-    fig.savefig(ruta_completa, bbox_inches='tight', dpi=150)
-    plt.close(fig)
-    return ruta_completa
+def sanitize_pdf_text(text):
+    """Limpia caracteres especiales para compatibilidad con FPDF."""
+    replacements = {'á':'a','é':'e','í':'i','ó':'o','ú':'u','ñ':'n','Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U','Ñ':'N'}
+    for k, v in replacements.items(): text = text.replace(k, v)
+    return text

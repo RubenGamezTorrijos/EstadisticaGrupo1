@@ -116,34 +116,78 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label,
         pdf.cell(col_widths[3], 8, f"{row['Desviación Típica']:,.2f}", 1, 0, 'R')
         pdf.cell(col_widths[4], 8, f"{row['CV%']:,.2f}%", 1, 1, 'R')
 
-    # --- SECCIÓN DE GRÁFICOS (TODOS) ---
+    # --- SECCIÓN INFERENCIAL ---
     pdf.add_page()
     pdf.set_text_color(30, 58, 138)
     pdf.set_font('Helvetica', 'B', 18)
-    pdf.cell(0, 15, sanitize_pdf_text('4. Visualizaciones y Gráficos del Proyecto'), 0, 1, 'L')
+    pdf.cell(0, 15, sanitize_pdf_text('4. Análisis Inferencial (Probabilidad)'), 0, 1, 'L')
+    
+    pdf.set_font('Helvetica', 'B', 12)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(0, 10, sanitize_pdf_text(f'Estimación de la Media ({currency_label}):'), 0, 1, 'L')
+    
+    from analisis.inferencial import calcular_ic_95, contraste_hipotesis
+    ic = calcular_ic_95(df[filtros_seleccionados['target_col']])
+    pdf.set_font('Helvetica', '', 11)
+    pdf.cell(10)
+    pdf.cell(0, 7, sanitize_pdf_text(f'* Intervalo de Confianza (95%): [{ic["Inferior"]:,.2f} - {ic["Superior"]:,.2f}]'), 0, 1, 'L')
+    pdf.cell(10)
+    pdf.cell(0, 7, sanitize_pdf_text(f'* Error Estándar: {ic["Error Estándar"]:,.2f}'), 0, 1, 'L')
+    
+    pdf.ln(5)
+    pdf.set_font('Helvetica', 'B', 12)
+    pdf.cell(0, 10, sanitize_pdf_text('Contraste de Hipótesis (Senior vs Junior):'), 0, 1, 'L')
+    
+    g_senior = df[df['experience_level'] == 'Senior'][filtros_seleccionados['target_col']]
+    g_junior = df[df['experience_level'] == 'Entry-level'][filtros_seleccionados['target_col']]
+    if not g_senior.empty and not g_junior.empty:
+        test_res = contraste_hipotesis(g_senior, g_junior)
+        pdf.set_font('Helvetica', '', 11)
+        pdf.cell(10)
+        pdf.cell(0, 7, sanitize_pdf_text(f'* P-Valor: {test_res["p_valor"]:.6f}'), 0, 1, 'L')
+        pdf.cell(10)
+        pdf.cell(0, 7, sanitize_pdf_text(f'* Resultado: {test_res["Conclusion"]}'), 0, 1, 'L')
+    
+    # --- SECCIÓN REGRESIÓN ---
+    pdf.ln(10)
+    pdf.set_text_color(30, 58, 138)
+    pdf.set_font('Helvetica', 'B', 18)
+    pdf.cell(0, 15, sanitize_pdf_text('5. Análisis de Regresión Lineal (COLI)'), 0, 1, 'L')
+    
+    from scipy import stats as scipy_stats
+    slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(df['cost_of_living_index'], df[filtros_seleccionados['target_col']])
+    
+    pdf.set_font('Helvetica', '', 11)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(10)
+    pdf.cell(0, 7, sanitize_pdf_text(f'* Coeficiente de Determinación (R2): {r_value**2:.4f}'), 0, 1, 'L')
+    pdf.cell(10)
+    pdf.cell(0, 7, sanitize_pdf_text(f'* Pendiente (Impacto COLI): {slope:.2f}'), 0, 1, 'L')
+    pdf.cell(10)
+    pdf.cell(0, 7, sanitize_pdf_text(f'* Intercepto: {intercept:,.2f}'), 0, 1, 'L')
+
+    # --- SECCIÓN DE GRÁFICOS ---
+    pdf.add_page()
+    pdf.set_text_color(30, 58, 138)
+    pdf.set_font('Helvetica', 'B', 18)
+    pdf.cell(0, 15, sanitize_pdf_text('6. Visualizaciones y Gráficos'), 0, 1, 'L')
     
     for i, (nombre_graf, fig) in enumerate(graficos_figs.items()):
-        # Si el gráfico no ha sido implementado (es None), lo saltamos
-        if fig is None:
-            continue
+        if fig is None: continue
             
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
             tmp_path = tmpfile.name
-            fig.savefig(tmp_path, format='png', dpi=120, bbox_inches='tight')
+            fig.savefig(tmp_path, format='png', dpi=100, bbox_inches='tight')
             
-        if pdf.get_y() > 180:
-            pdf.add_page()
+        if pdf.get_y() > 180: pdf.add_page()
         
         pdf.set_text_color(100, 100, 100)
         pdf.set_font('Helvetica', 'B', 11)
         pdf.cell(0, 10, sanitize_pdf_text(f'Gráfico {i+1}: {nombre_graf}'), 0, 1, 'C')
         pdf.image(tmp_path, x=15, w=180)
-        pdf.ln(10)
+        pdf.ln(5)
         
-        try:
-            os.unlink(tmp_path)
-        except:
-            pass
+        try: os.unlink(tmp_path)
+        except: pass
 
-    # Asegurar que devolvemos bytes pura (evita RuntimeError en Streamlit)
     return bytes(pdf.output())

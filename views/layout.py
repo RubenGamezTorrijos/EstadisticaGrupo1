@@ -102,45 +102,90 @@ def render_visualizaciones(df, key, sym):
         else: st.warning("Leslie: Implementar Bar Chart en `graficos.py`")
 
 def render_regresion(df, key, sym):
-    st.title("📈 Regresión Lineal - Leslie Ross")
-    st.write("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
+    st.title("📈 Regresión Lineal y Correlación")
+    st.write("**Análisis de Dependencia:** Evaluación de cómo influye el Coste de Vida (COLI) en el Salario percibido.")
     
-    fig_reg, stats_reg = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs COLI")
-    resumen_modelo, modelo_obj = ejecutar_regresion_simple(df, 'cost_of_living_index', key)
-
-    if fig_reg is None or modelo_obj is None:
-        st.warning("Leslie: Implementar lógica de regresión en `modelo_regresion.py` y `graficos.py`.")
-        return
-
-    st.pyplot(fig_reg)
+    fig_reg, stats_reg = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs Índice COLI")
     
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Coeficiente R2", resumen_modelo['Coeficiente R2'])
-    c2.metric("Pendiente", resumen_modelo['Pendiente'])
-    c3.metric("Intercepto", resumen_modelo['Intercepto'])
-    
-    st.info(f"**Conclusión Técnica:** {resumen_modelo['Conclusion']}")
+    if fig_reg is not None:
+        st.pyplot(fig_reg)
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Coeficiente R²", f"{stats_reg['r_cuadrado']:.4f}")
+        c2.metric("Pendiente (Beta)", f"{stats_reg['pendiente']:.2f}")
+        c3.metric("Intercepto", f"{stats_reg['intercepto']:,.0f}")
+        c4.metric("P-Valor", f"{stats_reg['p_valor']:.4f}")
+        
+        # Interpretación técnica
+        st.markdown("### 📝 Interpretación de Resultados")
+        r2 = stats_reg['r_cuadrado']
+        if r2 > 0.7:
+            interp = "Existe una **correlación fuerte**. El coste de vida explica gran parte de la variabilidad salarial."
+        elif r2 > 0.3:
+            interp = "Existe una **correlación moderada**. Otros factores influyen significativamente en el salario."
+        else:
+            interp = "La **correlación es débil**. El coste de vida no es el factor determinante principal en esta muestra."
+            
+        st.info(f"**Análisis Crítico:** {interp}")
 
 def render_inferencial(df, key, sym):
-    st.title("🧪 Estadística Inferencial - Bryann Vallejo")
-    st.write("Análisis de probabilidad para validar hipótesis poblacionales.")
+    st.title("🧪 Estadística Inferencial")
+    st.write("Validación de hipótesis poblacionales con un nivel de confianza del 95%.")
     
+    # 1. Intervalos de Confianza
+    st.subheader(f"1. Intervalos de Confianza (Media de Salario {sym})")
     ic_results = calcular_ic_95(df[key])
     
-    if ic_results.get('Estado') == 'PENDIENTE':
-        st.info("Bryann: Implementar lógica de intervalos de confianza en `inferencial.py`.")
-        return
-
-    # Mostrar resultados si Bryann ha implementado
-    st.markdown(f"### 1. Estimación Salarial (Confianza 95%) - {sym}")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
-    c2.metric("Límite Inferior", f"{ic_results['Inferior']:,.2f} {sym}")
-    c3.metric("Límite Superior", f"{ic_results['Superior']:,.2f} {sym}")
-
+    if ic_results['Estado'] == 'COMPLETO':
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
+        c2.metric("Límite Inferior (LCL)", f"{ic_results['Inferior']:,.2f} {sym}")
+        c3.metric("Límite Superior (UCL)", f"{ic_results['Superior']:,.2f} {sym}")
+        
+        st.caption(f"Error estándar de la media: {ic_results['Error Estándar']:,.2f}")
+    
     st.markdown("---")
-    st.markdown("### 2. Contrastes de Hipótesis")
-    st.info("Utilice el sidebar para filtrar y los resultados se actualizarán automáticamente.")
+    
+    # 2. Contrastes de Hipótesis
+    st.subheader("2. Contrastes de Hipótesis (T-Test)")
+    st.write("Comparativa de salarios entre grupos significativos.")
+    
+    # Grupos para el contraste (Senior vs Junior)
+    g_senior = df[df['experience_level'] == 'Senior'][key]
+    g_junior = df[df['experience_level'] == 'Entry-level'][key]
+    
+    if not g_senior.empty and not g_junior.empty:
+        test_res = contraste_hipotesis(g_senior, g_junior)
+        
+        col_a, col_b = st.columns([1, 2])
+        with col_a:
+            st.write("**H₀:** No hay diferencia de salarios entre Senior y Junior.")
+            st.write("**H₁:** Existe una diferencia significativa.")
+            st.metric("P-Valor", f"{test_res['p_valor']:.6f}")
+        
+        with col_b:
+            if test_res['rechaza_h0']:
+                st.success(f"✅ **Resultado:** {test_res['Conclusion']}. Se rechaza la hipótesis nula.")
+            else:
+                st.warning(f"⚠️ **Resultado:** {test_res['Conclusion']}. No hay evidencia para rechazar la hipótesis nula.")
+            
+            st.write(f"Estadístico T: `{test_res['t_statistic']:.4f}`")
+    else:
+        st.warning("No hay suficientes datos para realizar el contraste entre niveles de experiencia.")
+        
+    st.markdown("---")
+    st.subheader("3. Impacto del Coste de Vida (COLI)")
+    st.write("¿Influye el coste de vida del país en la media salarial?")
+    
+    median_coli = df['cost_of_living_index'].median()
+    g_high_coli = df[df['cost_of_living_index'] >= median_coli][key]
+    g_low_coli = df[df['cost_of_living_index'] < median_coli][key]
+    
+    if not g_high_coli.empty and not g_low_coli.empty:
+        test_coli = contraste_hipotesis(g_high_coli, g_low_coli)
+        st.write(f"Comparando países con COLI alto (>= {median_coli:.1f}) vs COLI bajo.")
+        st.metric("P-Valor (Impacto COLI)", f"{test_coli['p_valor']:.6f}")
+        st.info(f"**Conclusión:** {test_coli['Conclusion']}")
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
