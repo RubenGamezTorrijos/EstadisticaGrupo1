@@ -1,0 +1,28 @@
+"""
+config/settings.py
+==================
+Configuraciones globales del proyecto, rutas y constantes.
+"""
+
+import os
+
+# --- Rutas ---
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATOS_DIR = os.path.join(BASE_DIR, "datos")
+OUTPUTS_DIR = os.path.join(BASE_DIR, "outputs")
+
+# Archivos
+JOBS_CSV = os.path.join(DATOS_DIR, "jobs_in_data.csv")
+COLI_CSV = os.path.join(DATOS_DIR, "cost_of_living_index.csv")
+ENRIQUECIDO_CSV = os.path.join(DATOS_DIR, "dataset_enriquecido.csv")
+
+# --- Columnas ---
+COL_SALARIO_USD = "salary_in_usd"
+COL_COLI = "cost_of_living_index"
+COL_PAIS = "company_location"
+COL_SALARIO_AJUSTADO = "salary_adjusted_coli"
+
+# --- Estética ---
+APP_TITLE = "Análisis de Salarios y Coste de Vida (2020-2023)"
+PRIMARY_COLOR = "#007BFF"
+SECONDARY_COLOR = "#6C757D"
