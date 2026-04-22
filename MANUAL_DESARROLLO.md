@@ -23,20 +23,26 @@
 ```
 proyecto_estadistica/
 │
-├── app.py                    ← Aplicación principal (Rubén — NO TOCAR)
-├── requirements.txt          ← Dependencias Python
-├── README.md                 ← Documentación pública
-├── MANUAL_DESARROLLO.md      ← Este archivo
+├── app.py                    ← RUBÉN: Aplicación principal
+├── setup_data.py             ← RUBÉN: Script para inicializar y generar el dataset dummy temporal
+├── requirements.txt          ← RUBÉN: Dependencias Python
+├── README.md                 ← RUBÉN: Documentación pública
+├── MANUAL_DESARROLLO.md      ← RUBÉN: Este archivo
 │
 ├── analisis/                 ← Módulos de análisis (cada uno tiene su dueño)
 │   ├── estadisticos.py       ← RAFAEL: Limpieza y estadísticos descriptivos
 │   ├── graficos.py           ← LESLIE: Visualizaciones (histogramas, boxplots, etc.)
 │   ├── inferencial.py        ← BRYANN: Intervalos de confianza y contrastes
 │   ├── modelo_regresion.py   ← LESLIE + RAFAEL: Regresión lineal y scatter
-│   └── exportacion.py        ← Rubén: Generador de PDF (NO TOCAR)
+│   └── exportacion.py        ← RUBÉN: Generador de PDF
 │
 ├── datos/
-│   └── ds_salaries.csv       ← Dataset original (NO MODIFICAR)
+│   ├── jobs_in_data.csv       ← Dataset original (NO MODIFICAR)
+│   ├── cost_of_living_index.csv ← NUEVO: Datos reales Numbeo 2023
+│   └── dataset_enriquecido.csv  ← Dataset FINAL generado por script
+│
+├── scripts/
+│   └── preprocesar_coli.py    ← RUBÉN: Script de integración COLI (Merge)
 │
 ├── informes/
 │   ├── enunciado_practica.md ← Requisitos oficiales del profesor
@@ -51,7 +57,9 @@ proyecto_estadistica/
 ### ¿Cómo fluyen los datos?
 
 ```
-ds_salaries.csv
+jobs_in_data.csv + cost_of_living_index.csv
+      ↓
+  preprocesar_coli.py     [Rubén — scripts/] -> dataset_enriquecido.csv
       ↓
   limpiar_datos()         [Rafael — estadisticos.py]
       ↓
@@ -77,7 +85,7 @@ Esta tabla confirma que el proyecto cumple **todos los requisitos mínimos** del
 | Requisito | Estado | Detalle |
 | :--- | :---: | :--- |
 | Muestra mínima 100 datos | ✅ | +3.500 registros en `ds_salaries.csv` |
-| ≥ 2 variables numéricas continuas | ✅ | `salary_in_usd` y `cost_of_living_index` |
+| ≥ 2 variables numéricas continuas | ✅ | `salary_in_usd`/`salary_in_eur` y `cost_of_living_index` |
 | 1 variable discreta | ✅ | `work_year` (2020–2023) |
 | 1 variable categórica | ✅ | `experience_level`, `job_category`, `work_setting` |
 | No es serie temporal | ✅ | Datos de corte transversal por año |
@@ -91,7 +99,7 @@ Esta tabla confirma que el proyecto cumple **todos los requisitos mínimos** del
 | Diagramas de barra | ✅ | `graficos.py` | `crear_bar_chart()` |
 | Caja y bigotes (boxplot) | ✅ | `graficos.py` | `crear_boxplot()` |
 | Análisis de regresión + scatter + coef. correlación | ✅ | `graficos.py` | `crear_scatter_regresion()` |
-| Boxplot por variable categórica | ✅ | `graficos.py` | `crear_boxplot(df, 'salary_in_usd', 'experience_level')` |
+| Boxplot por variable categórica | ✅ | `graficos.py` | `crear_boxplot(df, 'salary_in_usd' / 'salary_in_eur', 'experience_level')` |
 | Discusión crítica de resultados | ⚠️ | `informes/informe_descriptivo.md` | Redactar en equipo |
 
 ### ✅ Análisis Inferencial (Sección 3 del Enunciado)
@@ -104,14 +112,17 @@ Esta tabla confirma que el proyecto cumple **todos los requisitos mínimos** del
 | Contraste de hipótesis var. 2 (entre grupos) | ✅ | `inferencial.py` | `contraste_hipotesis()` |
 | Justificación y explicación de resultados | ⚠️ | `informes/informe_inferencial.md` | Redactar Bryann |
 
-### ✅ Mejora Propia — Variable `cost_of_living_index`
+### ✅ Mejora Propia — Variable `cost_of_living_index` (PROFESIONAL)
 
 > **Pregunta de investigación**: *¿Suben los salarios en países con mayor coste de vida?*
 
-- **Fuente**: Índice propio basado en NUMBEO/Eurostat (EE.UU. = 100 como referencia).
-- **Cómo se crea**: En `limpiar_datos()` se une `company_location` con el diccionario `COST_OF_LIVING_INDEX`.
+- **Fuente**: Datos reales extraídos de **NUMBEO 2023 Mid-Year** (`cost_of_living_index.csv`)
+- **Proceso de Integración**: Se utiliza el script `scripts/preprocesar_coli.py` para realizar un merge entre el dataset de salarios y el índice de coste de vida por país (`company_location`).
+- **Nuevas Variables**: 
+    - `cost_of_living_index`: Índice real del país.
+    - `salary_adjusted_coli`: Salario real ajustado por poder adquisitivo.
 - **Análisis**: Scatter plot `cost_of_living_index` vs `salary_in_usd` + regresión lineal.
-- **Valores de referencia**:
+- **Cobertura**: 100% de los países integrados (70 países).
 
 | País | Índice COLI |
 |:---|:---:|
@@ -135,11 +146,17 @@ Esta tabla confirma que el proyecto cumple **todos los requisitos mínimos** del
 
 **Archivo**: `analisis/estadisticos.py`
 
-#### Tarea R-01: `limpiar_datos(df)` ✅ IMPLEMENTADA
+#### Tarea R-01: `limpiar_datos(df)` ✅ ACTUALIZADA
 
-Elimina duplicados, nulos y estandariza tipos. Añade automáticamente `salary_in_eur` y `cost_of_living_index`.
+Elimina duplicados, nulos y estandariza tipos. Carga el `dataset_enriquecido.csv` generado por el script de preprocesamiento.
 
 ```python
+# Rafael ahora consume el dataset ya enriquecido con COLI real
+def cargar_datos_maestros():
+    # Carga el dataset que ya contiene el COLI real y el salario ajustado
+    df = pd.read_csv('datos/dataset_enriquecido.csv')
+    return limpiar_datos(df)
+
 # Cómo funciona internamente:
 df_limpio = df.copy()                             # No modificar el original
 df_limpio = df_limpio.drop_duplicates()           # Paso 1: Eliminar filas iguales
