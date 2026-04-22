@@ -1,31 +1,47 @@
-# 🚀 Guía de Colaboración - Rama Dev
+# 🤝 GUÍA DE COLABORACIÓN - PROYECTO ESTADÍSTICA
 
-¡Hola equipo! Esta rama `dev` ha sido configurada como un entorno **Template Modular** siguiendo una arquitectura desacoplada (MVC). 
+¡Hola equipo! Hemos actualizado la arquitectura del proyecto a un modelo **MVC (Modelo-Vista-Controlador)** para que podamos trabajar de forma más organizada y evitar conflictos en Git.
 
-## 🗺️ Organización de Archivos por Rol
-
-Cada miembro tiene asignados archivos específicos. No es necesario modificar `app.py` para que vuestros cambios se vean reflejados.
-
-| Miembro | Rol | Archivo(s) a Completar |
-| :--- | :--- | :--- |
-| **Leslie Ross** | Visualización y Regresión | `analisis/graficos.py`, `analisis/modelo_regresion.py` |
-| **Bryann Vallejo** | Inferencia | `analisis/inferencial.py` |
-| **Rafael Rodriguez**| Data Manager | `analisis/utils.py`, `analisis/estadisticos.py` |
-| **Rubén Gámez** | Coordinador | `app.py`, `analisis/exportacion.py` |
-
-## 🛠️ Cómo Trabajar
-
-1.  Abre el archivo asignado a tu rol.
-2.  Busca los bloques marcados con `TODO:`.
-3.  Implementa tu lógica estadística o gráfica dentro de las funciones.
-4.  **No cambies el nombre de las funciones**, ya que `app.py` las utiliza tal cual están definidas.
-5.  Recarga la aplicación Streamlit para ver tus cambios en tiempo real.
-
-## ✅ Requisitos para el Informe Final (Rúbrica)
-
-- **Descriptiva**: Media, mediana, moda, rango, desviación típica, varianza. Histogramas, barras, cajas y bigotes.
-- **Regresión**: Gráfico de dispersión, coeficiente de correlación y discusión técnica.
-- **Inferencial**: Intervalo de Confianza (95%) y Contraste de Hipótesis para 2 variables (explicar p-valor).
+## 📁 Estructura de Archivos
+- `app.py`: Punto de entrada. **No es necesario editarlo**.
+- `analisis/`: Aquí es donde ocurre la magia matemática.
+- `views/`: Aquí es donde se define cómo se ve la App.
+- `models/`: Aquí se gestionan los datos.
 
 ---
-*Este entorno garantiza que vuestro trabajo sea independiente y no genere conflictos de código.*
+
+## 👩‍💻 Instrucciones para LESLIE (Visualización)
+Tu trabajo se centra en dos archivos:
+1.  **Lógica Gráfica**: `analisis/graficos.py`
+    - Implementa las funciones: `crear_histograma`, `crear_boxplot`, `crear_violin_plot`, etc.
+2.  **Vista de Gráficos**: `views/layout.py` (pestaña 3)
+    - Llama a tus funciones de `graficos.py` para mostrarlas en la app.
+
+---
+
+## 👨‍💻 Instrucciones para BRYANN (Inferencia)
+Tu trabajo se centra en:
+1.  **Lógica Inferencial**: `analisis/inferencial.py`
+    - Implementa: `calcular_ic_95`, `contraste_hipotesis`, `verificar_supuestos`.
+2.  **Vista de Inferencia**: `views/layout.py` (pestaña 4)
+    - Muestra los resultados de tus tests y los p-valores.
+
+---
+
+## 👨‍💻 Instrucciones para RAFAEL (Data Manager)
+Tu territorio es:
+1.  **Lógica de Datos**: `models/data_loader.py`
+    - Gestión de CSVs, limpieza y merge con la API del Banco Mundial.
+2.  **Estadísticos**: `analisis/estadisticos.py`
+    - Cálculo de media, mediana, desviación, etc.
+
+---
+
+## 🚀 Cómo ejecutar la App
+Desde la terminal, usa:
+```powershell
+python -m streamlit run app.py
+```
+
+---
+*Cualquier duda sobre la arquitectura, preguntad a **Rubén (Arquitecto)**.*
