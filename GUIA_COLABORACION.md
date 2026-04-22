@@ -43,5 +43,10 @@ Desde la terminal, usa:
 python -m streamlit run app.py
 ```
 
+## 🌿 Gestión de Ramas (Local)
+- **`main` (Producción/Referencia)**: Contiene la versión estable y completa. Si te quedas atascado, puedes consultar este código como referencia del objetivo final.
+- **`dev` (Desarrollo)**: Es vuestro espacio de trabajo. Aquí los módulos de Leslie y Bryann están vacíos para que los completéis.
+- **IMPORTANTE**: No subir cambios a GitHub sin permiso de Rubén.
+
 ---
 *Cualquier duda sobre la arquitectura, preguntad a **Rubén (Arquitecto)**.*
