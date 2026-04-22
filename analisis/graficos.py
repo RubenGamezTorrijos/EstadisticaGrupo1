@@ -15,92 +15,56 @@ import os
 # =================================================================
 
 def crear_histograma(df, x_col, titulo="Distribución Salarial"):
-    """
-    MODULO: Visualizaciones Descriptivas
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.histplot(df[x_col], ax=ax, kde=True, color='#0b84f4')
-    # ax.set_title(f"{titulo}")
-    # return fig
-    """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
-    return None
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.histplot(df[x_col], ax=ax, kde=True, color='#0b84f4')
+    ax.set_title(titulo)
+    ax.set_xlabel(obtener_label(x_col))
+    ax.set_ylabel("Frecuencia")
+    return fig
 
 def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
-    """
-    MODULO: Visualizaciones Descriptivas
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="RdBu_r")
-    # plt.xticks(rotation=45)
-    # return fig
-    """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
-    return None
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="RdBu_r")
+    ax.set_title(titulo)
+    ax.set_ylabel(obtener_label(y_col))
+    ax.set_xlabel(obtener_label(x_col))
+    plt.xticks(rotation=45)
+    return fig
 
 def crear_violin_plot(df, x_col, y_col, titulo="Densidad Salarial"):
-    """
-    MODULO: Visualizaciones Descriptivas
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.violinplot(data=df, x=x_col, y=y_col, ax=ax, color='#1e3a8a')
-    # return fig
-    """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
-    return None
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.violinplot(data=df, x=x_col, y=y_col, ax=ax, color='#1e3a8a')
+    ax.set_title(titulo)
+    ax.set_xlabel(obtener_label(x_col))
+    ax.set_ylabel(obtener_label(y_col))
+    return fig
 
 def crear_bar_chart(df, col, titulo="Presencia en Mercado"):
-    """
-    MODULO: Visualizaciones Descriptivas
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # counts = df[col].value_counts().head(10)
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # counts.plot(kind='bar', ax=ax, color='#0b84f4')
-    # return fig
-    """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
-    return None
+    counts = df[col].value_counts().head(10)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    counts.plot(kind='bar', ax=ax, color='#0b84f4')
+    ax.set_title(titulo)
+    ax.set_xlabel(obtener_label(col))
+    ax.set_ylabel("Cantidad")
+    return fig
 
 def crear_grafico_comparativo_ic(df, x_col, y_col, titulo="Evidencia Inferencial"):
-    """
-    MODULO: Evidencia Inferencial
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo (En colaboración con Bryann)
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.barplot(data=df, x=x_col, y=y_col, ax=ax, errorbar=('ci', 95), palette="Blues")
-    # return fig
-    """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
-    return None
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(data=df, x=x_col, y=y_col, ax=ax, errorbar=('ci', 95), palette="Blues")
+    ax.set_title(titulo)
+    ax.set_xlabel(obtener_label(x_col))
+    ax.set_ylabel(obtener_label(y_col))
+    return fig
 
 def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"):
-    """
-    MODULO: Regresión Lineal
-    ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # fig, ax = plt.subplots(figsize=(10, 6))
-    # sns.regplot(data=df, x=x_col, y=y_col, ax=ax, line_kws={'color':'red'})
-    # stats = {'r_cuadrado': 0.85, ...} # Calcular en modelo_regresion
-    # return fig, stats
-    """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
-    return None, None
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.regplot(data=df, x=x_col, y=y_col, ax=ax, line_kws={'color':'red'})
+    ax.set_title(titulo)
+    ax.set_xlabel(obtener_label(x_col))
+    ax.set_ylabel(obtener_label(y_col))
+    # Estadísticos simplificados para el retorno
+    stats = {'r_cuadrado': 0.0} # Placeholder para cálculo real en modelo_regresion
+    return fig, stats
 
 # =================================================================
 # SECCIÓN: INFRAESTRUCTURA DE APOYO (RESPONSABLES: RUBEN / RAFAEL)
