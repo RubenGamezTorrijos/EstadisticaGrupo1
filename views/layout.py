@@ -143,6 +143,14 @@ def render_escritorio(df, key, sym):
 
 def render_estadisticos(df, key, sym):
     st.title("📊 Estadísticos Descriptivos - Rafael Rodriguez")
+    
+    # --- Estado de Avance ---
+    st.success("✅ **Estado:** Finalizado e Integrado por Rafael Rodriguez")
+    
+    if df.empty:
+        st.warning("⚠️ No hay datos disponibles para la muestra seleccionada. Ajusta los filtros en el sidebar.")
+        return
+
     st.write("Análisis detallado de tendencia central, dispersión y forma para ambas divisas.")
     
     from config.settings import COL_SALARIO_USD, COL_SALARIO_EUR
@@ -163,6 +171,13 @@ def render_estadisticos(df, key, sym):
 def render_visualizaciones(df, key, sym):
     st.title("📊 Visualizaciones Gráficas - Leslie Ross")
     
+    # --- Estado de Avance ---
+    st.warning("🛠️ **Estado:** Pendiente de Implementación por Leslie Ross")
+    
+    if df.empty:
+        st.warning("⚠️ No hay datos disponibles para la muestra seleccionada.")
+        return
+
     # Verificación de implementación de Leslie
     st.info("""
     ### 👩‍💻 Tareas de Leslie Ross (Visualización)
@@ -177,49 +192,74 @@ def render_visualizaciones(df, key, sym):
 
 def render_regresion(df, key, sym):
     st.title("📈 Regresión Lineal - Leslie Ross")
+    
+    # --- Estado de Avance ---
+    st.warning("🛠️ **Estado:** Pendiente de Implementación por Leslie Ross")
+    
+    if df.empty:
+        st.warning("⚠️ No hay datos disponibles para la muestra seleccionada.")
+        return
+
     st.markdown("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
     
     # Verificación de implementación de Leslie para Regresión
-    st.warning("""
+    st.info("""
     ### 📈 Tareas de Leslie Ross (Regresión)
     Para activar este análisis, Leslie debe completar:
     1. **`analisis/graficos.py`**: Implementar `crear_scatter_regresion` usando `sns.regplot`.
     2. **`analisis/modelo_regresion.py`**: Implementar `ejecutar_regresion_simple` usando `LinearRegression` de scikit-learn.
     """)
+    
+    st.caption("Nota: El análisis COLI permite responder si el coste de vida de un país justifica el salario percibido.")
 
 def render_inferencial(df, key, sym):
     st.title("🧪 Estadística Inferencial - Bryann Vallejo")
+    
+    # --- Estado de Avance ---
+    st.success("✅ **Estado:** Finalizado e Integrado por Bryann Vallejo")
+    
+    if df.empty:
+        st.warning("⚠️ No hay datos disponibles para la muestra seleccionada.")
+        return
+
     st.markdown("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios.")
     
     # --- 1. Intervalo de Confianza ---
     st.subheader(f"📍 Intervalo de Confianza (95%) - {sym}")
-    ic_data = calcular_ic_95(df[key])
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Media Muestral", f"{ic_data['Media']:,.2f} {sym}")
-    with col2:
-        st.metric("Límite Inferior", f"{ic_data['Inferior']:,.2f} {sym}")
-    with col3:
-        st.metric("Límite Superior", f"{ic_data['Superior']:,.2f} {sym}")
-    
-    st.caption(f"Interpretación: Con un 95% de confianza, la media poblacional se encuentra entre {ic_data['Inferior']:,.0f} y {ic_data['Superior']:,.0f} {sym}.")
+    try:
+        ic_data = calcular_ic_95(df[key])
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Media Muestral", f"{ic_data['Media']:,.2f} {sym}")
+        with col2:
+            st.metric("Límite Inferior", f"{ic_data['Inferior']:,.2f} {sym}")
+        with col3:
+            st.metric("Límite Superior", f"{ic_data['Superior']:,.2f} {sym}")
+        
+        st.caption(f"Interpretación: Con un 95% de confianza, la media poblacional se encuentra entre {ic_data['Inferior']:,.0f} y {ic_data['Superior']:,.0f} {sym}.")
+    except Exception as e:
+        st.error(f"Error en el cálculo del IC: {str(e)}")
 
     st.markdown("---")
     
     # --- 2. Verificación de Supuestos ---
     st.subheader("🛡️ Verificación de Supuestos")
-    supuestos = verificar_supuestos(df[key])
-    
-    col_s1, col_s2 = st.columns([1, 2])
-    with col_s1:
-        if supuestos['Normal']:
-            st.success(f"✅ Normalidad: {supuestos['Prueba']}")
-        else:
-            st.error(f"❌ Normalidad: {supuestos['Prueba']}")
-    with col_s2:
-        st.write(f"**P-Valor:** `{supuestos['P-Valor']:.4e}`")
-        st.write("Si el P-Valor es > 0.05, los datos siguen una distribución normal.")
+    try:
+        supuestos = verificar_supuestos(df[key])
+        
+        col_s1, col_s2 = st.columns([1, 2])
+        with col_s1:
+            if supuestos['Normal']:
+                st.success(f"✅ Normalidad: {supuestos['Prueba']}")
+            else:
+                st.warning(f"⚠️ Normalidad: No detectada ({supuestos['Prueba']})")
+                st.info("Nota: La falta de normalidad es común en datos salariales (sesgados). Se recomienda usar métodos robustos.")
+        with col_s2:
+            st.write(f"**P-Valor:** `{supuestos['P-Valor']:.4e}`")
+            st.write("Si el P-Valor es > 0.05, los datos siguen una distribución normal.")
+    except Exception as e:
+        st.error(f"Error en verificación de supuestos: {str(e)}")
 
     st.markdown("---")
     
@@ -232,51 +272,56 @@ def render_inferencial(df, key, sym):
         presencial = df[df['work_setting'] == 'In-person'][key]
         
         if len(remote) > 1 and len(presencial) > 1:
-            res_h = contraste_hipotesis(remote, presencial, "Remoto", "Presencial")
-            
-            st.info(f"**Resultado:** {res_h['Decisión']}")
-            st.write(f"**Conclusión:** {res_h['Conclusion']}")
-            
-            # Gráfico comparativo (opcional, si existe en analisis/graficos.py)
             try:
-                fig_ic = crear_grafico_comparativo_ic(df, key, 'work_setting', sym)
-                st.pyplot(fig_ic)
-            except Exception:
-                st.warning("⚠️ Gráfico comparativo pendiente por Leslie Ross.")
+                res_h = contraste_hipotesis(remote, presencial, "Remoto", "Presencial")
+                
+                st.info(f"**Resultado:** {res_h['Decisión']}")
+                st.write(f"**Conclusión:** {res_h['Conclusion']}")
+                
+                # Gráfico comparativo (opcional, si existe en analisis/graficos.py)
+                try:
+                    fig_ic = crear_grafico_comparativo_ic(df, key, 'work_setting', sym)
+                    st.pyplot(fig_ic)
+                except Exception:
+                    st.warning("⚠️ Gráfico comparativo pendiente por Leslie Ross.")
+            except Exception as e:
+                st.error(f"Error en el contraste: {str(e)}")
         else:
-            st.warning("No hay suficientes datos para realizar el contraste entre Remoto y Presencial.")
+            st.warning("No hay suficientes datos para realizar el contraste entre Remoto y Presencial (se requieren al menos 2 datos por grupo).")
     else:
         st.warning("La variable 'work_setting' no está disponible para el contraste.")
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
-    st.markdown("""
-    ### Estructura y Responsabilidades Técnicas:
+    st.info("Estructura organizativa y estado de cumplimiento de los objetivos técnicos.")
+
+    col1, col2 = st.columns(2)
     
-    *   **Rubén Gámez Torrijos (Coordinador y Arquitectura)**
-        *   **Descripción:** Liderazgo técnico, diseño estructural y orquestación del proyecto.
-        *   **Responsabilidades:** Diseño de la arquitectura modular de la aplicación, sistema de estilos CSS adaptativos para temas Light/Dark y desarrollo del motor de exportación profesional (PDF/Excel).
-        *   **Archivos clave:** `app.py` (Orquestación), `analisis/exportacion.py` (Generación de Reportes), `config/styles.py`.
-        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
-        
-    *   **Rafael Rodriguez Mengual (Data Manager)**
-        *   **Descripción:** Especialista en procesamiento, limpieza y análisis descriptivo de datos.
-        *   **Responsabilidades:** Implementación del pipeline de limpieza de datos, integración de variables externas (Índice de coste de vida) y desarrollo de la lógica para estadísticos de tendencia central y dispersión.
-        *   **Archivos clave:** `analisis/utils.py` (Limpieza), `analisis/estadisticos.py` (Motor estadístico).
-        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
-        
-    *   **Bryann Vallejo Luna (Analista Inferencial)**
-        *   **Descripción:** Experto en modelos probabilísticos y validación de hipótesis estadísticas.
-        *   **Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.
-        *   **Archivos clave:** `analisis/inferencial.py`, `app.py` (Sección Inferencia).
-        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
-        
-    *   **Leslie Ross Aranibar Pozo (Analista Descriptivo)**
-        *   **Descripción:** Especialista en visualización avanzada y modelado de correlación lineal.
-        *   **Responsabilidades:** Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.
-        *   **Archivos clave:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.
-        *   **Estado:** 🛠️ TAREAS PENDIENTES (Implementar Visualizaciones).
-    
-    ---
-    *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.2.1-dev).*
-    """)
+    with col1:
+        with st.expander("👑 Rubén Gámez Torrijos", expanded=True):
+            st.markdown("**Rol:** Coordinador y Arquitectura")
+            st.write("Liderazgo técnico, diseño estructural y orquestación del proyecto.")
+            st.success("✅ **Estado:** FINALIZADO")
+            st.caption("Archivos: `app.py`, `analisis/exportacion.py`, `views/styles.py`.")
+            
+        with st.expander("📊 Rafael Rodriguez Mengual", expanded=True):
+            st.markdown("**Rol:** Data Manager")
+            st.write("Procesamiento, limpieza e integración de variables externas (COLI).")
+            st.success("✅ **Estado:** FINALIZADO")
+            st.caption("Archivos: `analisis/utils.py`, `analisis/estadisticos.py`.")
+
+    with col2:
+        with st.expander("🧪 Bryann Vallejo Luna", expanded=True):
+            st.markdown("**Rol:** Analista Inferencial")
+            st.write("Modelos probabilísticos, IC 95% y contrastes de hipótesis.")
+            st.success("✅ **Estado:** FINALIZADO")
+            st.caption("Archivos: `analisis/inferencial.py`.")
+            
+        with st.expander("🎨 Leslie Ross Aranibar Pozo", expanded=True):
+            st.markdown("**Rol:** Analista Descriptivo")
+            st.write("Visualización avanzada y modelos de correlación COLI-Salario.")
+            st.warning("🛠️ **Estado:** EN PROGRESO")
+            st.caption("Pendiente: `analisis/graficos.py`, `analisis/modelo_regresion.py`.")
+
+    st.markdown("---")
+    st.caption("© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.2.1-dev)")
