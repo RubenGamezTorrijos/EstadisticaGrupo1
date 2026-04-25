@@ -50,25 +50,35 @@ def apply_styles():
             letter-spacing: -0.01em;
         }
 
-        /* Botones */
+        /* Botones y Selectores - AZUL CORPORATIVO */
         .stButton>button {
             border-radius: 8px;
-            background-color: var(--primary-color);
-            color: white !important; /* El texto del botón suele ser mejor en blanco */
+            background-color: #0b84f4 !important;
+            color: white !important;
             font-weight: 600;
             border: none;
             transition: all 0.3s ease;
         }
         
         .stButton>button:hover {
-            opacity: 0.8;
-            box-shadow: 0 4px 12px var(--primary-color);
+            background-color: #0d6efd !important;
+            box-shadow: 0 4px 12px rgba(11, 132, 244, 0.3);
         }
 
-        /* Tags multiselect */
+        /* Tags multiselect - AZUL CORPORATIVO */
         span[data-baseweb="tag"] {
-            background-color: var(--primary-color) !important;
+            background-color: #0b84f4 !important;
             color: white !important;
+        }
+
+        /* Selectores de Radio (Divisa y Navegación) - AZUL CORPORATIVO */
+        div[data-testid="stRadio"] label[data-baseweb="radio"] div:first-child div:nth-child(2) {
+            background-color: #0b84f4 !important;
+        }
+        
+        div[data-testid="stRadio"] label[aria-checked="true"] p {
+            color: #0b84f4 !important;
+            font-weight: bold;
         }
     </style>
     """, unsafe_allow_html=True)
