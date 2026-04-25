@@ -16,7 +16,7 @@ def apply_styles():
         
         /* Contenedores de tarjetas y métricas - ADAPTATIVOS */
         div[data-testid="stMetric"], div[data-testid="stExpander"], div[data-testid="stTable"] {
-            background: var(--secondary-background-color) !important;
+            background: var(--secondary-background-color);
             border: 1px solid var(--primary-color);
             border-radius: 12px;
             padding: 15px;
@@ -26,7 +26,7 @@ def apply_styles():
         
         /* Asegurar que el texto sea siempre legible */
         p, span, label, .stMarkdown {
-            color: var(--text-color) !important;
+            color: var(--text-color);
         }
 
         div[data-testid="stMetric"]:hover {
@@ -37,14 +37,14 @@ def apply_styles():
 
         /* Sidebar Identity - ADAPTATIVO */
         [data-testid="stSidebar"] {
-            background-color: var(--secondary-background-color) !important;
+            background-color: var(--secondary-background-color);
             border-right: 1px solid var(--primary-color);
         }
         
         /* Títulos */
         h1, h2, h3 {
-            color: var(--primary-color) !important;
-            font-weight: 800 !important;
+            color: var(--primary-color);
+            font-weight: 800;
             padding-bottom: 5px;
             margin-top: 20px;
             letter-spacing: -0.01em;
