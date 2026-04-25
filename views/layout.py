@@ -38,7 +38,7 @@ def render_footer():
     st.markdown("---")
     st.markdown(
         "<div style='text-align: center; color: var(--text-color); opacity: 0.6; font-size: 0.85rem; font-style: italic;'>"
-        "© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.2.1-dev)"
+        "© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.5.1-dev)"
         "</div>", 
         unsafe_allow_html=True
     )
@@ -328,4 +328,4 @@ def render_equipo():
             st.warning("🛠️ **Estado:** TAREAS PENDIENTES (Implementar Visualizaciones)")
 
     st.markdown("---")
-    st.caption("© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.5.0)")
+    st.caption("© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.5.1-dev)")
