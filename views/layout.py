@@ -13,7 +13,7 @@ from analisis.graficos import (
     crear_bar_chart, crear_scatter_regresion, crear_grafico_comparativo_ic
 )
 from analisis.inferencial import calcular_ic_95, contraste_hipotesis
-from analisis.regresion import ejecutar_regresion_simple
+from analisis.modelo_regresion import ejecutar_regresion_simple
 
 def render_main_layout(df, opcion, key, sym):
     """Orquesta el renderizado de la sección seleccionada."""
@@ -164,136 +164,51 @@ def render_estadisticos(df, key, sym):
 def render_visualizaciones(df, key, sym):
     st.title("📊 Visualizaciones Gráficas - Leslie Ross")
     
-    # Aviso de estado para el equipo
-    st.warning("🚧 **ESTADO: PENDIENTE** - Leslie Ross debe completar la lógica en `analisis/graficos.py`.")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Distribución de Salarios")
-        fig_hist = crear_histograma(df, key, f"Histograma de Salarios ({sym})")
-        if fig_hist: st.pyplot(fig_hist)
-        else: st.info("Leslie: Implementar Histograma en `graficos.py` (Se mostrará aquí)")
-        
-    with col2:
-        st.subheader("Dispersión por Experiencia")
-        fig_box = crear_boxplot(df, key, 'experience_level', f"Distribución de Salarios por Nivel ({sym})")
-        if fig_box: st.pyplot(fig_box)
-        else: st.info("Leslie: Implementar Boxplot en `graficos.py` (Se mostrará aquí)")
-        
-    st.markdown("---")
-    col3, col4 = st.columns(2)
-    with col3:
-        st.subheader("Distribución de Densidad (Violin)")
-        fig_violin = crear_violin_plot(df, 'experience_level', key, f"Violin Plot: Salario vs Experiencia ({sym})")
-        if fig_violin: st.pyplot(fig_violin)
-        else: st.info("Leslie: Implementar Violin Plot en `graficos.py` (Se mostrará aquí)")
-    with col4:
-        st.subheader("Presencia por Categoría")
-        fig_bar = crear_bar_chart(df, 'job_category', titulo="Top Categorías de Empleo")
-        if fig_bar: st.pyplot(fig_bar)
-        else: st.info("Leslie: Implementar Bar Chart en `graficos.py` (Se mostrará aquí)")
+    st.markdown("""
+        <div style='background-color: #1a2a40; padding: 20px; border-radius: 10px; border: 1px solid #0b84f4; margin-bottom: 25px;'>
+            <h3 style='margin-top:0; color: #0b84f4;'>🙇 Tareas de Leslie Ross (Visualización)</h3>
+            <p style='color: #a0c4ff;'>Para que esta vista funcione, Leslie debe implementar en el archivo <code>analisis/graficos.py</code>:</p>
+            <ol style='color: white;'>
+                <li><b>Histograma</b>: Distribución de salarios con KDE.</li>
+                <li><b>Boxplot</b>: Comparativa salarial por nivel de experiencia.</li>
+                <li><b>Violin Plot</b>: Densidad de probabilidad.</li>
+                <li><b>Bar Chart</b>: Frecuencia de categorías de puestos.</li>
+            </ol>
+            <p style='font-style: italic; color: #0b84f4;'>Utiliza las pistas (💡 PISTA) disponibles en el código.</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 def render_regresion(df, key, sym):
-    st.title("📈 Regresión Lineal y Correlación")
-    st.write("**Análisis de Dependencia:** Evaluación de cómo influye el Coste de Vida (COLI) en el Salario percibido.")
+    st.title("📈 Regresión Lineal - Leslie Ross")
+    st.markdown("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
     
-    # Aviso de estado para el equipo
-    st.warning("🚧 **ESTADO: PENDIENTE** - Leslie Ross debe completar la lógica en `analisis/regresion.py`.")
-    
-    fig_reg, stats_reg = crear_scatter_regresion(df, 'cost_of_living_index', key, f"Regresión: Salario ({sym}) vs Índice COLI")
-    
-    if fig_reg is not None:
-        st.pyplot(fig_reg)
-        
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Coeficiente R²", f"{stats_reg['r_cuadrado']:.4f}")
-        c2.metric("Pendiente (Beta)", f"{stats_reg['pendiente']:.2f}")
-        c3.metric("Intercepto", f"{stats_reg['intercepto']:,.0f}")
-        c4.metric("P-Valor", f"{stats_reg['p_valor']:.4f}")
-        
-        # Interpretación técnica
-        st.markdown("### 📝 Interpretación de Resultados")
-        r2 = stats_reg['r_cuadrado']
-        if r2 > 0.7:
-            interp = "Existe una **correlación fuerte**. El coste de vida explica gran parte de la variabilidad salarial."
-        elif r2 > 0.3:
-            interp = "Existe una **correlación moderada**. Otros factores influyen significativamente en el salario."
-        else:
-            interp = "La **correlación es débil**. El coste de vida no es el factor determinante principal en esta muestra."
-            
-        st.info(f"**Análisis Crítico:** {interp}")
-    else:
-        st.info("Leslie: La visualización de regresión se mostrará aquí una vez implementada la lógica.")
+    st.markdown("""
+        <div style='background-color: #1a2a40; padding: 20px; border-radius: 10px; border: 1px solid #0b84f4; margin-top: 20px;'>
+            <h3 style='margin-top:0; color: #0b84f4;'>📈 Tareas de Leslie Ross (Regresión)</h3>
+            <p style='color: #a0c4ff;'>Para activar este análisis, Leslie debe completar:</p>
+            <ol style='color: white;'>
+                <li><code>analisis/graficos.py</code>: Implementar <code>crear_scatter_regresion</code> usando <code>sns.regplot</code>.</li>
+                <li><code>analisis/modelo_regresion.py</code>: Implementar <code>ejecutar_regresion_simple</code> usando <code>LinearRegression</code> de <code>scikit-learn</code>.</li>
+            </ol>
+        </div>
+    """, unsafe_allow_html=True)
 
 def render_inferencial(df, key, sym):
-    st.title("🧪 Estadística Inferencial")
-    st.write("Validación de hipótesis poblacionales con un nivel de confianza del 95%.")
+    st.title("🧪 Estadística Inferencial - Bryann Vallejo")
+    st.markdown("Análisis de probabilidad para validar hipótesis poblacionales.")
     
-    # Aviso de estado para el equipo
-    st.warning("🚧 **ESTADO: PENDIENTE** - Bryann Vallejo debe completar la lógica en `analisis/inferencial.py`.")
-    
-    # 1. Intervalos de Confianza
-    st.subheader(f"1. Intervalos de Confianza (Media de Salario {sym})")
-    ic_results = calcular_ic_95(df[key])
-    
-    if ic_results['Estado'] == 'COMPLETO':
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Media Muestral (x̄)", f"{ic_results['Media']:,.2f} {sym}")
-        c2.metric("Límite Inferior (LCL)", f"{ic_results['Inferior']:,.2f} {sym}")
-        c3.metric("Límite Superior (UCL)", f"{ic_results['Superior']:,.2f} {sym}")
-        
-        st.caption(f"Error estándar de la media: {ic_results['Error Estándar']:,.2f}")
-    else:
-        st.info("Bryann: Los resultados del intervalo se mostrarán aquí una vez implementada la función `calcular_ic_95`.")
-    
-    st.markdown("---")
-    
-    # 2. Contrastes de Hipótesis
-    st.subheader("2. Contrastes de Hipótesis (T-Test)")
-    st.write("Comparativa de salarios entre grupos significativos.")
-    
-    # Grupos para el contraste (Senior vs Junior)
-    g_senior = df[df['experience_level'] == 'Senior'][key]
-    g_junior = df[df['experience_level'] == 'Entry-level'][key]
-    
-    if not g_senior.empty and not g_junior.empty:
-        test_res = contraste_hipotesis(g_senior, g_junior)
-        
-        if test_res.get('Estado') == 'COMPLETO':
-            col_a, col_b = st.columns([1, 2])
-            with col_a:
-                st.write("**H₀:** No hay diferencia de salarios entre Senior y Junior.")
-                st.write("**H₁:** Existe una diferencia significativa.")
-                st.metric("P-Valor", f"{test_res['p_valor']:.6f}")
-            
-            with col_b:
-                if test_res['rechaza_h0']:
-                    st.success(f"✅ **Resultado:** {test_res['Conclusion']}. Se rechaza la hipótesis nula.")
-                else:
-                    st.warning(f"⚠️ **Resultado:** {test_res['Conclusion']}. No hay evidencia para rechazar la hipótesis nula.")
-                
-                st.write(f"Estadístico T: `{test_res['t_statistic']:.4f}`")
-        else:
-            st.info("Bryann: Los resultados del contraste T-Test se mostrarán aquí.")
-    else:
-        st.warning("No hay suficientes datos para realizar el contraste entre niveles de experiencia.")
-    
-    st.markdown("---")
-    st.subheader("3. Impacto del Coste de Vida (COLI)")
-    st.write("¿Influye el coste de vida del país en la media salarial?")
-    
-    median_coli = df['cost_of_living_index'].median()
-    g_high_coli = df[df['cost_of_living_index'] >= median_coli][key]
-    g_low_coli = df[df['cost_of_living_index'] < median_coli][key]
-    
-    if not g_high_coli.empty and not g_low_coli.empty:
-        test_coli = contraste_hipotesis(g_high_coli, g_low_coli)
-        st.write(f"Comparando países con COLI alto (>= {median_coli:.1f}) vs COLI bajo.")
-        if test_coli.get('Estado') == 'COMPLETO':
-            st.metric("P-Valor (Impacto COLI)", f"{test_coli['p_valor']:.6f}")
-            st.info(f"**Conclusión:** {test_coli['Conclusion']}")
-        else:
-            st.info("Bryann: Los resultados del impacto COLI se mostrarán aquí.")
+    st.markdown("""
+        <div style='background-color: #1a2a40; padding: 20px; border-radius: 10px; border: 1px solid #0b84f4; margin-top: 20px;'>
+            <h3 style='margin-top:0; color: #0b84f4;'>🙇 Tareas de Bryann Vallejo (Estadística Inferencial)</h3>
+            <p style='color: #a0c4ff;'>Bryann debe completar la lógica matemática en el archivo <code>analisis/inferencial.py</code> para:</p>
+            <ol style='color: white;'>
+                <li><b>Intervalos de Confianza</b>: Cálculo manual de grados de libertad, error estándar y T-crítico.</li>
+                <li><b>Contrastes de Hipótesis</b>: Implementar <code>stats.ttest_ind</code> y analizar el P-valor.</li>
+                <li><b>Supuestos</b>: Validar si los datos siguen una distribución normal.</li>
+            </ol>
+            <p style='font-style: italic; color: #0b84f4;'>Consulta las pistas en el código para las fórmulas de Numpy y Scipy.</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
