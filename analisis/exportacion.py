@@ -204,16 +204,31 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label,
     pdf.cell(0, 15, sanitize_pdf_text('5. Análisis de Regresión Lineal (COLI)'), 0, 1, 'L')
     
     from scipy import stats as scipy_stats
-    slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(df['cost_of_living_index'], df[filtros_seleccionados['target_col']])
-    
-    pdf.set_font('Helvetica', '', 11)
-    pdf.set_text_color(0, 0, 0)
-    pdf.cell(10)
-    pdf.cell(0, 7, sanitize_pdf_text(f'* Coeficiente de Determinación (R2): {r_value**2:.4f}'), 0, 1, 'L')
-    pdf.cell(10)
-    pdf.cell(0, 7, sanitize_pdf_text(f'* Pendiente (Impacto COLI): {slope:.2f}'), 0, 1, 'L')
-    pdf.cell(10)
-    pdf.cell(0, 7, sanitize_pdf_text(f'* Intercepto: {intercept:,.2f}'), 0, 1, 'L')
+    try:
+        if df['cost_of_living_index'].nunique() > 1:
+            slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(df['cost_of_living_index'], df[filtros_seleccionados['target_col']])
+            r2 = r_value**2
+        else:
+            slope, intercept, r2, p_value = 0, 0, 0, 1
+            pdf.set_text_color(200, 0, 0)
+            pdf.set_font('Helvetica', 'I', 10)
+            pdf.cell(10)
+            pdf.cell(0, 7, sanitize_pdf_text('Nota: No se pudo calcular la regresión (COLI constante en la muestra).'), 0, 1, 'L')
+            pdf.set_text_color(0, 0, 0)
+            pdf.set_font('Helvetica', '', 11)
+
+        pdf.set_font('Helvetica', '', 11)
+        pdf.set_text_color(0, 0, 0)
+        pdf.cell(10)
+        pdf.cell(0, 7, sanitize_pdf_text(f'* Coeficiente de Determinación (R2): {r2:.4f}'), 0, 1, 'L')
+        pdf.cell(10)
+        pdf.cell(0, 7, sanitize_pdf_text(f'* Pendiente (Impacto COLI): {slope:.2f}'), 0, 1, 'L')
+        pdf.cell(10)
+        pdf.cell(0, 7, sanitize_pdf_text(f'* Intercepto: {intercept:,.2f}'), 0, 1, 'L')
+    except Exception as e:
+        pdf.set_text_color(255, 0, 0)
+        pdf.cell(0, 10, sanitize_pdf_text(f'Error en cálculo de regresión: {str(e)}'), 0, 1, 'L')
+        pdf.set_text_color(0, 0, 0)
 
     # --- SECCIÓN DE GRÁFICOS ---
     pdf.add_page()
