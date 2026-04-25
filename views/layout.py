@@ -223,7 +223,7 @@ def render_equipo():
         *   **Descripción:** Experto en modelos probabilísticos y validación de hipótesis estadísticas.
         *   **Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.
         *   **Archivos clave:** `analisis/inferencial.py`, `app.py` (Sección Inferencia).
-        *   **Estado:** 🛠️ TAREAS PENDIENTES (Implementar Lógica Inferencial).
+        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
         
     *   **Leslie Ross Aranibar Pozo (Analista Descriptivo)**
         *   **Descripción:** Especialista en visualización avanzada y modelado de correlación lineal.
