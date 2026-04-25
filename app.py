@@ -17,15 +17,9 @@ st.set_page_config(
 )
 
 def main():
-    # 1. Instanciar controlador
+    # Instanciar y ejecutar el controlador principal
     controller = AppController()
-    
-    # 2. Ejecutar lógica de datos y filtros
-    df_filtered = controller.run()
-    
-    if df_filtered is not None:
-        # 3. Renderizar la página principal
-        render_main_layout(df_filtered)
+    controller.run()
 
 if __name__ == "__main__":
     main()

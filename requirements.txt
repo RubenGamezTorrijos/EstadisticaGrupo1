@@ -9,3 +9,4 @@ scikit-learn>=1.4.0
 streamlit>=1.31.0
 openpyxl>=3.1.0
 fpdf2>=2.7.0
+plotly>=5.18.0

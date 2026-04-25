@@ -3,6 +3,7 @@ PROYECTO: Estadística para Ingeniería
 ANÁLISIS DE REGRESIÓN LINEAL
 COORDINADOR: RUBEN GAMEZ TORRIJOS
 ROL ASIGNADO (Lógica de Modelado): Leslie Ross Aranibar Pozo
+ESTADO: PENDIENTE (Rama DEV)
 """
 
 import pandas as pd
@@ -16,24 +17,21 @@ from sklearn.metrics import r2_score
 
 def ejecutar_regresion_simple(df, x_col, y_col):
     """
-    MODULO: Análisis de Regresión
+    MODULO: Regresión Lineal
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
     
-    # 💡 PISTA DE IMPLEMENTACIÓN (REFERENCIA MAIN):
-    # ==========================================
-    # 1. modelo = LinearRegression()
-    # 2. X = df[[x_col]].values
-    # 3. y = df[y_col].values
-    # 4. modelo.fit(X, y)
-    # 5. r2 = r2_score(y, modelo.predict(X))
-    # 6. retornar resumen, modelo
+    # 💡 PISTA DE IMPLEMENTACIÓN:
+    # 1. Definir X e y a partir de las columnas
+    # 2. Ajustar LinearRegression()
+    # 3. Calcular R2, Slope e Intercept
+    # 4. Retornar resumen y modelo (o None si falla)
     """
-    # IMPLEMENTACIÓN PENDIENTE POR LESLIE
     resumen = {
-        'Coeficiente R2': "PENDIENTE",
-        'Pendiente': "0.0",
-        'Intercepto': "0.0",
-        'Conclusion': "Leslie debe implementar el ajuste del modelo en la rama dev."
+        'Coeficiente R2': "0.0000",
+        'Pendience': "0.00",
+        'Intercepto': "0.00",
+        'Conclusion': "Pendiente por completar por Leslie Ross",
+        'Estado': 'PENDIENTE'
     }
     
     return resumen, None

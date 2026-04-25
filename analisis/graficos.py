@@ -3,11 +3,13 @@ PROYECTO: Estadística para Ingeniería
 ANÁLISIS GRÁFICO Y VISUALIZACIÓN
 COORDINADOR: RUBEN GAMEZ TORRIJOS
 ROL ASIGNADO (Lógica Visual): Leslie Ross Aranibar Pozo
+ESTADO: PENDIENTE (Rama DEV)
 """
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import config.settings as cfg
 
 # =================================================================
 # SECCIÓN: VISUALIZACIÓN DE DATOS (RESPONSABLE: LESLIE ROSS)
@@ -17,9 +19,6 @@ def crear_histograma(df, x_col, titulo="Distribución Salarial"):
     """
     MODULO: Histogramas
     ROL ASIGNADO: Leslie Ross Aranibar Pozo
-    
-    # 💡 PISTA (REFERENCIA MAIN):
-    # sns.histplot(df[x_col], kde=True, color='#2c3e50')
     """
     # PENDIENTE POR LESLIE
     return None
@@ -65,9 +64,8 @@ def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"
     return None, {'r_cuadrado': 0.0, 'pendiente': 0.0, 'intercepto': 0.0, 'p_valor': 0.0}
 
 def obtener_label(col):
-    """Devuelve una etiqueta legible para el gráfico."""
-    from analisis.estadisticos import VAR_LABELS
-    return VAR_LABELS.get(col, col)
+    """Devuelve una etiqueta legible para el gráfico desde la configuración central."""
+    return cfg.VAR_LABELS.get(col, col)
 
 def sanitize_pdf_text(text):
     """Limpia caracteres especiales para compatibilidad con FPDF."""

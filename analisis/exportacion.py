@@ -93,6 +93,21 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label,
     
     pdf.ln(10)
     
+    # --- SECCIÓN DE DIVISAS Y CAMBIO ---
+    from config.settings import EUR_USD_RATE
+    pdf.set_text_color(30, 58, 138)
+    pdf.set_font('Helvetica', 'B', 14)
+    pdf.cell(0, 10, sanitize_pdf_text('2.1 Contexto de Divisas y Tipo de Cambio'), 0, 1, 'L')
+    pdf.set_font('Helvetica', '', 10)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(10)
+    pdf.multi_cell(0, 7, sanitize_pdf_text(
+        f"Para este informe se ha aplicado un factor de conversión global de 1 USD = {EUR_USD_RATE} EUR. "
+        f"Los cálculos de ingeniería y comparativas se basan en la moneda seleccionada ({currency_label})."
+    ))
+    
+    pdf.ln(5)
+    
     # --- TABLA DE ESTADÍSTICOS ---
     pdf.set_text_color(30, 58, 138)
     pdf.set_font('Helvetica', 'B', 18)
@@ -115,6 +130,40 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label,
         pdf.cell(col_widths[2], 8, f"{row['Mediana']:,.2f}", 1, 0, 'R')
         pdf.cell(col_widths[3], 8, f"{row['Desviación Típica']:,.2f}", 1, 0, 'R')
         pdf.cell(col_widths[4], 8, f"{row['CV%']:,.2f}%", 1, 1, 'R')
+
+    # --- TABLA COMPARATIVA POR PAÍSES (Novedad Profesional) ---
+    paises_sel = filtros_seleccionados.get('countries', [])
+    if paises_sel and len(paises_sel) > 0:
+        pdf.add_page()
+        pdf.set_text_color(30, 58, 138)
+        pdf.set_font('Helvetica', 'B', 16)
+        pdf.cell(0, 15, sanitize_pdf_text('3.2 Comparativa Salarial por Países Seleccionados'), 0, 1, 'L')
+        
+        pdf.set_font('Helvetica', 'B', 8)
+        pdf.set_fill_color(240, 240, 240)
+        h_comp = ['País', 'Salario USD', 'Salario EUR', 'Diferencia (%)', 'COLI']
+        w_comp = [50, 35, 35, 40, 30]
+        for i, h in enumerate(h_comp):
+            pdf.cell(w_comp[i], 10, sanitize_pdf_text(h), 1, 0, 'C', True)
+        pdf.ln()
+        
+        pdf.set_font('Helvetica', '', 8)
+        # Agrupamos por país para el informe
+        df_comp = df.groupby('company_location').agg({
+            'salary_dollar_usd': 'mean',
+            'salary_euro': 'mean',
+            'cost_of_living_index': 'first'
+        }).reset_index()
+        
+        media_global_usd = df['salary_dollar_usd'].mean()
+        
+        for _, row in df_comp.iterrows():
+            diff = ((row['salary_dollar_usd'] - media_global_usd) / media_global_usd) * 100
+            pdf.cell(w_comp[0], 8, sanitize_pdf_text(row['company_location']), 1, 0, 'L')
+            pdf.cell(w_comp[1], 8, f"{row['salary_dollar_usd']:,.0f} $", 1, 0, 'R')
+            pdf.cell(w_comp[2], 8, f"{row['salary_euro']:,.0f} €", 1, 0, 'R')
+            pdf.cell(w_comp[3], 8, f"{diff:+.2f}% vs Med", 1, 0, 'R')
+            pdf.cell(w_comp[4], 8, f"{row['cost_of_living_index']:.2f}", 1, 1, 'R')
 
     # --- SECCIÓN INFERENCIAL ---
     pdf.add_page()

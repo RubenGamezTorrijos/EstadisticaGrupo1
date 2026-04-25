@@ -13,6 +13,10 @@ import requests
 import pandas as pd
 import os
 
+# --- Rutas ---
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATOS_DIR = os.path.join(BASE_DIR, "datos")
+
 # Indicador: Price level ratio of PPP conversion factor (GDP) to market exchange rate
 # Nos da una medida del coste de vida relativo. USA = 1.0
 INDICATOR = "PA.NUS.PPPC.RF"
@@ -62,7 +66,7 @@ def fetch_coli_data(start_year=2020, end_year=2023):
 def main():
     df = fetch_coli_data()
     if df is not None:
-        path = os.path.join("datos", "cost_of_living_wb.csv")
+        path = os.path.join(DATOS_DIR, "cost_of_living_wb.csv")
         df.to_csv(path, index=False)
         print(f"[OK] Datos guardados en {path}")
 
