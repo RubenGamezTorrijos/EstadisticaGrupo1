@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 from config.settings import VAR_LABELS, COL_SALARIO_USD, COL_SALARIO_EUR, COL_SALARIO_DINAMICO, COL_COLI
 
 

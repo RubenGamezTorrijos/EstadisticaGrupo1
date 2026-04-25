@@ -34,4 +34,4 @@ from .inferencial import (
 )
 
 # Regresión (Responsable: Leslie Ross)
-from .regresion import ejecutar_regresion_simple
+from .modelo_regresion import ejecutar_regresion_simple

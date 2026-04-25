@@ -3,6 +3,9 @@ import pandas as pd
 import os
 import config.settings as cfg
 
+# Fallback para evitar errores NameError si la importación falla o el nombre no está definido globalmente
+COL_CURRENCY = getattr(cfg, 'COL_CURRENCY', 'currency')
+
 @st.cache_data(ttl=3600)
 def load_processed_data() -> pd.DataFrame:
     """
@@ -17,7 +20,7 @@ def load_processed_data() -> pd.DataFrame:
             mapping = {
                 'salary_in_usd': cfg.COL_SALARIO_USD,
                 'salary_in_eur': cfg.COL_SALARIO_EUR,
-                'salary_currency': cfg.COL_CURRENCY
+                'salary_currency': COL_CURRENCY
             }
             renamed = False
             for old, new in mapping.items():
@@ -41,7 +44,7 @@ def load_processed_data() -> pd.DataFrame:
         
         # --- Limpieza y Renombrado Senior ---
         df = df.rename(columns={
-            'salary_currency': cfg.COL_CURRENCY,
+            'salary_currency': COL_CURRENCY,
             'salary_in_usd': cfg.COL_SALARIO_USD
         })
         

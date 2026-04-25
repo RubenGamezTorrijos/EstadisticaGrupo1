@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import config.settings as cfg
+import os
 
 # =================================================================
 # SECCIÓN: VISUALIZACIÓN DE DATOS (RESPONSABLE: LESLIE ROSS)
@@ -68,7 +69,30 @@ def obtener_label(col):
     return cfg.VAR_LABELS.get(col, col)
 
 def sanitize_pdf_text(text):
-    """Limpia caracteres especiales para compatibilidad con FPDF."""
-    replacements = {'á':'a','é':'e','í':'i','ó':'o','ú':'u','ñ':'n','Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U','Ñ':'N'}
-    for k, v in replacements.items(): text = text.replace(k, v)
-    return text
+    """Limpia caracteres especiales para compatibilidad con FPDF (latin-1)."""
+    if text is None: return ""
+    replacements = {
+        'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+        'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
+        'ñ': 'n', 'Ñ': 'N', '€': 'EUR', '$': 'USD',
+        '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4',
+        '²': '^2', '±': '+/-', '≥': '>=', '≤': '<=', '≠': '!='
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    try:
+        return text.encode('latin-1', 'replace').decode('latin-1')
+    except:
+        return text
+
+def guardar_grafico(fig, nombre, ruta='outputs/graficos/'):
+    """
+    Guarda un gráfico como PNG de forma segura para los informes.
+    Módulo desarrollado por Rafael Rodriguez para consumo global.
+    """
+    if fig is None: return None
+    os.makedirs(ruta, exist_ok=True)
+    ruta_completa = os.path.join(ruta, nombre)
+    fig.savefig(ruta_completa, bbox_inches='tight', dpi=150)
+    plt.close(fig)
+    return ruta_completa

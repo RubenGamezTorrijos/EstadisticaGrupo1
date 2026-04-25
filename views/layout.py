@@ -164,51 +164,44 @@ def render_estadisticos(df, key, sym):
 def render_visualizaciones(df, key, sym):
     st.title("📊 Visualizaciones Gráficas - Leslie Ross")
     
-    st.markdown("""
-        <div style='background-color: #1a2a40; padding: 20px; border-radius: 10px; border: 1px solid #0b84f4; margin-bottom: 25px;'>
-            <h3 style='margin-top:0; color: #0b84f4;'>🙇 Tareas de Leslie Ross (Visualización)</h3>
-            <p style='color: #a0c4ff;'>Para que esta vista funcione, Leslie debe implementar en el archivo <code>analisis/graficos.py</code>:</p>
-            <ol style='color: white;'>
-                <li><b>Histograma</b>: Distribución de salarios con KDE.</li>
-                <li><b>Boxplot</b>: Comparativa salarial por nivel de experiencia.</li>
-                <li><b>Violin Plot</b>: Densidad de probabilidad.</li>
-                <li><b>Bar Chart</b>: Frecuencia de categorías de puestos.</li>
-            </ol>
-            <p style='font-style: italic; color: #0b84f4;'>Utiliza las pistas (💡 PISTA) disponibles en el código.</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # Verificación de implementación de Leslie
+    st.info("""
+    ### 👩‍💻 Tareas de Leslie Ross (Visualización)
+    Para que esta vista funcione, Leslie debe implementar en el archivo `analisis/graficos.py`:
+    1. **Histograma**: Distribución de salarios con KDE.
+    2. **Boxplot**: Comparativa salarial por nivel de experiencia.
+    3. **Violin Plot**: Densidad de probabilidad.
+    4. **Bar Chart**: Frecuencia de categorías de puestos.
+    
+    *Utiliza las pistas (`# 💡 PISTA`) disponibles en el código.*
+    """)
 
 def render_regresion(df, key, sym):
     st.title("📈 Regresión Lineal - Leslie Ross")
     st.markdown("**Metodología:** Evaluación de la dependencia lineal entre el Coste de Vida (COLI) y el Salario.")
     
-    st.markdown("""
-        <div style='background-color: #1a2a40; padding: 20px; border-radius: 10px; border: 1px solid #0b84f4; margin-top: 20px;'>
-            <h3 style='margin-top:0; color: #0b84f4;'>📈 Tareas de Leslie Ross (Regresión)</h3>
-            <p style='color: #a0c4ff;'>Para activar este análisis, Leslie debe completar:</p>
-            <ol style='color: white;'>
-                <li><code>analisis/graficos.py</code>: Implementar <code>crear_scatter_regresion</code> usando <code>sns.regplot</code>.</li>
-                <li><code>analisis/modelo_regresion.py</code>: Implementar <code>ejecutar_regresion_simple</code> usando <code>LinearRegression</code> de <code>scikit-learn</code>.</li>
-            </ol>
-        </div>
-    """, unsafe_allow_html=True)
+    # Verificación de implementación de Leslie para Regresión
+    st.warning("""
+    ### 📈 Tareas de Leslie Ross (Regresión)
+    Para activar este análisis, Leslie debe completar:
+    1. **`analisis/graficos.py`**: Implementar `crear_scatter_regresion` usando `sns.regplot`.
+    2. **`analisis/modelo_regresion.py`**: Implementar `ejecutar_regresion_simple` usando `LinearRegression` de scikit-learn.
+    """)
 
 def render_inferencial(df, key, sym):
     st.title("🧪 Estadística Inferencial - Bryann Vallejo")
     st.markdown("Análisis de probabilidad para validar hipótesis poblacionales.")
     
-    st.markdown("""
-        <div style='background-color: #1a2a40; padding: 20px; border-radius: 10px; border: 1px solid #0b84f4; margin-top: 20px;'>
-            <h3 style='margin-top:0; color: #0b84f4;'>🙇 Tareas de Bryann Vallejo (Estadística Inferencial)</h3>
-            <p style='color: #a0c4ff;'>Bryann debe completar la lógica matemática en el archivo <code>analisis/inferencial.py</code> para:</p>
-            <ol style='color: white;'>
-                <li><b>Intervalos de Confianza</b>: Cálculo manual de grados de libertad, error estándar y T-crítico.</li>
-                <li><b>Contrastes de Hipótesis</b>: Implementar <code>stats.ttest_ind</code> y analizar el P-valor.</li>
-                <li><b>Supuestos</b>: Validar si los datos siguen una distribución normal.</li>
-            </ol>
-            <p style='font-style: italic; color: #0b84f4;'>Consulta las pistas en el código para las fórmulas de Numpy y Scipy.</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # Verificación de implementación de Bryann
+    st.info("""
+    ### 👨‍💻 Tareas de Bryann Vallejo (Estadística Inferencial)
+    Bryann debe completar la lógica matemática en el archivo `analisis/inferencial.py` para:
+    1. **Intervalos de Confianza**: Cálculo manual de grados de libertad, error estándar y T-crítico.
+    2. **Contrastes de Hipótesis**: Implementar `stats.ttest_ind` y analizar el P-valor.
+    3. **Supuestos**: Validar si los datos siguen una distribución normal.
+    
+    *Consulta las pistas en el código para las fórmulas de Numpy y Scipy.*
+    """)
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
@@ -216,11 +209,29 @@ def render_equipo():
     ### Estructura y Responsabilidades Técnicas:
     
     *   **Rubén Gámez Torrijos (Coordinador y Arquitectura)**
-        *   **Responsabilidades:** Diseño MVC, estilos CSS, motor de exportación PDF/Excel.
+        *   **Descripción:** Liderazgo técnico, diseño estructural y orquestación del proyecto.
+        *   **Responsabilidades:** Diseño de la arquitectura modular de la aplicación, sistema de estilos CSS adaptativos para temas Light/Dark y desarrollo del motor de exportación profesional (PDF/Excel).
+        *   **Archivos clave:** `app.py` (Orquestación), `analisis/exportacion.py` (Generación de Reportes), `config/styles.py`.
+        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
+        
     *   **Rafael Rodriguez Mengual (Data Manager)**
-        *   **Responsabilidades:** Pipeline de limpieza, integración COLI, estadísticos.
+        *   **Descripción:** Especialista en procesamiento, limpieza y análisis descriptivo de datos.
+        *   **Responsabilidades:** Implementación del pipeline de limpieza de datos, integración de variables externas (Índice de coste de vida) y desarrollo de la lógica para estadísticos de tendencia central y dispersión.
+        *   **Archivos clave:** `analisis/utils.py` (Limpieza), `analisis/estadisticos.py` (Motor estadístico).
+        *   **Estado:** ✅ FINALIZADO Y VERIFICADO.
+        
     *   **Bryann Vallejo Luna (Analista Inferencial)**
-        *   **Responsabilidades:** Intervalos de confianza, contrastes de hipótesis.
+        *   **Descripción:** Experto en modelos probabilísticos y validación de hipótesis estadísticas.
+        *   **Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.
+        *   **Archivos clave:** `analisis/inferencial.py`, `app.py` (Sección Inferencia).
+        *   **Estado:** 🛠️ TAREAS PENDIENTES (Implementar Lógica Inferencial).
+        
     *   **Leslie Ross Aranibar Pozo (Analista Descriptivo)**
-        *   **Responsabilidades:** Catálogo visual, regresión lineal.
+        *   **Descripción:** Especialista en visualización avanzada y modelado de correlación lineal.
+        *   **Responsabilidades:** Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.
+        *   **Archivos clave:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.
+        *   **Estado:** 🛠️ TAREAS PENDIENTES (Implementar Visualizaciones).
+    
+    ---
+    *© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.2.1-dev).*
     """)
