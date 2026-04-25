@@ -38,7 +38,7 @@ def render_footer():
     st.markdown("---")
     st.markdown(
         "<div style='text-align: center; color: #888; font-size: 0.85rem; font-style: italic;'>"
-        "Rubén: Coordinador y arquitectura de la aplicación Python y Streamlit"
+        "© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.2.1-dev)"
         "</div>", 
         unsafe_allow_html=True
     )
@@ -149,7 +149,6 @@ def render_estadisticos(df, key, sym):
     
     stats_df = calcular_estadisticos(df)
     # Filtrar 'salary' (dinámico) de la tabla descriptiva general para evitar duplicidad visual
-    # El usuario prefiere ver las bases fijas aquí.
     from config.settings import COL_SALARIO_DINAMICO
     stats_df = stats_df[stats_df['ID_Variable'] != COL_SALARIO_DINAMICO]
     
