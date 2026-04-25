@@ -19,10 +19,10 @@ def render_sidebar(df_full):
             <div style="display: flex; align-items: center; justify-content: center; gap: 15px; padding-bottom: 20px;">
                 <img src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png" width="50">
                 <div style="text-align: left;">
-                    <h2 style='color: white; font-size: 1.0rem; margin: 0; line-height: 1.1;'>
+                    <h2 style='color: var(--primary-color); font-size: 1.0rem; margin: 0; line-height: 1.1;'>
                         ESTADÍSTICA Y <br>OPTIMIZACIÓN
                     </h2>
-                    <p style='color: #0b84f4; font-weight: 600; font-size: 0.75rem; margin: 3px 0 0 0;'>
+                    <p style='color: var(--text-color); opacity: 0.8; font-weight: 600; font-size: 0.75rem; margin: 3px 0 0 0;'>
                         GRUPO DE TRABAJO 1
                     </p>
                 </div>

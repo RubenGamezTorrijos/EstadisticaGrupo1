@@ -14,31 +14,36 @@ def apply_styles():
             background-attachment: fixed;
         }
         
-        /* Contenedores de tarjetas y métricas */
+        /* Contenedores de tarjetas y métricas - ADAPTATIVOS */
         div[data-testid="stMetric"], div[data-testid="stExpander"], div[data-testid="stTable"] {
-            background: rgba(128, 128, 128, 0.1) !important;
-            border: 1px solid rgba(128, 128, 128, 0.2);
+            background: var(--secondary-background-color) !important;
+            border: 1px solid var(--primary-color);
             border-radius: 12px;
-            backdrop-filter: blur(8px);
             padding: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
         
-        div[data-testid="stMetric"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(11, 132, 244, 0.15);
-            border-color: rgba(11, 132, 244, 0.4);
+        /* Asegurar que el texto sea siempre legible */
+        p, span, label, .stMarkdown {
+            color: var(--text-color) !important;
         }
 
-        /* Sidebar Identity */
+        div[data-testid="stMetric"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-color);
+            opacity: 0.9;
+        }
+
+        /* Sidebar Identity - ADAPTATIVO */
         [data-testid="stSidebar"] {
-            background-color: #0c1c30 !important;
+            background-color: var(--secondary-background-color) !important;
+            border-right: 1px solid var(--primary-color);
         }
         
         /* Títulos */
         h1, h2, h3 {
-            color: #0b84f4 !important;
+            color: var(--primary-color) !important;
             font-weight: 800 !important;
             padding-bottom: 5px;
             margin-top: 20px;
@@ -48,21 +53,21 @@ def apply_styles():
         /* Botones */
         .stButton>button {
             border-radius: 8px;
-            background-color: #0b84f4;
-            color: white;
+            background-color: var(--primary-color);
+            color: white !important; /* El texto del botón suele ser mejor en blanco */
             font-weight: 600;
             border: none;
             transition: all 0.3s ease;
         }
         
         .stButton>button:hover {
-            background-color: #0d6efd;
-            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            opacity: 0.8;
+            box-shadow: 0 4px 12px var(--primary-color);
         }
 
         /* Tags multiselect */
         span[data-baseweb="tag"] {
-            background-color: #0b84f4 !important;
+            background-color: var(--primary-color) !important;
             color: white !important;
         }
     </style>
