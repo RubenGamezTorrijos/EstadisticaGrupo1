@@ -139,7 +139,7 @@ def render_escritorio(df, key, sym):
     st.markdown("---")
         
     st.markdown("### 📋 Vista Previa de Datos")
-    st.dataframe(df.head(10), use_container_width=True)
+    st.dataframe(df, use_container_width=True, height=400)
 
 def render_estadisticos(df, key, sym):
     st.title("📊 Estadísticos Descriptivos - Rafael Rodriguez")
@@ -223,6 +223,13 @@ def render_inferencial(df, key, sym):
         return
 
     st.markdown("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios.")
+    
+    # --- Nota para Bryann (Reporte) ---
+    st.info("""
+    ### 📝 Nota para Bryann Vallejo
+    Es necesario crear el **informe de 1 a 2 páginas** verificando que los cálculos realizados sean correctos. 
+    Este informe debe coordinarse con **Leslie Ross** para asegurar la coherencia entre los resultados inferenciales y visuales, siguiendo el orden de las tareas y dependencias del proyecto.
+    """)
     
     # --- 1. Intervalo de Confianza ---
     st.subheader(f"📍 Intervalo de Confianza (95%) - {sym}")

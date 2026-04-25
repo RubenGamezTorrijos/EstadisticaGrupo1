@@ -4,6 +4,7 @@ ANÁLISIS INFERENCIAL Y PRUEBAS DE HIPÓTESIS
 AUTORES: RUBEN GAMEZ TORRIJOS / RAFAEL RODRIGUEZ
 ROL ASIGNADO (Lógica Estadística): Bryann Vallejo Luna
 ESTADO: ✅ INTEGRADO (Lógica de Bryann verificada)
+TAREA PENDIENTE: Crear informe de 1-2 páginas verificado con Leslie Ross.
 """
 
 import numpy as np
