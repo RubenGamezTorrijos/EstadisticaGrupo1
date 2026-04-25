@@ -1,112 +1,6 @@
-"""
-PROYECTO: Estadística para Ingeniería
-COMPONENTE: Motor de Estadísticos Descriptivos
-RESPONSABLE: Rafael Rodriguez Mengual (Data Manager)
-COLABORADOR: Rubén Gámez Torrijos (Coordinador)
-
-ESTADO: FINALIZADO Y VERIFICADO (v.2.2.1)
-========================================
-Este módulo contiene la lógica nuclear de procesamiento de datos y 
-cálculo de estadísticos descriptivos unificados. 
-
-Funciones Implementadas:
-1. limpiar_datos()             - Pipeline de limpieza y normalización integrando COLI.
-2. calcular_estadisticos()     - Análisis unificado de tendencia central, dispersión y forma.
-3. calcular_estadisticos_por_categoria() - Análisis segmentado por variables clave.
-4. detectar_outliers_iqr()     - Sistema de detección de valores atípicos.
-"""
-
 import pandas as pd
 import numpy as np
-import os
-
-# Índice de coste de vida aproximado (USA = 100)
-COST_OF_LIVING_INDEX = {
-    'United States': 100, 'United Kingdom': 85, 'Canada': 90, 
-    'Spain': 70, 'Germany': 80, 'France': 80, 'Australia': 95, 
-    'Portugal': 65, 'Netherlands': 85, 'Brazil': 50, 
-    'Colombia': 40, 'Greece': 60, 'Italy': 75, 'Mexico': 45, 
-    'Poland': 60, 'Estonia': 65, 'Nigeria': 35, 'Ireland': 90, 
-    'India': 30, 'Russia': 40
-}
-
-# Mapeo de variables para etiquetas legibles
-VAR_LABELS = {
-    'work_year': 'Año de Trabajo',
-    'experience_level': 'Nivel de Experiencia',
-    'employment_type': 'Tipo de Empleo',
-    'job_title': 'Título del Puesto',
-    'salary': 'Salario (Original)',
-    'salary_currency': 'Moneda',
-    'salary_in_usd': 'Salario (USD)',
-    'salary_in_eur': 'Salario (EUR)',
-    'employee_residence': 'Residencia Empleado',
-    'remote_ratio': 'Ratio Remoto',
-    'company_location': 'Localización Empresa',
-    'company_size': 'Tamaño Empresa',
-    'job_category': 'Categoría de Puesto',
-    'work_setting': 'Modalidad de Trabajo',
-    'cost_of_living_index': 'Índice de Coste de Vida'
-}
-
-def limpiar_datos(df):
-    """
-    RAFAEL RODRIGUEZ MENGUAL - Limpieza del Dataset
-
-    Pasos que debes implementar:
-    1. Eliminar filas duplicadas               → df.drop_duplicates()
-    2. Eliminar nulos en columnas clave:       → df.dropna(subset=['salary_in_usd','experience_level','job_category'])
-    3. Asegurar tipos:
-       - 'work_year' → int
-       - 'salary_in_usd' → float
-    4. Resetear el índice                      → df.reset_index(drop=True)
-    5. Guardar en 'datos/dataset_limpio.csv'
-
-    PISTA: Usa df.copy() al inicio para no modificar el DataFrame original.
-
-    Args:
-        df: DataFrame original (crudo)
-
-    Returns:
-        DataFrame limpio y procesado
-    """
-    # TODO: COMPLETAR - Elimina duplicados, nulos en columnas clave y asegura tipos
-
-    # ╔══════════════════════════════════════════════════════╗
-    # ║  ¡IMPLEMENTA AQUÍ TU LÓGICA DE LIMPIEZA DE DATOS!  ║
-    # ╚══════════════════════════════════════════════════════╝
-
-    df_limpio = df.copy()
-
-    # --- PASO 1: Eliminar duplicados ---
-    df_limpio = df_limpio.drop_duplicates()
-
-    # --- PASO 2: Eliminar nulos en columnas clave ---
-    df_limpio = df_limpio.dropna(subset=['salary_in_usd', 'experience_level', 'job_category'])
-
-    # --- PASO 3: Asegurar tipos de datos ---
-    df_limpio['work_year'] = df_limpio['work_year'].astype(int)
-    df_limpio['salary_in_usd'] = df_limpio['salary_in_usd'].astype(float)
-    
-    # --- PASO 4: Multidivisa (EUR) ---
-    # Usamos un cambio base de 0.92 si no existe la columna
-    if 'salary_in_eur' not in df_limpio.columns:
-        df_limpio['salary_in_eur'] = df_limpio['salary_in_usd'] * 0.92
-    df_limpio['salary_in_eur'] = df_limpio['salary_in_eur'].astype(float)
-
-    # --- PASO 5: Nueva Variable de Coste de Vida (Mejora 2) ---
-    # Asignamos 70 (media estimada global) a los países que no estén en el Top 20
-    if 'company_location' in df_limpio.columns:
-        df_limpio['cost_of_living_index'] = df_limpio['company_location'].map(COST_OF_LIVING_INDEX).fillna(70)
-
-    # --- PASO 5: Resetear índice ---
-    df_limpio = df_limpio.reset_index(drop=True)
-
-    # --- PASO 5: Guardar dataset limpio ---
-    # os.makedirs('datos', exist_ok=True)
-    # df_limpio.to_csv('datos/dataset_limpio.csv', index=False)
-
-    return df_limpio
+from config.settings import VAR_LABELS, COL_SALARIO_USD, COL_SALARIO_EUR, COL_SALARIO_DINAMICO, COL_COLI
 
 
 def calcular_estadisticos(df):
@@ -144,8 +38,8 @@ def calcular_estadisticos(df):
     Returns:
         pd.DataFrame con una fila por variable analizada
     """
-    # TODO: COMPLETAR
-    cols_num = ['salary_in_usd', 'salary_in_eur', 'work_year', 'cost_of_living_index']
+    # Lista de columnas a analizar (usando constantes centralizadas)
+    cols_num = [COL_SALARIO_USD, COL_SALARIO_EUR, COL_SALARIO_DINAMICO, COL_COLI, 'work_year']
     resultados = []
 
     for col in cols_num:

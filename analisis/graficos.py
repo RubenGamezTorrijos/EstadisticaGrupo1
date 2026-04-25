@@ -25,7 +25,7 @@ def crear_histograma(df, x_col, titulo="Distribución Salarial"):
 
 def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, palette="viridis", width=0.6)
+    sns.boxplot(data=df, x=x_col, y=y_col, ax=ax, hue=x_col, palette="viridis", width=0.6, legend=False)
     ax.set_title(titulo, fontsize=14, fontweight='bold', pad=15)
     ax.set_ylabel(obtener_label(y_col), fontsize=12)
     ax.set_xlabel(obtener_label(x_col), fontsize=12)
@@ -35,7 +35,7 @@ def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
 
 def crear_violin_plot(df, x_col, y_col, titulo="Densidad Salarial"):
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.violinplot(data=df, x=x_col, y=y_col, ax=ax, palette="magma", inner="quartile")
+    sns.violinplot(data=df, x=x_col, y=y_col, ax=ax, hue=x_col, palette="magma", inner="quartile", legend=False)
     ax.set_title(titulo, fontsize=14, fontweight='bold', pad=15)
     ax.set_xlabel(obtener_label(x_col), fontsize=12)
     ax.set_ylabel(obtener_label(y_col), fontsize=12)
@@ -45,7 +45,7 @@ def crear_violin_plot(df, x_col, y_col, titulo="Densidad Salarial"):
 def crear_bar_chart(df, col, titulo="Presencia en Mercado"):
     counts = df[col].value_counts().head(10)
     fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(x=counts.index, y=counts.values, ax=ax, palette="rocket")
+    sns.barplot(x=counts.index, y=counts.values, ax=ax, hue=counts.index, palette="rocket", legend=False)
     ax.set_title(titulo, fontsize=14, fontweight='bold', pad=15)
     ax.set_xlabel(obtener_label(col), fontsize=12)
     ax.set_ylabel("Cantidad", fontsize=12)
@@ -66,7 +66,7 @@ def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.regplot(data=df, x=x_col, y=y_col, ax=ax, 
                 scatter_kws={'color': '#3498db', 'alpha': 0.5}, 
-                line_kws={'color': '#e74c3c', 'weight': 'bold'})
+                line_kws={'color': '#e74c3c', 'linewidth': 2})
     ax.set_title(titulo, fontsize=14, fontweight='bold', pad=15)
     ax.set_xlabel(obtener_label(x_col), fontsize=12)
     ax.set_ylabel(obtener_label(y_col), fontsize=12)
@@ -122,10 +122,8 @@ def sanitize_pdf_text(text):
         return text
 
 def obtener_label(col):
-    """
-    DESARROLLADO POR RUBEN: Retorna la etiqueta legible para una columna.
-    Usa VAR_LABELS como base de datos.
-    """
+    """Devuelve una etiqueta legible para el gráfico."""
+    from config.settings import VAR_LABELS
     return VAR_LABELS.get(col, col.replace('_', ' ').title())
 
 def guardar_grafico(fig, nombre, ruta='outputs/graficos/'):

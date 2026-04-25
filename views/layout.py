@@ -13,7 +13,7 @@ from analisis.graficos import (
     crear_bar_chart, crear_scatter_regresion, crear_grafico_comparativo_ic
 )
 from analisis.inferencial import calcular_ic_95, contraste_hipotesis
-from analisis.modelo_regresion import ejecutar_regresion_simple
+from analisis.regresion import ejecutar_regresion_simple
 
 def render_main_layout(df, opcion, key, sym):
     """Orquesta el renderizado de la sección seleccionada."""
@@ -47,28 +47,102 @@ def render_escritorio(df, key, sym):
     st.title(f"🏠 Escritorio de Control - Rafael Rodriguez")
     st.write("Resumen ejecutivo de la muestra actual analizada.")
     
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Total Muestra (N)", len(df))
-    with col2:
-        st.metric(f"Salario Medio ({sym})", f"{df[key].mean():,.0f} {sym}")
-    with col3:
-        st.metric("Mediana COLI", f"{df['cost_of_living_index'].median():,.2f}")
-    with col4:
-        st.metric("Años en Muestra", f"{df['work_year'].nunique()}")
+    from config.settings import COL_SALARIO_USD, COL_SALARIO_EUR
+    import plotly.graph_objects as go
+    
+    # 1. Cálculos de base
+    mean_active = df[key].mean()
+    mean_usd = df[COL_SALARIO_USD].mean()
+    mean_eur = df[COL_SALARIO_EUR].mean()
+    med_coli = df['cost_of_living_index'].median()
+    n_muestra = len(df)
+    años_unique = df['work_year'].nunique()
+    
+    # 2. Lógica de formato (Requisito: >140,500 -> XXX.X K)
+    def format_salary(val):
+        if val > 140500:
+            return f"{val/1000:.1f}K"
+        return f"{val:,.0f}"
+
+    # 3. Diseño: Columna Izquierda (Métricas 2x2) | Columna Derecha (Gráfica)
+    main_col_left, main_col_right = st.columns([1.5, 1])
+    
+    with main_col_left:
+        # Fila 1 de métricas
+        r1_c1, r1_c2 = st.columns(2)
+        with r1_c1:
+            st.metric("Total Muestra (N)", f"{n_muestra:,}")
+        with r1_c2:
+            # Mostramos la divisa CONTRARIA a la de la gráfica para no duplicar
+            if key == COL_SALARIO_USD:
+                st.metric("Salario Medio (EUR)", f"{mean_eur:,.0f} €")
+            else:
+                st.metric("Salario Medio (USD)", f"{mean_usd:,.0f} $")
+        
+        # Fila 2 de métricas
+        r2_c1, r2_c2 = st.columns(2)
+        with r2_c1:
+            st.metric("Mediana COLI", f"{med_coli:,.2f}")
+        with r2_c2:
+            st.metric("Años en Muestra", f"{años_unique}")
+
+    with main_col_right:
+        # 4. Gráfico de Aguja (Gauge) del Salario Seleccionado
+        label_active = "Salario Medio (USD)" if key == COL_SALARIO_USD else "Salario Medio (EUR)"
+        
+        # Formateo dinámico para el número central
+        is_high = mean_active > 140500
+        display_val = mean_active / 1000 if is_high else mean_active
+        suffix = "k" if is_high else ""
+        val_format = ".1f" if is_high else ",.0f"
+
+        fig = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = display_val,
+            number = {'prefix': sym, 'suffix': suffix, 'valueformat': val_format},
+            domain = {'x': [0, 1], 'y': [0, 1]},
+            title = {'text': label_active, 'font': {'size': 16}},
+            gauge = {
+                'axis': {'range': [None, (df[key].max() / 1000 if is_high else df[key].max()) * 1.1], 'tickwidth': 1},
+                'bar': {'color': "#007BFF"},
+                'steps': [
+                    {'range': [0, 70 if is_high else 70000], 'color': '#f8d7da'},
+                    {'range': [70 if is_high else 70000, 140 if is_high else 140000], 'color': '#fff3cd'},
+                    {'range': [140 if is_high else 140000, (df[key].max() / 1000 if is_high else df[key].max()) * 1.1], 'color': '#d4edda'}
+                ],
+                'threshold': {
+                    'line': {'color': "red", 'width': 4},
+                    'thickness': 0.75,
+                    'value': display_val
+                }
+            }
+        ))
+        
+        fig.update_layout(height=250, margin=dict(l=20, r=20, t=40, b=20))
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+
+    st.markdown("---")
         
     st.markdown("### 📋 Vista Previa de Datos")
     st.dataframe(df.head(10), use_container_width=True)
 
 def render_estadisticos(df, key, sym):
     st.title("📊 Estadísticos Descriptivos - Rafael Rodriguez")
-    st.write("Análisis detallado de tendencia central, dispersión y forma.")
+    st.write("Análisis detallado de tendencia central, dispersión y forma para ambas divisas.")
+    
+    from config.settings import COL_SALARIO_USD, COL_SALARIO_EUR
     
     stats_df = calcular_estadisticos(df)
+    # Filtrar 'salary' (dinámico) de la tabla descriptiva general para evitar duplicidad visual
+    # El usuario prefiere ver las bases fijas aquí.
+    from config.settings import COL_SALARIO_DINAMICO
+    stats_df = stats_df[stats_df['ID_Variable'] != COL_SALARIO_DINAMICO]
+    
     st.dataframe(stats_df, use_container_width=True, hide_index=True)
     
     st.markdown("---")
-    st.subheader(f"📍 Análisis por Nivel de Experiencia ({sym})")
+    st.subheader(f"📍 Análisis Detallado por Nivel de Experiencia ({sym})")
+    st.info(f"Esta sección se adapta a la moneda seleccionada: **{sym}**")
     cat_stats = calcular_estadisticos_por_categoria(df, key, 'experience_level')
     st.table(cat_stats)
 

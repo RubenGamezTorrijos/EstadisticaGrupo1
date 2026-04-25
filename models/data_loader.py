@@ -1,54 +1,92 @@
-"""
-models/data_loader.py
-=====================
-Módulo encargado de la carga y preparación del dataset enriquecido.
-Este archivo es territorio de RAFAEL.
-"""
-
+import streamlit as st
 import pandas as pd
 import os
-import sys
-from config.settings import JOBS_CSV, COLI_CSV, ENRIQUECIDO_CSV, COL_PAIS, COL_SALARIO_USD, COL_COLI, COL_SALARIO_AJUSTADO
+import config.settings as cfg
 
+@st.cache_data(ttl=3600)
 def load_processed_data() -> pd.DataFrame:
     """
-    Carga el dataset enriquecido. Si no existe, intenta generarlo
-    combinando jobs_in_data.csv con el índice de coste de vida.
+    Carga, limpia y enriquece el dataset. 
+    Aplica caché de Streamlit para optimizar el rendimiento.
     """
-    if os.path.exists(ENRIQUECIDO_CSV):
-        return pd.read_csv(ENRIQUECIDO_CSV)
-    
-    # Si no existe, realizar el proceso de unión básico
-    print("[!] Dataset enriquecido no encontrado. Generando automáticamente...")
-    
-    if not os.path.exists(JOBS_CSV) or not os.path.exists(COLI_CSV):
-        print(f"ERROR: Faltan archivos base en {DATOS_DIR}")
+    try:
+        # 1. Intentar cargar el dataset ya procesado para velocidad
+        if os.path.exists(cfg.ENRIQUECIDO_CSV):
+            df = pd.read_csv(cfg.ENRIQUECIDO_CSV)
+            # Adaptar archivos antiguos al nuevo esquema
+            mapping = {
+                'salary_in_usd': cfg.COL_SALARIO_USD,
+                'salary_in_eur': cfg.COL_SALARIO_EUR,
+                'salary_currency': cfg.COL_CURRENCY
+            }
+            renamed = False
+            for old, new in mapping.items():
+                if old in df.columns and new not in df.columns:
+                    df = df.rename(columns={old: new})
+                    renamed = True
+            
+            if renamed:
+                df.to_csv(cfg.ENRIQUECIDO_CSV, index=False)
+            
+            # Si aún falta alguna columna vital, forzar reconstrucción
+            if cfg.COL_SALARIO_EUR in df.columns:
+                return df
+        
+        # 2. Si no existe, construirlo desde cero
+        if not os.path.exists(cfg.JOBS_CSV):
+            st.error(f"Archivo base no encontrado: {cfg.JOBS_CSV}")
+            return pd.DataFrame()
+
+        df = pd.read_csv(cfg.JOBS_CSV)
+        
+        # --- Limpieza y Renombrado Senior ---
+        df = df.rename(columns={
+            'salary_currency': cfg.COL_CURRENCY,
+            'salary_in_usd': cfg.COL_SALARIO_USD
+        })
+        
+        df = df.drop_duplicates()
+        df = df.dropna(subset=[cfg.COL_SALARIO_USD, 'experience_level', 'job_category'])
+        
+        # --- Enriquecimiento Multidivisa ---
+        df[cfg.COL_SALARIO_EUR] = (df[cfg.COL_SALARIO_USD] * cfg.EUR_USD_RATE).round(2)
+        
+        # --- Integración de Coste de Vida (COLI) ---
+        if os.path.exists(cfg.COLI_CSV):
+            df_coli = pd.read_csv(cfg.COLI_CSV)
+            df = pd.merge(df, df_coli[['country', 'cost_of_living_index']], 
+                         left_on=cfg.COL_PAIS, right_on='country', how='left')
+            
+            if 'country' in df.columns:
+                df.drop(columns=['country'], inplace=True)
+            
+            # Rellenar países faltantes con la media global (Senior Strategy)
+            media_coli = df['cost_of_living_index'].mean()
+            df['cost_of_living_index'] = df['cost_of_living_index'].fillna(media_coli)
+        else:
+            st.warning("Archivo COLI no encontrado. Usando valores por defecto.")
+            df['cost_of_living_index'] = 70.0 # Valor neutral
+            
+        # --- Cálculo de Salario Ajustado (Poder Adquisitivo) ---
+        df[cfg.COL_SALARIO_AJUSTADO] = (df[cfg.COL_SALARIO_USD] / df['cost_of_living_index'] * 100).round(2)
+        
+        # Guardar para la próxima sesión
+        df.to_csv(cfg.ENRIQUECIDO_CSV, index=False)
+        return df
+
+    except Exception as e:
+        st.error(f"Error crítico en la carga de datos: {str(e)}")
         return pd.DataFrame()
 
-    df_jobs = pd.read_csv(JOBS_CSV)
-    df_coli = pd.read_csv(COLI_CSV)
+def filter_data(df: pd.DataFrame, experience=None, categories=None, countries=None) -> pd.DataFrame:
+    """Filtro unificado de alta performance."""
+    df_filtered = df.copy()
     
-    # Merge por país
-    df_merged = pd.merge(df_jobs, df_coli[['country', 'cost_of_living_index']], 
-                         left_on=COL_PAIS, right_on='country', how='left')
-    
-    # Limpieza: Eliminar columna duplicada de país si existe
-    if 'country' in df_merged.columns:
-        df_merged.drop(columns=['country'], inplace=True)
-    
-    # Cálculo de salario ajustado
-    df_merged[COL_SALARIO_AJUSTADO] = (df_merged[COL_SALARIO_USD] / df_merged[COL_COLI]) * 100
-    
-    # Cálculo de salario en Euros (Nueva columna para frontend)
-    from config.settings import COL_SALARIO_EUR, EUR_USD_RATE
-    df_merged[COL_SALARIO_EUR] = df_merged[COL_SALARIO_USD] * EUR_USD_RATE
-    
-    # Guardar para futuros usos
-    df_merged.to_csv(ENRIQUECIDO_CSV, index=False)
-    return df_merged
-
-def filter_by_year(df: pd.DataFrame, years: list) -> pd.DataFrame:
-    """Filtra el dataframe por una lista de años."""
-    if not years:
-        return df
-    return df[df['work_year'].isin(years)]
+    if experience:
+        df_filtered = df_filtered[df_filtered['experience_level'].isin(experience)]
+    if categories:
+        df_filtered = df_filtered[df_filtered['job_category'].isin(categories)]
+    if countries:
+        df_filtered = df_filtered[df_filtered[cfg.COL_PAIS].isin(countries)]
+        
+    return df_filtered

@@ -25,7 +25,7 @@ import os
 import sys
 
 # ── Rutas de archivos ────────────────────────────────────────────────────────
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 JOBS_CSV  = os.path.join(BASE_DIR, "datos", "jobs_in_data.csv")
 COLI_CSV  = os.path.join(BASE_DIR, "datos", "cost_of_living_index.csv")
 OUT_CSV   = os.path.join(BASE_DIR, "datos", "dataset_enriquecido.csv")

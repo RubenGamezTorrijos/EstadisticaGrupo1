@@ -8,7 +8,6 @@ para facilitar su uso en la aplicación principal (app.py).
 
 # Estadísticos (Responsable: Rafael / Rubén)
 from .estadisticos import (
-    limpiar_datos, 
     calcular_estadisticos, 
     calcular_estadisticos_por_categoria,
     detectar_outliers_iqr
@@ -35,4 +34,4 @@ from .inferencial import (
 )
 
 # Regresión (Responsable: Leslie Ross)
-from .modelo_regresion import ejecutar_regresion_simple
+from .regresion import ejecutar_regresion_simple
