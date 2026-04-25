@@ -51,74 +51,89 @@ def render_escritorio(df, key, sym):
     import plotly.graph_objects as go
     
     # 1. Cálculos de base
-    mean_active = df[key].mean()
     mean_usd = df[COL_SALARIO_USD].mean()
     mean_eur = df[COL_SALARIO_EUR].mean()
     med_coli = df['cost_of_living_index'].median()
     n_muestra = len(df)
-    años_unique = df['work_year'].nunique()
     
-    # 2. Lógica de formato (Requisito: >140,500 -> XXX.X K)
-    def format_salary(val):
-        if val > 140500:
-            return f"{val/1000:.1f}K"
-        return f"{val:,.0f}"
-
-    # 3. Diseño: Columna Izquierda (Métricas 2x2) | Columna Derecha (Gráfica)
-    main_col_left, main_col_right = st.columns([1.5, 1])
+    if 'work_setting' in df.columns:
+        remote_pct = (df['work_setting'] == 'Remote').mean() * 100
+    else:
+        remote_pct = 0
+        
+    años_range = f"{df['work_year'].min()} - {df['work_year'].max()}"
+    
+    # 2. Diseño: Columna Izquierda (Métricas 2x2) | Columna Derecha (Gráficas Duales)
+    main_col_left, main_col_right = st.columns([1, 1.2])
     
     with main_col_left:
         # Fila 1 de métricas
         r1_c1, r1_c2 = st.columns(2)
         with r1_c1:
-            st.metric("Total Muestra (N)", f"{n_muestra:,}")
+            st.metric("👥 Total Datos", f"{n_muestra:,}")
         with r1_c2:
-            # Mostramos la divisa CONTRARIA a la de la gráfica para no duplicar
-            if key == COL_SALARIO_USD:
-                st.metric("Salario Medio (EUR)", f"{mean_eur:,.0f} €")
-            else:
-                st.metric("Salario Medio (USD)", f"{mean_usd:,.0f} $")
+            st.metric("🏠 Mediana COLI", f"{med_coli:,.2f}")
         
         # Fila 2 de métricas
         r2_c1, r2_c2 = st.columns(2)
         with r2_c1:
-            st.metric("Mediana COLI", f"{med_coli:,.2f}")
+            st.metric("📡 % Trabajo Remoto", f"{remote_pct:.1f}%")
         with r2_c2:
-            st.metric("Años en Muestra", f"{años_unique}")
+            st.metric("📅 Años Analizados", años_range)
 
     with main_col_right:
-        # 4. Gráfico de Aguja (Gauge) del Salario Seleccionado
-        label_active = "Salario Medio (USD)" if key == COL_SALARIO_USD else "Salario Medio (EUR)"
-        
-        # Formateo dinámico para el número central
-        is_high = mean_active > 140500
-        display_val = mean_active / 1000 if is_high else mean_active
-        suffix = "k" if is_high else ""
-        val_format = ".1f" if is_high else ",.0f"
+        # 3. Gráficos de Aguja Duales (USD y EUR) en una sola figura
+        fig = go.Figure()
 
-        fig = go.Figure(go.Indicator(
+        # Configuración de formato para USD
+        is_high_usd = mean_usd > 140500
+        val_usd = mean_usd / 1000 if is_high_usd else mean_usd
+        
+        # Configuración de formato para EUR
+        is_high_eur = mean_eur > 140500
+        val_eur = mean_eur / 1000 if is_high_eur else mean_eur
+
+        # Trace para USD
+        fig.add_trace(go.Indicator(
             mode = "gauge+number",
-            value = display_val,
-            number = {'prefix': sym, 'suffix': suffix, 'valueformat': val_format},
-            domain = {'x': [0, 1], 'y': [0, 1]},
-            title = {'text': label_active, 'font': {'size': 16}},
+            value = val_usd,
+            number = {'prefix': "$", 'suffix': "k" if is_high_usd else "", 'valueformat': ".1f" if is_high_usd else ",.0f"},
+            title = {'text': "Media USD", 'font': {'size': 14}},
+            domain = {'x': [0, 0.48], 'y': [0, 1]},
             gauge = {
-                'axis': {'range': [None, (df[key].max() / 1000 if is_high else df[key].max()) * 1.1], 'tickwidth': 1},
-                'bar': {'color': "#007BFF"},
+                'axis': {'range': [None, (df[COL_SALARIO_USD].max() / 1000 if is_high_usd else df[COL_SALARIO_USD].max()) * 1.1]},
+                'bar': {'color': "#1f77b4"},
                 'steps': [
-                    {'range': [0, 70 if is_high else 70000], 'color': '#f8d7da'},
-                    {'range': [70 if is_high else 70000, 140 if is_high else 140000], 'color': '#fff3cd'},
-                    {'range': [140 if is_high else 140000, (df[key].max() / 1000 if is_high else df[key].max()) * 1.1], 'color': '#d4edda'}
-                ],
-                'threshold': {
-                    'line': {'color': "red", 'width': 4},
-                    'thickness': 0.75,
-                    'value': display_val
-                }
+                    {'range': [0, 140 if is_high_usd else 140000], 'color': "lavender"},
+                    {'range': [140 if is_high_usd else 140000, 500], 'color': "ghostwhite"}
+                ]
             }
         ))
+
+        # Trace para EUR
+        fig.add_trace(go.Indicator(
+            mode = "gauge+number",
+            value = val_eur,
+            number = {'prefix': "€", 'suffix': "k" if is_high_eur else "", 'valueformat': ".1f" if is_high_eur else ",.0f"},
+            title = {'text': "Media EUR", 'font': {'size': 14}},
+            domain = {'x': [0.52, 1], 'y': [0, 1]},
+            gauge = {
+                'axis': {'range': [None, (df[COL_SALARIO_EUR].max() / 1000 if is_high_eur else df[COL_SALARIO_EUR].max()) * 1.1]},
+                'bar': {'color': "#ff7f0e"},
+                'steps': [
+                    {'range': [0, 140 if is_high_eur else 140000], 'color': "lavender"},
+                    {'range': [140 if is_high_eur else 140000, 500], 'color': "ghostwhite"}
+                ]
+            }
+        ))
+
+        fig.update_layout(
+            height=280, 
+            margin=dict(l=10, r=10, t=40, b=10),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
         
-        fig.update_layout(height=250, margin=dict(l=20, r=20, t=40, b=20))
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
     st.markdown("---")
