@@ -1,4 +1,4 @@
-# 🛠️ Entorno de Desarrollo v.2.2.1 - Grupo 1 (Estadística y Optimización)
+# 🛠️ Entorno de Desarrollo v.2.5.1 - Grupo 1 (Estadística y Optimización)
 
 ## ⚠️ AVISO PARA EL EQUIPO (Modo Puzle v2)
 Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El núcleo de la aplicación, el motor de exportación y la limpieza de datos están **FINALIZADOS**.
@@ -20,9 +20,10 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 - [x] **Estadística Descriptiva**: Motor de cálculos en `analisis/estadisticos.py`.
 
 ### 👤 Bryann Vallejo Luna (Analista Inferencial)
-- [ ] **Intervalos de Confianza**: Implementación de IC 95% (T-Student) en `analisis/inferencial.py`.
-- [ ] **Contrastes de Hipótesis**: Tests paramétricos para Experiencia y Modalidad.
-- [ ] **Verificación**: Validación de p-valores y conclusiones poblacionales.
+- [x] **Intervalos de Confianza**: Implementación de IC 95% (T-Student) en `analisis/inferencial.py`.
+- [x] **Contrastes de Hipótesis**: Tests paramétricos para Experiencia y Modalidad.
+- [x] **Verificación**: Validación de p-valores y conclusiones poblacionales.
+- [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
 ### 👤 Leslie Ross Aranibar Pozo (Analista Descriptivo)
 - [ ] **Visualizaciones**: Catálogo de Histogramas, Boxplots y Violines en `analisis/graficos.py`.
@@ -31,7 +32,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 
 ---
 
-## 🚀 Cómo empezar en esta versión (v.2.2.1)
+## 🚀 Cómo empezar en esta versión (v.2.5.1)
 
 1. **Clonar la rama de desarrollo**:
    ```bash
@@ -74,7 +75,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 | ![Captura 1](capturas/captura_1_app_streamlit_escritorio_general.jpg?v=2) | ![Captura 2](capturas/captura_2_app_streamlit_analisis_descriptivo_estadisticos.jpg?v=2) |
 | **Visualizaciones (Pistas)** | **Regresión (Pistas)** |
 | ![Captura 3](capturas/captura_3_app_streamlit_analisis_descriptivo_visualizaciones.jpg?v=2) | ![Captura 4](capturas/captura_4_app_streamlit_analisis_descriptivo_regresion.jpg?v=2) |
-| **Estadística Inferencial** | **Nueva Vista de Equipo (v.2.2.1)** |
+| **Estadística Inferencial** | **Nueva Vista de Equipo (v.2.5.1)** |
 | ![Captura 5](capturas/captura_5_app_streamlit_estadistica_inferencial.jpg?v=2) | ![Captura 6](capturas/captura_6_app_streamlit_equipo_del_grupo1.jpg?v=2) |
 
 ---
@@ -89,4 +90,4 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 > Versión coordinada por **Rubén Gámez Torrijos**. No fusionar a `main` sin aprobación previa del esquema de integración.
 
 ---
-*© 2026 - Universidad Europea - Grado en Ingeniería - v.2.2.1-dev*
+*© 2026 - Universidad Europea - Grado en Ingeniería - v.2.5.1-dev*
