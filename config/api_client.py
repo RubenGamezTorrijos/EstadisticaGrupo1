@@ -15,30 +15,33 @@ WB_URL = "https://api.worldbank.org/v2/country/all/indicator/"
 
 def get_latest_coli_data():
     """
-    Intenta obtener los datos más recientes. 
-    Si la API falla, devuelve los datos locales de respaldo.
+    Obtiene el factor de conversión PPP (Coste de Vida) del Banco Mundial.
+    Normaliza el índice a base 100 (USA = 100) para compatibilidad.
     """
     params = {
         "format": "json",
-        "date": "2020:2023",
-        "per_page": 5000,
-        "source": 2 # World Development Indicators
+        "date": "2022:2023",
+        "per_page": 300,
+        "source": 2
     }
     
     try:
-        # Nota: Algunos indicadores pueden requerir fuentes específicas
-        response = requests.get(f"{WB_URL}{WB_INDICATOR}", params=params, timeout=10)
+        response = requests.get(f"{WB_URL}{WB_INDICATOR}", params=params, timeout=15)
         if response.status_code == 200:
-            data = response.json()
-            if len(data) > 1:
-                records = data[1]
-                # Procesar registros...
-                return pd.DataFrame([
-                    {"country": r['country']['value'], "year": int(r['date']), "index": r['value']}
-                    for r in records if r['value'] is not None
+            json_data = response.json()
+            if isinstance(json_data, list) and len(json_data) > 1:
+                records = json_data[1]
+                # Crear DataFrame y normalizar (API devuelve ratio, queremos base 100)
+                df_api = pd.DataFrame([
+                    {
+                        "country": r['country']['value'], 
+                        "cost_of_living_index": float(r['value']) * 100 if r['value'] else None
+                    }
+                    for r in records
                 ])
-    except Exception:
-        pass
+                # Limpiar nulos y duplicados (quedarse con el más reciente)
+                return df_api.dropna().drop_duplicates(subset=['country'])
+    except Exception as e:
+        print(f"Error consultando World Bank API: {e}")
     
-    # Fallback a datos locales si la API no está disponible
-    return pd.read_csv(COLI_CSV) if os.path.exists(COLI_CSV) else None
+    return None

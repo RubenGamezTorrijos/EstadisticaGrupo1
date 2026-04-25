@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import config.settings as cfg
+from config.api_client import get_latest_coli_data
 
 # Fallback para evitar errores NameError si la importación falla o el nombre no está definido globalmente
 COL_CURRENCY = getattr(cfg, 'COL_CURRENCY', 'currency')
@@ -55,8 +56,19 @@ def load_processed_data() -> pd.DataFrame:
         df[cfg.COL_SALARIO_EUR] = (df[cfg.COL_SALARIO_USD] * cfg.EUR_USD_RATE).round(2)
         
         # --- Integración de Coste de Vida (COLI) ---
-        if os.path.exists(cfg.COLI_CSV):
-            df_coli = pd.read_csv(cfg.COLI_CSV)
+        df_coli = get_latest_coli_data()
+        
+        # Si la API falla, intentar cargar desde el CSV local
+        if df_coli is None or df_coli.empty:
+            if os.path.exists(cfg.COLI_CSV):
+                df_coli = pd.read_csv(cfg.COLI_CSV)
+                st.info("Utilizando datos locales de COLI (Respaldo).")
+            else:
+                st.warning("Archivo COLI no encontrado. Usando valores por defecto.")
+                df['cost_of_living_index'] = 70.0 # Valor neutral
+        
+        # Si tenemos datos (de API o de CSV), realizar el merge
+        if df_coli is not None and not df_coli.empty:
             df = pd.merge(df, df_coli[['country', 'cost_of_living_index']], 
                          left_on=cfg.COL_PAIS, right_on='country', how='left')
             
@@ -66,9 +78,6 @@ def load_processed_data() -> pd.DataFrame:
             # Rellenar países faltantes con la media global (Senior Strategy)
             media_coli = df['cost_of_living_index'].mean()
             df['cost_of_living_index'] = df['cost_of_living_index'].fillna(media_coli)
-        else:
-            st.warning("Archivo COLI no encontrado. Usando valores por defecto.")
-            df['cost_of_living_index'] = 70.0 # Valor neutral
             
         # --- Cálculo de Salario Ajustado (Poder Adquisitivo) ---
         df[cfg.COL_SALARIO_AJUSTADO] = (df[cfg.COL_SALARIO_USD] / df['cost_of_living_index'] * 100).round(2)
