@@ -12,7 +12,7 @@ from analisis.graficos import (
     crear_histograma, crear_boxplot, crear_violin_plot, 
     crear_bar_chart, crear_scatter_regresion, crear_grafico_comparativo_ic
 )
-from analisis.inferencial import calcular_ic_95, contraste_hipotesis
+from analisis.inferencial import calcular_ic_95, contraste_hipotesis, verificar_supuestos
 from analisis.modelo_regresion import ejecutar_regresion_simple
 
 def render_main_layout(df, opcion, key, sym):
@@ -189,18 +189,64 @@ def render_regresion(df, key, sym):
 
 def render_inferencial(df, key, sym):
     st.title("🧪 Estadística Inferencial - Bryann Vallejo")
-    st.markdown("Análisis de probabilidad para validar hipótesis poblacionales.")
+    st.markdown("Análisis de probabilidad para validar hipótesis poblacionales sobre los salarios.")
     
-    # Verificación de implementación de Bryann
-    st.info("""
-    ### 👨‍💻 Tareas de Bryann Vallejo (Estadística Inferencial)
-    Bryann debe completar la lógica matemática en el archivo `analisis/inferencial.py` para:
-    1. **Intervalos de Confianza**: Cálculo manual de grados de libertad, error estándar y T-crítico.
-    2. **Contrastes de Hipótesis**: Implementar `stats.ttest_ind` y analizar el P-valor.
-    3. **Supuestos**: Validar si los datos siguen una distribución normal.
+    # --- 1. Intervalo de Confianza ---
+    st.subheader(f"📍 Intervalo de Confianza (95%) - {sym}")
+    ic_data = calcular_ic_95(df[key])
     
-    *Consulta las pistas en el código para las fórmulas de Numpy y Scipy.*
-    """)
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Media Muestral", f"{ic_data['Media']:,.2f} {sym}")
+    with col2:
+        st.metric("Límite Inferior", f"{ic_data['Inferior']:,.2f} {sym}")
+    with col3:
+        st.metric("Límite Superior", f"{ic_data['Superior']:,.2f} {sym}")
+    
+    st.caption(f"Interpretación: Con un 95% de confianza, la media poblacional se encuentra entre {ic_data['Inferior']:,.0f} y {ic_data['Superior']:,.0f} {sym}.")
+
+    st.markdown("---")
+    
+    # --- 2. Verificación de Supuestos ---
+    st.subheader("🛡️ Verificación de Supuestos")
+    supuestos = verificar_supuestos(df[key])
+    
+    col_s1, col_s2 = st.columns([1, 2])
+    with col_s1:
+        if supuestos['Normal']:
+            st.success(f"✅ Normalidad: {supuestos['Prueba']}")
+        else:
+            st.error(f"❌ Normalidad: {supuestos['Prueba']}")
+    with col_s2:
+        st.write(f"**P-Valor:** `{supuestos['P-Valor']:.4e}`")
+        st.write("Si el P-Valor es > 0.05, los datos siguen una distribución normal.")
+
+    st.markdown("---")
+    
+    # --- 3. Contraste de Hipótesis ---
+    st.subheader("⚖️ Contraste de Hipótesis (Welch T-Test)")
+    st.write("¿Existe una diferencia significativa entre el trabajo **Remoto** y **Presencial**?")
+    
+    if 'work_setting' in df.columns:
+        remote = df[df['work_setting'] == 'Remote'][key]
+        presencial = df[df['work_setting'] == 'In-person'][key]
+        
+        if len(remote) > 1 and len(presencial) > 1:
+            res_h = contraste_hipotesis(remote, presencial, "Remoto", "Presencial")
+            
+            st.info(f"**Resultado:** {res_h['Decisión']}")
+            st.write(f"**Conclusión:** {res_h['Conclusion']}")
+            
+            # Gráfico comparativo (opcional, si existe en analisis/graficos.py)
+            try:
+                fig_ic = crear_grafico_comparativo_ic(df, key, 'work_setting', sym)
+                st.pyplot(fig_ic)
+            except Exception:
+                st.warning("⚠️ Gráfico comparativo pendiente por Leslie Ross.")
+        else:
+            st.warning("No hay suficientes datos para realizar el contraste entre Remoto y Presencial.")
+    else:
+        st.warning("La variable 'work_setting' no está disponible para el contraste.")
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")

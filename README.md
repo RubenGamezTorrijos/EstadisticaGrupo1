@@ -62,7 +62,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 | **Motor Exportación** | Rubén Gámez | `analisis/exportacion.py` | ✅ Finalizado |
 | **Procesamiento Datos**| Rafael Rodriguez | `analisis/utils.py` | ✅ Finalizado |
 | **Motor Estadístico**| Rafael Rodriguez | `analisis/estadisticos.py`| ✅ Finalizado |
-| **Inferencia** | Bryann Vallejo | `analisis/inferencial.py` | 🛠️ Pendiente |
+| **Inferencia** | Bryann Vallejo | `analisis/inferencial.py` | ✅ Finalizado |
 | **Gráficos y Regresión**| Leslie Ross | `analisis/graficos.py` | 🛠️ Pendiente |
 
 ---
