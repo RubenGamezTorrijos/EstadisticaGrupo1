@@ -41,6 +41,7 @@ ipython_config.py
 documentacion/
 informes/
 plan/
+MANUAL_DESARROLLO.md
 
 # --- Logs y CSV en raíz ---
 *.csv

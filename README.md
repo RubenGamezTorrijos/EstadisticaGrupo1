@@ -3,7 +3,7 @@
 ## ⚠️ AVISO PARA EL EQUIPO (Modo Puzle v2)
 Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El núcleo de la aplicación, el motor de exportación y la limpieza de datos están **FINALIZADOS**.
 
-**OBJETIVO PARA LESLIE Y BRYANN:** La aplicación se encuentra en "Modo Puzle". Deberéis implementar la lógica matemática y visual en los archivos indicados basándoos en las pistas (`# 💡 PISTA`) y los banners inteligentes de la UI.
+**OBJETIVO PARA LESLIE:** La aplicación se encuentra en "Modo Puzle". Deberás implementar la lógica matemática y visual en los archivos indicados basándoos en las pistas (`# 💡 PISTA`) y los banners inteligentes de la UI.
 
 ---
 
@@ -47,7 +47,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 
 3. **Ejecutar y Localizar Tareas**:
    ```bash
-   streamlit run app.py
+   python -m streamlit run app.py
    ```
 
 > [!IMPORTANT]
