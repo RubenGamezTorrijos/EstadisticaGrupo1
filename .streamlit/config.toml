@@ -1,0 +1,3 @@
+[theme]
+primaryColor = "#0b84f4"
+# El fondo y el texto se dejan por defecto para que Streamlit los gestione dinámicamente según el sistema/usuario
