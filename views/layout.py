@@ -299,29 +299,33 @@ def render_equipo():
     
     with col1:
         with st.expander("👑 Rubén Gámez Torrijos", expanded=True):
-            st.markdown("**Rol:** Coordinador y Arquitectura")
-            st.write("Liderazgo técnico, diseño estructural y orquestación del proyecto.")
-            st.success("✅ **Estado:** FINALIZADO")
-            st.caption("Archivos: `app.py`, `analisis/exportacion.py`, `views/styles.py`.")
+            st.markdown("**Coordinador y Arquitectura**")
+            st.write("**Descripción:** Liderazgo técnico, diseño estructural y orquestación del proyecto.")
+            st.write("**Responsabilidades:** Diseño de la arquitectura modular de la aplicación, sistema de estilos CSS adaptativos para temas Light/Dark y desarrollo del motor de exportación profesional (PDF/Excel).")
+            st.write("**Archivos clave:** `app.py` (Orquestación), `analisis/exportacion.py` (Generación de Reportes), `config/styles.py`.")
+            st.success("✅ **Estado:** FINALIZADO Y VERIFICADO")
             
         with st.expander("📊 Rafael Rodriguez Mengual", expanded=True):
-            st.markdown("**Rol:** Data Manager")
-            st.write("Procesamiento, limpieza e integración de variables externas (COLI).")
-            st.success("✅ **Estado:** FINALIZADO")
-            st.caption("Archivos: `analisis/utils.py`, `analisis/estadisticos.py`.")
+            st.markdown("**Data Manager**")
+            st.write("**Descripción:** Especialista en procesamiento, limpieza y análisis descriptivo de datos.")
+            st.write("**Responsabilidades:** Implementación del pipeline de limpieza de datos, integración de variables externas (Índice de coste de vida) y desarrollo de la lógica para estadísticos de tendencia central y dispersión.")
+            st.write("**Archivos clave:** `analisis/utils.py` (Limpieza), `analisis/estadisticos.py` (Motor estadístico).")
+            st.success("✅ **Estado:** FINALIZADO Y VERIFICADO")
 
     with col2:
         with st.expander("🧪 Bryann Vallejo Luna", expanded=True):
-            st.markdown("**Rol:** Analista Inferencial")
-            st.write("Modelos probabilísticos, IC 95% y contrastes de hipótesis.")
-            st.success("✅ **Estado:** FINALIZADO")
-            st.caption("Archivos: `analisis/inferencial.py`.")
+            st.markdown("**Analista Inferencial**")
+            st.write("**Descripción:** Experto en modelos probabilísticos y validación de hipótesis estadísticas.")
+            st.write("**Responsabilidades:** Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.")
+            st.write("**Archivos clave:** `analisis/inferencial.py`, `app.py` (Sección Inferencia).")
+            st.success("✅ **Estado:** FINALIZADO Y VERIFICADO")
             
         with st.expander("🎨 Leslie Ross Aranibar Pozo", expanded=True):
-            st.markdown("**Rol:** Analista Descriptivo")
-            st.write("Visualización avanzada y modelos de correlación COLI-Salario.")
-            st.warning("🛠️ **Estado:** EN PROGRESO")
-            st.caption("Pendiente: `analisis/graficos.py`, `analisis/modelo_regresion.py`.")
+            st.markdown("**Analista Descriptivo**")
+            st.write("**Descripción:** Especialista en visualización avanzada y modelado de correlación lineal.")
+            st.write("**Responsabilidades:** Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.")
+            st.write("**Archivos clave:** `analisis/graficos.py`, `analisis/modelo_regresion.py`.")
+            st.warning("🛠️ **Estado:** TAREAS PENDIENTES (Implementar Visualizaciones)")
 
     st.markdown("---")
-    st.caption("© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.2.1-dev)")
+    st.caption("© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.5.0)")
