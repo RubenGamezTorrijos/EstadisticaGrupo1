@@ -36,6 +36,11 @@ def crear_histograma(df, columna):
     # 3. Añade etiquetas de eje X e Y
     
     # --- Tu código aquí ---
+    sns.histplot(data=df, x=columna, kde=True, ax=ax, color='#00d1b2')
+    
+    ax.xaxis.set_major_formatter(formatter)
+    ax.set_xlabel(columna)
+    ax.set_ylabel("Frecuencia")
     
     ax.set_title(f'Distribución de {columna}', fontsize=14, pad=15)
     guardar_grafico(fig, f'histograma_{columna}.png')
@@ -50,6 +55,13 @@ def crear_boxplot(df, num, cat):
     # 2. Aplica formatter al eje Y si aplica (ax.yaxis.set_major_formatter)
     
     # --- Tu código aquí ---
+    sns.boxplot(data=df, x=cat, y=num, ax=ax)
+
+    ax.yaxis.set_major_formatter(formatter)
+
+    ax.set_xlabel(cat)
+    ax.set_ylabel(num)
+    
     
     ax.set_title(f'{num} por {cat}', fontsize=14, pad=15)
     plt.xticks(rotation=45)
@@ -65,7 +77,13 @@ def crear_scatter_regresion(df, x_col, y_col):
     # 2. Aplica el formatter al eje Y
     
     # --- Tu código aquí ---
-    corr = 0.0  # Modifica esto por el cálculo real
+    sns.regplot(data=df, x=x_col, y=y_col, ax=ax, scatter_kws={'alpha': 0.6})
+
+    corr = df[x_col].corr(df[y_col])  # Modifica esto por el cálculo real
+    ax.yaxis.set_major_formatter(formatter)
+
+    ax.set_xlabel(x_col)
+    ax.set_ylabel(y_col)
     
     ax.set_title(f'Regresión: {y_col} vs {x_col} (r={corr:.2f})', fontsize=14, pad=15)
     guardar_grafico(fig, f'scatter_regresion_{x_col}_{y_col}.png')
@@ -79,6 +97,13 @@ def crear_bar_chart(df, cat):
     # Ejemplo: counts = df[cat].value_counts().head(10)
     
     # --- Tu código aquí ---
+    counts = df[cat].value_counts().head(10)
+
+    sns.barplot(x=counts.index, y=counts.values, ax=ax)
+
+    ax.set_xlabel(cat)
+    ax.set_ylabel("Frecuencia")
+        
     
     ax.set_title(f'Top 10: {cat}', fontsize=14, pad=15)
     plt.xticks(rotation=45)
