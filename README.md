@@ -35,7 +35,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 
 ---
 
-## 🚀 Cómo empezar en esta versión (v.2.5.1)
+## 🚀 Cómo empezar en esta versión (v.2.5.2)
 
 1. **Clonar la rama de desarrollo**:
    ```bash
@@ -93,4 +93,4 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 > Versión coordinada por **Rubén Gámez Torrijos**. No fusionar a `main` sin aprobación previa del esquema de integración.
 
 ---
-*© 2026 - Universidad Europea - Grado en Ingeniería - v.2.5.1-dev*
+*© 2026 - Universidad Europea - Grado en Ingeniería - v.2.5.2-dev*
