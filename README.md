@@ -1,4 +1,4 @@
-# 🛠️ Entorno de Desarrollo v.2.5.1 - Grupo 1 (Estadística y Optimización)
+# 🛠️ Entorno de Desarrollo v.2.5.2 - Grupo 1 (Estadística y Optimización)
 
 ## ⚠️ AVISO PARA EL EQUIPO (Modo Puzle v2)
 Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El núcleo de la aplicación, el motor de exportación y la limpieza de datos están **FINALIZADOS**.
