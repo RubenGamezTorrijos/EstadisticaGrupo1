@@ -11,7 +11,7 @@ from .settings import COLI_CSV
 
 # Usaremos un indicador estable del Banco Mundial para el Coste de Vida (PPP ratio)
 WB_INDICATOR = "PA.NUS.PPPC.RF"
-WB_URL = "https://api.worldbank.org/v2/country/all/indicator/"
+WB_URL = "https://api.worldbank.org/v2/country/all/"
 
 def get_latest_coli_data():
     """

@@ -12,12 +12,14 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 ### 👤 Rubén Gámez Torrijos (Coordinador y Arquitectura)
 - [x] **Arquitectura Core**: Diseño modular `analisis/` y orquestación en `app.py`.
 - [x] **Identidad Visual**: Diseño de banners de tareas y pie de página crediticio.
-- [x] **Exportación Pro**: Motor de reportes PDF/Excel con validación de nulidad (v.2.2.1).
+- [x] **Exportación Pro**: Motor de reportes PDF/Excel con validación de nulidad.
+- [x] **Estado**: ⏳ Pendiente de verificar arquitectura completa.
 
 ### 👤 Rafael Rodriguez Mengual (Data Manager)
 - [x] **Limpieza de Datos**: Pipeline de procesamiento en `analisis/utils.py`.
 - [x] **Enriquecimiento**: Integración del Índice de Coste de Vida (COLI).
 - [x] **Estadística Descriptiva**: Motor de cálculos en `analisis/estadisticos.py`.
+- [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
 ### 👤 Bryann Vallejo Luna (Analista Inferencial)
 - [x] **Intervalos de Confianza**: Implementación de IC 95% (T-Student) en `analisis/inferencial.py`.
@@ -29,6 +31,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 - [ ] **Visualizaciones**: Catálogo de Histogramas, Boxplots y Violines en `analisis/graficos.py`.
 - [ ] **Correlación**: Desarrollo del modelo de regresión lineal simple.
 - [ ] **Integración**: Ajuste de plots para alta resolución en exportación.
+- [ ] **Estado**: ⏳ Pendiente de refactorización y revisión completa.
 
 ---
 
