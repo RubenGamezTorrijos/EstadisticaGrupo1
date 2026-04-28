@@ -1,111 +1,98 @@
 """
 PROYECTO: Estadística para Ingeniería
-MIEMBRO: LESLIE ROSS ARANIBAR POZO (Analista Descriptivo)
-TAREA: Visualizaciones estadísticas y Análisis de Regresión
+ANÁLISIS GRÁFICO Y VISUALIZACIÓN
+COORDINADOR: RUBEN GAMEZ TORRIJOS
+ROL ASIGNADO (Lógica Visual): Leslie Ross Aranibar Pozo
+ESTADO: PENDIENTE (Rama DEV)
 """
+
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
+import config.settings as cfg
 import os
-from matplotlib.ticker import FuncFormatter
 
-# Configuración estética Leslie
-sns.set_theme(style="darkgrid")
-plt.rcParams['figure.dpi'] = 300
-plt.rcParams['savefig.dpi'] = 300
+# =================================================================
+# SECCIÓN: VISUALIZACIÓN DE DATOS (RESPONSABLE: LESLIE ROSS)
+# =================================================================
 
-def fmt_es(x, pos):
-    """Formato español: punto para miles, coma para decimales"""
-    return f"{x:,.0f}".replace(",", "@").replace(".", ",").replace("@", ".")
+def crear_histograma(df, x_col, titulo="Distribución Salarial"):
+    """
+    MODULO: Histogramas
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """
+    # PENDIENTE POR LESLIE
+    return None
 
-formatter = FuncFormatter(fmt_es)
+def crear_boxplot(df, y_col, x_col, titulo="Comparativa Salarial"):
+    """
+    MODULO: Boxplots
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """
+    # PENDIENTE POR LESLIE
+    return None
 
-def guardar_grafico(fig, nombre):
-    """LESLIE ROSS ARANIBAR POZO - Guardar PNG"""
-    ruta = os.path.join('outputs', 'graficos', nombre)
-    os.makedirs(os.path.dirname(ruta), exist_ok=True)
-    fig.savefig(ruta, bbox_inches='tight')
+def crear_violin_plot(df, x_col, y_col, titulo="Densidad Salarial"):
+    """
+    MODULO: Violin Plots
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """
+    # PENDIENTE POR LESLIE
+    return None
+
+def crear_bar_chart(df, col, titulo="Presencia en Mercado"):
+    """
+    MODULO: Bar Charts
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """
+    # PENDIENTE POR LESLIE
+    return None
+
+def crear_grafico_comparativo_ic(df, x_col, y_col, titulo="Evidencia Inferencial"):
+    """
+    MODULO: Gráficos de Error (IC)
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """
+    # PENDIENTE POR LESLIE
+    return None
+
+def crear_scatter_regresion(df, x_col, y_col, titulo="Relación Salario vs COLI"):
+    """
+    MODULO: Dispersión con Regresión
+    ROL ASIGNADO: Leslie Ross Aranibar Pozo
+    """
+    # PENDIENTE POR LESLIE
+    return None, {'r_cuadrado': 0.0, 'pendiente': 0.0, 'intercepto': 0.0, 'p_valor': 0.0}
+
+def obtener_label(col):
+    """Devuelve una etiqueta legible para el gráfico desde la configuración central."""
+    return cfg.VAR_LABELS.get(col, col)
+
+def sanitize_pdf_text(text):
+    """Limpia caracteres especiales para compatibilidad con FPDF (latin-1)."""
+    if text is None: return ""
+    replacements = {
+        'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+        'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U',
+        'ñ': 'n', 'Ñ': 'N', '€': 'EUR', '$': 'USD',
+        '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4',
+        '²': '^2', '±': '+/-', '≥': '>=', '≤': '<=', '≠': '!='
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    try:
+        return text.encode('latin-1', 'replace').decode('latin-1')
+    except:
+        return text
+
+def guardar_grafico(fig, nombre, ruta='outputs/graficos/'):
+    """
+    Guarda un gráfico como PNG de forma segura para los informes.
+    Módulo desarrollado por Rafael Rodriguez para consumo global.
+    """
+    if fig is None: return None
+    os.makedirs(ruta, exist_ok=True)
+    ruta_completa = os.path.join(ruta, nombre)
+    fig.savefig(ruta_completa, bbox_inches='tight', dpi=150)
     plt.close(fig)
-
-def crear_histograma(df, columna):
-    """LESLIE ROSS ARANIBAR POZO - Histograma con KDE"""
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # TODO (Leslie): Generar histograma con Seaborn
-    # 1. Usa sns.histplot(data=df, x=columna, kde=True, ax=ax, color='#00d1b2')
-    # 2. Aplica el formatedor al eje X: ax.xaxis.set_major_formatter(formatter)
-    # 3. Añade etiquetas de eje X e Y
-    
-    # --- Tu código aquí ---
-    sns.histplot(data=df, x=columna, kde=True, ax=ax, color='#00d1b2')
-    
-    ax.xaxis.set_major_formatter(formatter)
-    ax.set_xlabel(columna)
-    ax.set_ylabel("Frecuencia")
-    
-    ax.set_title(f'Distribución de {columna}', fontsize=14, pad=15)
-    guardar_grafico(fig, f'histograma_{columna}.png')
-    return fig
-
-def crear_boxplot(df, num, cat):
-    """LESLIE ROSS ARANIBAR POZO - Boxplot por categoría"""
-    fig, ax = plt.subplots(figsize=(12, 7))
-    
-    # TODO (Leslie): Generar boxplot con Seaborn
-    # 1. Usa sns.boxplot para relacionar la variable categórica (cat) con la numérica (num)
-    # 2. Aplica formatter al eje Y si aplica (ax.yaxis.set_major_formatter)
-    
-    # --- Tu código aquí ---
-    sns.boxplot(data=df, x=cat, y=num, ax=ax)
-
-    ax.yaxis.set_major_formatter(formatter)
-
-    ax.set_xlabel(cat)
-    ax.set_ylabel(num)
-    
-    
-    ax.set_title(f'{num} por {cat}', fontsize=14, pad=15)
-    plt.xticks(rotation=45)
-    guardar_grafico(fig, f'boxplot_{num}_{cat}.png')
-    return fig
-
-def crear_scatter_regresion(df, x_col, y_col):
-    """LESLIE ROSS ARANIBAR POZO - Dispersión + Regresión"""
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # TODO (Leslie): Generar dispersión con línea de regresión (sns.regplot)
-    # 1. Calcula la correlación de Pearson y guárdala en una variable `corr`
-    # 2. Aplica el formatter al eje Y
-    
-    # --- Tu código aquí ---
-    sns.regplot(data=df, x=x_col, y=y_col, ax=ax, scatter_kws={'alpha': 0.6})
-
-    corr = df[x_col].corr(df[y_col])  # Modifica esto por el cálculo real
-    ax.yaxis.set_major_formatter(formatter)
-
-    ax.set_xlabel(x_col)
-    ax.set_ylabel(y_col)
-    
-    ax.set_title(f'Regresión: {y_col} vs {x_col} (r={corr:.2f})', fontsize=14, pad=15)
-    guardar_grafico(fig, f'scatter_regresion_{x_col}_{y_col}.png')
-    return fig
-
-def crear_bar_chart(df, cat):
-    """LESLIE ROSS ARANIBAR POZO - Diagrama de barras"""
-    fig, ax = plt.subplots(figsize=(12, 6))
-    
-    # TODO (Leslie): Obtener conteo de categorías y graficar con sns.barplot
-    # Ejemplo: counts = df[cat].value_counts().head(10)
-    
-    # --- Tu código aquí ---
-    counts = df[cat].value_counts().head(10)
-
-    sns.barplot(x=counts.index, y=counts.values, ax=ax)
-
-    ax.set_xlabel(cat)
-    ax.set_ylabel("Frecuencia")
-        
-    
-    ax.set_title(f'Top 10: {cat}', fontsize=14, pad=15)
-    plt.xticks(rotation=45)
-    guardar_grafico(fig, f'barras_{cat}.png')
-    return fig
+    return ruta_completa

@@ -1,82 +1,89 @@
 """
 PROYECTO: Estadística para Ingeniería
-MIEMBRO: BRYANN VALLEJO LUNA (Analista Inferencial)
-TAREA: Intervalos de Confianza y Contrastes de Hipótesis
+ANÁLISIS INFERENCIAL Y PRUEBAS DE HIPÓTESIS
+AUTORES: RUBEN GAMEZ TORRIJOS / RAFAEL RODRIGUEZ
+ROL ASIGNADO (Lógica Estadística): Bryann Vallejo Luna
+ESTADO: ✅ INTEGRADO (Lógica de Bryann verificada)
+TAREA PENDIENTE: Crear informe de 1-2 páginas verificado con Leslie Ross.
 """
-import pandas as pd
+
 import numpy as np
 from scipy import stats
-import os
+import pandas as pd
+
+# =================================================================
+# SECCIÓN: INFERENCIA POBLACIONAL (RESPONSABLE: BRYANN VALLEJO)
+# =================================================================
 
 def calcular_ic_95(data):
     """
-    BRYANN VALLEJO LUNA - Intervalo de Confianza 95%
-    Calcula el IC para una serie de datos.
+    MODULO: Inferencia Poblacional
+    ROL ASIGNADO: Bryann Vallejo Luna
     """
     n = len(data)
-    
-    # TODO (Bryann): Calcular media, error estándar y el intervalo IC al 95%.
-    # 1. Usa np.mean(data)
-    # 2. Usa stats.sem(data)
-    # 3. Usa stats.t.interval(0.95, n-1, ...)
-    
-    # --- Tu código aquí ---
-    media = 0.0
-    intervalo = (0.0, 0.0)
-    
+    if n < 2:
+        return {'Media': 0, 'Inferior': 0, 'Superior': 0, 'Error Estándar': 0, 'Estado': 'ERROR_N_BAJO'}
+
+    media = np.mean(data)
+    # Cálculo del intervalo usando distribución T de Student (apropiado para muestras pequeñas/grandes)
+    intervalo = stats.t.interval(
+        0.95, 
+        df=n-1, 
+        loc=media, 
+        scale=stats.sem(data)
+    )
+
     return {
         'Media': media,
         'Inferior': intervalo[0],
         'Superior': intervalo[1],
-        'Margen Error': (intervalo[1] - intervalo[0]) / 2 if intervalo[1] else 0.0
+        'Error Estándar': stats.sem(data),
+        'Estado': 'COMPLETO'
     }
 
-def contraste_hipotesis(grupo1, grupo2, label1="G1", label2="G2"):
+def contraste_hipotesis(g1, g2, label1="G1", label2="G2"):
     """
-    BRYANN VALLEJO LUNA - Contraste de Hipótesis (Welch T-test)
-    Compara dos medias independientes sin asumir varianzas iguales.
+    MODULO: Contrastes de Hipótesis (T-Test Welch)
+    ROL ASIGNADO: Bryann Vallejo Luna
     """
-    # TODO (Bryann): Realiza una prueba Welch's T-Test usando scipy.stats.ttest_ind
-    # Extrae el t_stat y el p_valor, y genera una conclusión en función del p_valor.
-    
-    # --- Tu código aquí ---
-    t_stat, p_valor = (0.0, 1.0)
-    decision = "Pendiente de ejecutar"
-    conclusion = "No definido"
-    
+    # Welch's T-test: no asume varianzas iguales (equal_var=False)
+    t_stat, p_valor = stats.ttest_ind(g1, g2, equal_var=False)
+
+    if p_valor < 0.05:
+        decision = 'Se rechaza H0'
+        conclusion = f'Diferencias significativas entre {label1} y {label2}.'
+    else:
+        decision = 'No se rechaza H0'
+        conclusion = f'Sin evidencia de diferencias significativas entre {label1} y {label2}.'
+
     return {
-        'Comparación': f"{label1} vs {label2}",
-        'T-Stat': t_stat,
-        'P-Valor': p_valor,
+        'p_valor': p_valor,
+        't_statistic': t_stat,
+        'rechaza_h0': p_valor < 0.05,
+        'Conclusion': conclusion,
         'Decisión': decision,
-        'Conclusión': conclusion
+        'Estado': 'COMPLETO'
     }
 
 def verificar_supuestos(data):
     """
-    BRYANN VALLEJO LUNA - Prueba de Normalidad (Shapiro-Wilk o K-S)
+    MODULO: Verificación de Supuestos (Normalidad)
+    ROL ASIGNADO: Bryann Vallejo Luna
     """
-    # TODO (Bryann): Aplica el test correcto (K-S si n > 5000, Shapiro si no)
-    
-    # --- Tu código aquí ---
-    stat, p = 0.0, 1.0
-    prueba = "En desarrollo"
-        
-    return {'Prueba': prueba, 'Stat': stat, 'P-Valor': p}
+    n = len(data)
+    # Selección dinámica de prueba según tamaño de muestra
+    if n <= 5000:
+        stat, p = stats.shapiro(data)
+        prueba = "Shapiro-Wilk"
+    else:
+        # Estandarización para Kolmogorov-Smirnov
+        data_std = (data - data.mean()) / data.std()
+        stat, p = stats.kstest(data_std, 'norm')
+        prueba = "Kolmogorov-Smirnov"
 
-def generar_reporte_inferencial(df):
-    """Procesa los análisis inferenciales clave"""
-    
-    # TODO (Bryann): Manda llamar a calcular_ic_95() y contraste_hipotesis(),
-    # y guarda el resultado en outputs/tablas/inferencial.csv.
-    
-    # --- Tu código aquí ---
-    # ic_salario = ...
-    # test_exp = ...
-    # Guardar en CSV...
-    
-    # Valores por defecto para que no falle app.py 
-    ic_salario = {'Inferior': 0, 'Superior': 0, 'Media': 0, 'Margen Error': 0}
-    test_exp = {'P-Valor': 1.0, 'Decisión': '-', 'Conclusión': '-'}
-    
-    return ic_salario, test_exp
+    return {
+        'Prueba': prueba,
+        'P-Valor': p,
+        'Normal': p > 0.05,
+        'Estado': 'COMPLETO'
+    }
