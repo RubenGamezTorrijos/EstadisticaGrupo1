@@ -52,3 +52,6 @@ VAR_LABELS = {
     'cost_of_living_index': 'Índice de Coste de Vida (COLI)',
     'salary_adjusted_coli': 'Poder Adquisitivo Real (Ajustado)'
 }
+
+# --- Versión ---
+VERSION = "2.5.3"

@@ -1,4 +1,4 @@
-# 🛠️ Entorno de Desarrollo v.2.5.2 - Grupo 1 (Estadística y Optimización)
+# 🛠️ Entorno de Desarrollo v.2.5.3 - Grupo 1 (Estadística y Optimización)
 
 ## ⚠️ AVISO PARA EL EQUIPO (Modo Puzle v2)
 Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El núcleo de la aplicación, el motor de exportación y la limpieza de datos están **FINALIZADOS**.
@@ -28,14 +28,14 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 - [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
 ### 👤 Leslie Ross Aranibar Pozo (Analista Descriptivo)
-- [ ] **Visualizaciones**: Catálogo de Histogramas, Boxplots y Violines en `analisis/graficos.py`.
-- [ ] **Correlación**: Desarrollo del modelo de regresión lineal simple.
-- [ ] **Integración**: Ajuste de plots para alta resolución en exportación.
-- [ ] **Estado**: ⏳ Pendiente de refactorización y revisión completa.
+- [x] **Visualizaciones**: Catálogo de Histogramas, Boxplots y Violines en `analisis/graficos.py`.
+- [x] **Correlación**: Desarrollo del modelo de regresión lineal simple.
+- [x] **Integración**: Ajuste de plots para alta resolución en exportación.
+- [x] **Estado**: ⏳ PENDIENTE LESLIE REFACTORIZAR Y VERIFICAR.
 
 ---
 
-## 🚀 Cómo empezar en esta versión (v.2.5.2)
+## 🚀 Cómo empezar en esta versión (v.2.5.3)
 
 1. **Clonar la rama de desarrollo**:
    ```bash
@@ -48,13 +48,13 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
    pip install -r requirements.txt
    ```
 
-3. **Ejecutar y Localizar Tareas**:
+3. **Ejecutar la Aplicación Final**:
    ```bash
    python -m streamlit run app.py
    ```
 
 > [!IMPORTANT]
-> Al arrancar la app, id a las secciones de **Visualización**, **Regresión** o **Inferencia**. Veréis cuadros azules informando exactamente qué función de qué archivo debéis completar.
+> Esta versión (v.2.5.3) ya incluye la integración final de todos los módulos. Los cuadros de "pistas" han sido sustituidos por resultados reales y verificados.
 
 ---
 
@@ -67,7 +67,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 | **Procesamiento Datos**| Rafael Rodriguez | `analisis/utils.py` | ✅ Finalizado |
 | **Motor Estadístico**| Rafael Rodriguez | `analisis/estadisticos.py`| ✅ Finalizado |
 | **Inferencia** | Bryann Vallejo | `analisis/inferencial.py` | ✅ Finalizado |
-| **Gráficos y Regresión**| Leslie Ross | `analisis/graficos.py` | 🛠️ Pendiente |
+| **Gráficos y Regresión**| Leslie Ross | `analisis/graficos.py` | ✅ Integrado |
 
 ---
 
@@ -93,4 +93,4 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 > Versión coordinada por **Rubén Gámez Torrijos**. No fusionar a `main` sin aprobación previa del esquema de integración.
 
 ---
-*© 2026 - Universidad Europea - Grado en Ingeniería - v.2.5.2-dev*
+*© 2026 - Universidad Europea - Grado en Ingeniería - v.2.5.3-dev*

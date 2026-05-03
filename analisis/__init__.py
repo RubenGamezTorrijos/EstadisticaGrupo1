@@ -17,20 +17,18 @@ from .estadisticos import (
 from .graficos import (
     crear_histograma, 
     crear_boxplot, 
-    crear_violin_plot, 
     crear_bar_chart,
-    crear_grafico_comparativo_ic,
     crear_scatter_regresion,
     sanitize_pdf_text,
-    obtener_label,
     guardar_grafico
 )
 
 # Inferencia (Responsable: Bryann Vallejo)
 from .inferencial import (
-    calcular_ic_95, 
+    calcular_intervalos_confianza, 
     contraste_hipotesis, 
-    verificar_supuestos
+    verificar_supuestos,
+    realizar_test_hipotesis
 )
 
 # Regresión (Responsable: Leslie Ross)

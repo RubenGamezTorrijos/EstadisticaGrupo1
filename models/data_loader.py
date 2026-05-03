@@ -10,8 +10,8 @@ COL_CURRENCY = getattr(cfg, 'COL_CURRENCY', 'currency')
 @st.cache_data(ttl=3600)
 def load_processed_data() -> pd.DataFrame:
     """
-    Carga, limpia y enriquece el dataset. 
-    Aplica caché de Streamlit para optimizar el rendimiento.
+    REFACTORIZACIÓN DE SEGURIDAD (v.2.5.3):
+    Carga, limpia y valida tipos de datos para prevenir inyecciones y errores de ejecución.
     """
     try:
         # 1. Intentar cargar el dataset ya procesado para velocidad
@@ -43,14 +43,23 @@ def load_processed_data() -> pd.DataFrame:
 
         df = pd.read_csv(cfg.JOBS_CSV)
         
-        # --- Limpieza y Renombrado Senior ---
+        # --- Seguridad y Validación de Tipos (Checklist v.2.5.3) ---
         df = df.rename(columns={
             'salary_currency': COL_CURRENCY,
             'salary_in_usd': cfg.COL_SALARIO_USD
         })
         
+        # Eliminar duplicados y nulos críticos
         df = df.drop_duplicates()
         df = df.dropna(subset=[cfg.COL_SALARIO_USD, 'experience_level', 'job_category'])
+        
+        # Forzar tipos de datos (Type Enforcement)
+        try:
+            df[cfg.COL_SALARIO_USD] = pd.to_numeric(df[cfg.COL_SALARIO_USD], errors='coerce')
+            df['work_year'] = pd.to_numeric(df['work_year'], errors='coerce').astype('Int64')
+            df = df.dropna(subset=[cfg.COL_SALARIO_USD]) # Eliminar filas que no pudieron convertirse
+        except Exception as te:
+            st.warning(f"Advertencia en conversión de tipos: {te}")
         
         # --- Enriquecimiento Multidivisa ---
         df[cfg.COL_SALARIO_EUR] = (df[cfg.COL_SALARIO_USD] * cfg.EUR_USD_RATE).round(2)
@@ -80,8 +89,15 @@ def load_processed_data() -> pd.DataFrame:
             df['cost_of_living_index'] = df['cost_of_living_index'].fillna(media_coli)
             
         # --- Cálculo de Salario Ajustado (Poder Adquisitivo) ---
+        # Evitar división por cero
+        df['cost_of_living_index'] = df['cost_of_living_index'].replace(0, 100)
         df[cfg.COL_SALARIO_AJUSTADO] = (df[cfg.COL_SALARIO_USD] / df['cost_of_living_index'] * 100).round(2)
         
+        # Validación de integridad final
+        if df.empty:
+            st.error("El dataset resultante está vacío tras aplicar validaciones de seguridad.")
+            return pd.DataFrame()
+
         # Guardar para la próxima sesión
         df.to_csv(cfg.ENRIQUECIDO_CSV, index=False)
         return df

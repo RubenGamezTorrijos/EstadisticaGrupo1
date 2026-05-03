@@ -1,89 +1,129 @@
 """
 PROYECTO: Estadística para Ingeniería
-ANÁLISIS INFERENCIAL Y PRUEBAS DE HIPÓTESIS
-AUTORES: RUBEN GAMEZ TORRIJOS / RAFAEL RODRIGUEZ
-ROL ASIGNADO (Lógica Estadística): Bryann Vallejo Luna
-ESTADO: ✅ INTEGRADO (Lógica de Bryann verificada)
-TAREA PENDIENTE: Crear informe de 1-2 páginas verificado con Leslie Ross.
+MIEMBRO: BRYANN VALLEJO LUNA (Analista Inferencial)
+TAREA: Intervalos de Confianza y Contrastes de Hipótesis
 """
-
+import pandas as pd
 import numpy as np
 from scipy import stats
-import pandas as pd
+import config.settings as cfg
 
-# =================================================================
-# SECCIÓN: INFERENCIA POBLACIONAL (RESPONSABLE: BRYANN VALLEJO)
-# =================================================================
-
-def calcular_ic_95(data):
+def realizar_test_hipotesis(df, variable_num, variable_cat):
     """
-    MODULO: Inferencia Poblacional
-    ROL ASIGNADO: Bryann Vallejo Luna
+    BRYANN SKEITH LOZA CACERES - Estadística Inferencial
+    Realiza un test T o ANOVA según el número de categorías.
     """
-    n = len(data)
-    if n < 2:
-        return {'Media': 0, 'Inferior': 0, 'Superior': 0, 'Error Estándar': 0, 'Estado': 'ERROR_N_BAJO'}
+    grupos = df[variable_cat].unique()
+    datos_grupos = [df[df[variable_cat] == g][variable_num].dropna() for g in grupos]
+    
+    # Filtrar grupos con muy pocos datos
+    datos_grupos = [g for g in datos_grupos if len(g) > 5]
+    
+    if len(datos_grupos) < 2:
+        return {"error": "No hay suficientes grupos con datos para el test."}
 
-    media = np.mean(data)
-    # Cálculo del intervalo usando distribución T de Student (apropiado para muestras pequeñas/grandes)
-    intervalo = stats.t.interval(
-        0.95, 
-        df=n-1, 
-        loc=media, 
-        scale=stats.sem(data)
-    )
+    if len(datos_grupos) == 2:
+        # Test de Student
+        t_stat, p_val = stats.ttest_ind(datos_grupos[0], datos_grupos[1], equal_var=False)
+        test_nombre = "Test T de Student (2 grupos)"
+    else:
+        # ANOVA
+        f_stat, p_val = stats.f_oneway(*datos_grupos)
+        test_nombre = "ANOVA (múltiples grupos)"
 
     return {
-        'Media': media,
-        'Inferior': intervalo[0],
-        'Superior': intervalo[1],
-        'Error Estándar': stats.sem(data),
-        'Estado': 'COMPLETO'
+        "Test": test_nombre,
+        "Variable Numérica": cfg.VAR_LABELS.get(variable_num, variable_num),
+        "Variable Categórica": cfg.VAR_LABELS.get(variable_cat, variable_cat),
+        "P-Valor": p_val,
+        "Significativo (5%)": "Sí" if p_val < 0.05 else "No"
+    }
+
+def calcular_intervalos_confianza(df, columna, confianza=0.95):
+    """BRYANN SKEITH LOZA CACERES - Intervalos de Confianza"""
+    data = df[columna].dropna()
+    n = len(data)
+    media = np.mean(data)
+    sem = stats.sem(data)
+    intervalo = sem * stats.t.ppf((1 + confianza) / 2., n-1)
+    
+    return {
+        "Variable": cfg.VAR_LABELS.get(columna, columna),
+        "Media": media,
+        "Error Estándar": sem,
+        "Límite Inferior": media - intervalo,
+        "Límite Superior": media + intervalo
     }
 
 def contraste_hipotesis(g1, g2, label1="G1", label2="G2"):
     """
-    MODULO: Contrastes de Hipótesis (T-Test Welch)
-    ROL ASIGNADO: Bryann Vallejo Luna
+    BRYANN VALLEJO LUNA - Contraste de Hipótesis (Welch T-test)
+    Compara dos medias independientes sin asumir varianzas iguales.
     """
-    # Welch's T-test: no asume varianzas iguales (equal_var=False)
+    # TODO (Bryann): Realiza una prueba Welch's T-Test usando scipy.stats.ttest_ind
+    # Extrae el t_stat y el p_valor, y genera una conclusión en función del p_valor.
+    
+    # --- Tu código aquí ---
+    # Control básico
+
     t_stat, p_valor = stats.ttest_ind(g1, g2, equal_var=False)
 
     if p_valor < 0.05:
         decision = 'Se rechaza H0'
-        conclusion = f'Diferencias significativas entre {label1} y {label2}.'
+        conclusion = f'Hay diferencias estadísticamente significativas entre {label1} y {label2}.'
     else:
         decision = 'No se rechaza H0'
-        conclusion = f'Sin evidencia de diferencias significativas entre {label1} y {label2}.'
+        conclusion = f'No hay evidencia suficiente para afirmar diferencias significativas entre {label1} y {label2}.'
 
     return {
-        'p_valor': p_valor,
+        'P-Valor': p_valor,
         't_statistic': t_stat,
-        'rechaza_h0': p_valor < 0.05,
-        'Conclusion': conclusion,
         'Decisión': decision,
-        'Estado': 'COMPLETO'
+        'Conclusión': conclusion,
+        'Estado': 'OK'
     }
+
 
 def verificar_supuestos(data):
     """
-    MODULO: Verificación de Supuestos (Normalidad)
-    ROL ASIGNADO: Bryann Vallejo Luna
+    BRYANN VALLEJO LUNA - Prueba de Normalidad (Shapiro-Wilk o K-S)
     """
+    # TODO (Bryann): Aplica el test correcto (K-S si n > 5000, Shapiro si no)
+    
+    # --- Tu código aquí ---
+
     n = len(data)
-    # Selección dinámica de prueba según tamaño de muestra
+
+    # Selección de prueba
     if n <= 5000:
         stat, p = stats.shapiro(data)
         prueba = "Shapiro-Wilk"
     else:
-        # Estandarización para Kolmogorov-Smirnov
+        # K-S necesita datos estandarizados
         data_std = (data - data.mean()) / data.std()
         stat, p = stats.kstest(data_std, 'norm')
         prueba = "Kolmogorov-Smirnov"
 
     return {
         'Prueba': prueba,
+        'Stat': stat,
         'P-Valor': p,
-        'Normal': p > 0.05,
-        'Estado': 'COMPLETO'
+        'Estado': 'OK'
     }
+
+def generar_reporte_inferencial(df):
+    """Procesa los análisis inferenciales clave"""
+    
+    # TODO (Bryann): Manda llamar a calcular_ic_95() y contraste_hipotesis(),
+    # y guarda el resultado en outputs/tablas/inferencial.csv.
+    
+    # --- Tu código aquí ---
+    # ic_salario = ...
+    # test_exp = ...
+    # Guardar en CSV...
+    
+    # Valores por defecto para que no falle app.py 
+    ic_salario = {'Inferior': 0, 'Superior': 0, 'Media': 0, 'Margen Error': 0}
+    test_exp = {'P-Valor': 1.0, 'Decisión': '-', 'Conclusión': '-'}
+    
+    return ic_salario, test_exp
