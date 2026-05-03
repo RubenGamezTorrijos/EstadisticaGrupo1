@@ -120,9 +120,16 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
             val_mediana = formatear_porcentaje(row['Mediana'], es_euro)
             val_desv = formatear_porcentaje(row['Desviación Típica'], es_euro)
         else:
-            val_media = formatear_moneda(row['Media'], divisa)
-            val_mediana = formatear_moneda(row['Mediana'], divisa)
-            val_desv = formatear_moneda(row['Desviación Típica'], divisa)
+            # Detectar moneda específica por variable (v.2.5.3)
+            row_curr = divisa
+            if "USD" in str(row['Variable']).upper():
+                row_curr = "USD"
+            elif "EUR" in str(row['Variable']).upper():
+                row_curr = "EUR"
+                
+            val_media = formatear_moneda(row['Media'], row_curr)
+            val_mediana = formatear_moneda(row['Mediana'], row_curr)
+            val_desv = formatear_moneda(row['Desviación Típica'], row_curr)
         
         pdf.cell(col_widths[1], 8, sanitize_pdf_text(val_media), 1, 0, 'R')
         pdf.cell(col_widths[2], 8, sanitize_pdf_text(val_mediana), 1, 0, 'R')
