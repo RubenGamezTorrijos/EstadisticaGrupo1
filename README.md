@@ -1,9 +1,9 @@
 # 🛠️ Entorno de Desarrollo v.2.5.3 - Grupo 1 (Estadística y Optimización)
 
-## ⚠️ AVISO PARA EL EQUIPO (Modo Puzle v2)
+## ⚠️ AVISO PARA EL EQUIPO (Modo Validación y Verificación v.2.5.3")
 Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El núcleo de la aplicación, el motor de exportación y la limpieza de datos están **FINALIZADOS**.
 
-**OBJETIVO PARA LESLIE:** La aplicación se encuentra en "Modo Puzle". Deberás implementar la lógica matemática y visual en los archivos indicados basándoos en las pistas (`# 💡 PISTA`) y los banners inteligentes de la UI.
+**OBJETIVO VERIFICACIÓN:** La aplicación se encuentra en "Modo Validación Datos" y se ha finalizado el diseño y desarrollo de las funciones matemáticas y visuales de la aplicación. por lo que se debe verificar que los datos se muestran correctamente, que las funciones matemáticas realizan los cálculos correctos y que las visualizaciones son las adecuadas.
 
 ---
 
@@ -75,11 +75,11 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 
 | Escritorio General | Estadísticos Descriptivos |
 | :---: | :---: |
-| ![Captura 1](capturas/captura_1_app_streamlit_escritorio_general.jpg?v=2) | ![Captura 2](capturas/captura_2_app_streamlit_analisis_descriptivo_estadisticos.jpg?v=2) |
-| **Visualizaciones (Pistas)** | **Regresión (Pistas)** |
-| ![Captura 3](capturas/captura_3_app_streamlit_analisis_descriptivo_visualizaciones.jpg?v=2) | ![Captura 4](capturas/captura_4_app_streamlit_analisis_descriptivo_regresion.jpg?v=2) |
-| **Estadística Inferencial** | **Nueva Vista de Equipo (v.2.5.1)** |
-| ![Captura 5](capturas/captura_5_app_streamlit_estadistica_inferencial.jpg?v=2) | ![Captura 6](capturas/captura_6_app_streamlit_equipo_del_grupo1.jpg?v=2) |
+| ![Captura 1](capturas/captura_1_app_streamlit_escritorio_general.png) | ![Captura 2](capturas/captura_2_app_streamlit_analisis_descriptivo_estadisticos.jpg) |
+| **Visualizaciones** | **Regresión** |
+| ![Captura 3](capturas/captura_3_app_streamlit_analisis_descriptivo_visualizaciones.png) | ![Captura 4](capturas/captura_4_app_streamlit_analisis_descriptivo_regresion.png) |
+| **Estadística Inferencial** | **Equipo del Grupo 1** |
+| ![Captura 5](capturas/captura_5_app_streamlit_estadistica_inferencial.png) | ![Captura 6](capturas/captura_6_app_streamlit_equipo_del_grupo1.png) |
 
 ---
 
