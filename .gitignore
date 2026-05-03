@@ -38,15 +38,12 @@ static/
 profile_default/
 ipython_config.py
 =======
-# documentación e informes
-documentacion/
-informes/
->>>>>>> origin/feature/estadisticos-rafael
 
 # --- Documentación e Informes ---
-documentacion/
-informes/
-plan/
+documentacion/*.md
+informes/*.md
+plan/**.md
+outputs/*.png
 MANUAL_DESARROLLO.md
 
 # --- Logs y CSV en raíz ---
