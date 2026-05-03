@@ -151,8 +151,12 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
     sup_salario = verificar_supuestos(df[target_col])
     sup_coli = verificar_supuestos(df[cfg.COL_COLI])
     
-    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- Salario ({sup_salario['Prueba']}): P-Valor = {sup_salario['P-Valor']:.4f}. {'Sigue' if sup_salario['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
-    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- COLI ({sup_coli['Prueba']}): P-Valor = {sup_coli['P-Valor']:.4f}. {'Sigue' if sup_coli['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
+    def fmt_pval(p):
+        if p < 0.0001 and p > 0: return f"{p:.2e}".replace(".", "," if es_euro else ".")
+        return f"{p:.4f}".replace(".", "," if es_euro else ".")
+
+    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- Salario ({sup_salario['Prueba']}): Estadístico={sup_salario['Stat']:.4f}, P-Valor={fmt_pval(sup_salario['P-Valor'])}. {'Sigue' if sup_salario['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
+    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- COLI ({sup_coli['Prueba']}): Estadístico={sup_coli['Stat']:.4f}, P-Valor={fmt_pval(sup_coli['P-Valor'])}. {'Sigue' if sup_coli['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
 
     # 4.3 Contrastes de Hipótesis por Categoría
     pdf.ln(5)
@@ -162,7 +166,8 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
     
     test_cat = realizar_test_hipotesis(df, target_col, 'experience_level')
     if "error" not in test_cat:
-        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- {test_cat['Test']}: P-Valor = {test_cat['P-Valor']:.4f}. Diferencia significativa: {test_cat['Significativo (5%)']}."))
+        stat_val = test_cat['Estadístico']
+        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- {test_cat['Test']}: Estadístico={stat_val:.4f}, P-Valor={fmt_pval(test_cat['P-Valor'])}. Diferencia significativa: {test_cat['Significativo (5%)']}."))
     else:
         pdf.multi_cell(0, 8, sanitize_pdf_text(f"- {test_cat['error']}"))
 

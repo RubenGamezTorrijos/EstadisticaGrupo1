@@ -24,18 +24,19 @@ def realizar_test_hipotesis(df, variable_num, variable_cat):
 
     if len(datos_grupos) == 2:
         # Test de Student
-        t_stat, p_val = stats.ttest_ind(datos_grupos[0], datos_grupos[1], equal_var=False)
+        stat, p_val = stats.ttest_ind(datos_grupos[0], datos_grupos[1], equal_var=False)
         test_nombre = "Test T de Student (2 grupos)"
     else:
         # ANOVA
-        f_stat, p_val = stats.f_oneway(*datos_grupos)
+        stat, p_val = stats.f_oneway(*datos_grupos)
         test_nombre = "ANOVA (múltiples grupos)"
 
     return {
         "Test": test_nombre,
         "Variable Numérica": cfg.VAR_LABELS.get(variable_num, variable_num),
         "Variable Categórica": cfg.VAR_LABELS.get(variable_cat, variable_cat),
-        "P-Valor": p_val,
+        "Estadístico": float(stat),
+        "P-Valor": float(p_val),
         "Significativo (5%)": "Sí" if p_val < 0.05 else "No"
     }
 

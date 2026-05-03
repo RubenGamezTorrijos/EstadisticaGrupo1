@@ -220,9 +220,18 @@ def render_inferencial(df, key, sym):
             c1, c2 = st.columns(2)
             with c1:
                 st.metric("Test Realizado", res['Test'])
-                st.write(f"**Estadístico:** `{res.get('Estadístico', 0):.4f}`")
+                # Formatear estadístico con comas/puntos según idioma
+                stat_val = res['Estadístico']
+                stat_fmt = f"{stat_val:,.4f}".replace(",", "X").replace(".", "," if sym == "€" else ".").replace("X", "." if sym == "€" else ",")
+                st.write(f"**Estadístico:** `{stat_fmt}`")
             with c2:
-                p_val_fmt = f"{res['P-Valor']:.4f}".replace(".", "," if sym == "€" else ".")
+                p_val = res['P-Valor']
+                # Si el P-valor es muy pequeño, mostrar notación científica o < 0.0001
+                if p_val < 0.0001 and p_val > 0:
+                    p_val_fmt = f"{p_val:.2e}".replace(".", "," if sym == "€" else ".")
+                else:
+                    p_val_fmt = f"{p_val:.4f}".replace(".", "," if sym == "€" else ".")
+                
                 st.metric("P-Valor", p_val_fmt)
                 st.write(f"**Significativo (5%):** {res['Significativo (5%)']}")
             
@@ -240,9 +249,19 @@ def render_inferencial(df, key, sym):
         supuestos = verificar_supuestos(df[key])
         col_s1, col_s2 = st.columns(2)
         with col_s1:
-            st.write(f"**Prueba:** {supuestos['Prueba']}")
+            st.write(f"**Prueba de Normalidad:** {supuestos['Prueba']}")
+            
+            # Estadístico de normalidad
+            s_val = supuestos['Stat']
+            s_fmt = f"{s_val:.4f}".replace(".", "," if sym == "€" else ".")
+            st.write(f"**Estadístico W/D:** `{s_fmt}`")
+            
             p_val = supuestos['P-Valor']
-            p_val_fmt = f"{p_val:.4f}".replace(".", "," if sym == "€" else ".")
+            if p_val < 0.0001 and p_val > 0:
+                p_val_fmt = f"{p_val:.2e}".replace(".", "," if sym == "€" else ".")
+            else:
+                p_val_fmt = f"{p_val:.4f}".replace(".", "," if sym == "€" else ".")
+                
             st.write(f"**P-Valor:** `{p_val_fmt}`")
             if p_val < 0.05:
                 st.error("❌ Los datos NO siguen una distribución normal (P < 0.05).")
