@@ -11,27 +11,26 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 
 ### 👤 Rubén Gámez Torrijos (Coordinador y Arquitectura)
 - [x] **Arquitectura Core**: Diseño modular MVC y orquestación en `app.py`.
-- [x] **Identidad Visual**: Diseño de la interfaz, estilos y experiencia de usuario (UX).
+- [x] **Motor de Datos**: Pipeline de procesamiento en `models/data_loader.py` e integración API en `config/api_client.py`.
 - [x] **Exportación Pro**: Motor de reportes PDF/Excel con validación de datos.
-- [x] **Integración**: Consolidación de todos los módulos del grupo.
+- [x] **Identidad Visual**: Diseño de la interfaz, estilos y experiencia de usuario (UX).
 - [x] **Estado**: ✅ FINALIZADO (v.2.5.3).
 
 ### 👤 Rafael Rodriguez Mengual (Data Manager)
-- [x] **Limpieza de Datos**: Pipeline de procesamiento en `models/data_loader.py`.
-- [x] **Enriquecimiento**: Integración del Índice de Coste de Vida (COLI) vía API.
 - [x] **Estadística Descriptiva**: Motor de cálculos en `analisis/estadisticos.py`.
+- [x] **Análisis de Dispersión**: Medidas de tendencia central y variabilidad.
+- [x] **Gestión de Outliers**: Detección profesional mediante IQR.
 - [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
-### 👤 Bryann Vallejo Luna (Analista Inferencial)
+### 👤 Bryann Vallejo Luna (Especialista Inferencial)
 - [x] **Intervalos de Confianza**: Implementación de IC 95% en `analisis/inferencial.py`.
 - [x] **Contrastes de Hipótesis**: Tests paramétricos para categorías críticas.
 - [x] **Validación Normicidad**: Implementación de Shapiro-Wilk y Q-Q plots.
 - [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
-### 👤 Leslie Ross Aranibar Pozo (Analista Descriptivo)
+### 👤 Leslie Ross Aranibar Pozo (Especialista Descriptivo)
 - [x] **Visualizaciones**: Catálogo de Histogramas, Boxplots y Violines en `analisis/graficos.py`.
-- [x] **Correlación**: Desarrollo del modelo de regresión lineal simple y R².
-- [x] **Integración**: Ajuste de plots para alta resolución en exportación.
+- [x] **Correlación**: Desarrollo del modelo de regresión lineal simple y R² en `analisis/modelo_regresion.py`.
 - [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
 ---

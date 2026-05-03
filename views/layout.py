@@ -119,11 +119,23 @@ def render_estadisticos(df, key, sym):
     stats_df = calcular_estadisticos(df)
     divisa = "EUR" if sym == "€" else "USD"
     df_display = stats_df.copy()
-    for col in ['Media', 'Mediana', 'Desviación Típica']:
+    
+    def format_val(val, var_name, current_sym):
+        if pd.isna(val):
+            return "N/A"
+        if "COLI" in str(var_name):
+            return formatear_porcentaje(val, current_sym == "€")
+        elif "USD" in str(var_name):
+            return formatear_moneda(val, "USD")
+        elif "EUR" in str(var_name):
+            return formatear_moneda(val, "EUR")
+        else:
+            return formatear_moneda(val, "EUR" if current_sym == "€" else "USD")
+
+    cols_to_format = ['Media', 'Mediana', 'Moda', 'Rango', 'Desviación Típica', 'Varianza', 'Mínimo', 'Máximo', 'Q1', 'Q3', 'IQR']
+    for col in cols_to_format:
         df_display[col] = df_display.apply(
-            lambda row: formatear_porcentaje(row[col], sym == "€") 
-            if "COLI" in str(row['Variable']) 
-            else formatear_moneda(row[col], divisa), 
+            lambda row: format_val(row[col], row['Variable'], sym), 
             axis=1
         )
     df_display['CV%'] = df_display['CV%'].apply(lambda x: formatear_porcentaje(x, sym == "€"))
@@ -251,78 +263,74 @@ def render_equipo():
     col1, col2 = st.columns(2)
     
     with col1:
-        with st.expander("👑 Rubén Gámez Torrijos", expanded=True):
-            st.markdown("""
-            <div style="border: 1px solid #0b84f4; padding: 15px; border-radius: 8px;">
-                <h4 style="color: #0b84f4; margin-top: 0;">Coordinador y Arquitectura</h4>
-                <p style="font-style: italic; font-size: 0.9rem;">Liderazgo técnico, diseño estructural y orquestación del proyecto.</p>
-                <hr style="margin: 10px 0;">
-                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
-                <ul style="font-size: 0.85rem;">
-                    <li>Arquitectura modular MVC y controladores.</li>
-                    <li>Motor de exportación profesional PDF/Excel.</li>
-                    <li>Sistema de estilos y gestión de configuración global.</li>
-                    <li>Integración de APIs externas (WorldBank/COLI).</li>
-                </ul>
-                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
-                <code>app.py</code>, <code>config/</code>, <code>controllers/</code>, <code>views/</code>, <code>requirements.txt</code>, <code>README.md</code>, <code>GUIA_COLABORACION.md</code></p>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="border: 1px solid #0b84f4; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h4 style="color: #0b84f4; margin-top: 0;">👑 Rubén Gámez Torrijos - Coordinador</h4>
+            <p style="font-style: italic; font-size: 0.9rem;">Liderazgo técnico, diseño estructural y orquestación del proyecto.</p>
+            <hr style="margin: 10px 0;">
+            <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+            <ul style="font-size: 0.85rem;">
+                <li>Arquitectura modular MVC y controladores.</li>
+                <li>Motor de exportación profesional PDF/Excel.</li>
+                <li>Sistema de estilos y gestión de configuración global.</li>
+                <li>Integración de APIs externas (WorldBank/COLI).</li>
+            </ul>
+            <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+            <code>app.py</code>, <code>config/</code>, <code>controllers/</code>, <code>views/</code>, <code>models/data_loader.py</code>, <code>config/api_client.py</code>, <code>requirements.txt</code>, <code>README.md</code>, <code>GUIA_COLABORACION.md</code></p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        with st.expander("📊 Rafael Rodriguez Mengual", expanded=False):
-            st.markdown("""
-            <div style="border: 1px solid #00d1b2; padding: 15px; border-radius: 8px;">
-                <h4 style="color: #00d1b2; margin-top: 0;">Data Manager</h4>
-                <p style="font-style: italic; font-size: 0.9rem;">Especialista en procesamiento, limpieza y análisis descriptivo.</p>
-                <hr style="margin: 10px 0;">
-                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
-                <ul style="font-size: 0.85rem;">
-                    <li>Pipeline de limpieza y validación de tipos.</li>
-                    <li>Lógica de estadísticos descriptivos.</li>
-                    <li>Gestión y detección de Outliers.</li>
-                    <li>Mapeo de datos internacionales.</li>
-                </ul>
-                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
-                <code>estadisticos.py</code>, <code>models/data_loader.py</code>, <code>api_client.py</code></p>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="border: 1px solid #00d1b2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h4 style="color: #00d1b2; margin-top: 0;">📊 Rafael Rodriguez Mengual - Data Manager</h4>
+            <p style="font-style: italic; font-size: 0.9rem;">Especialista en procesamiento, limpieza y análisis descriptivo.</p>
+            <hr style="margin: 10px 0;">
+            <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+            <ul style="font-size: 0.85rem;">
+                <li>Pipeline de limpieza y validación de tipos.</li>
+                <li>Lógica de estadísticos descriptivos.</li>
+                <li>Gestión y detección de Outliers.</li>
+                <li>Mapeo de datos internacionales.</li>
+            </ul>
+            <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+            <code>estadisticos.py</code></p>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        with st.expander("🧪 Bryann Vallejo Luna", expanded=False):
-            st.markdown("""
-            <div style="border: 1px solid #7c4dff; padding: 15px; border-radius: 8px;">
-                <h4 style="color: #7c4dff; margin-top: 0;">Analista Inferencial</h4>
-                <p style="font-style: italic; font-size: 0.9rem;">Experto en modelos probabilísticos y validación de hipótesis.</p>
-                <hr style="margin: 10px 0;">
-                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
-                <ul style="font-size: 0.85rem;">
-                    <li>Desarrollo de modelos de probabilidad.</li>
-                    <li>Cálculo de intervalos de confianza.</li>
-                    <li>Ejecución de contrastes de hipótesis.</li>
-                    <li>Pruebas de normalidad (Shapiro-Wilk).</li>
-                </ul>
-                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
-                <code>inferencial.py</code>, <code>app.py</code> (Lógica Inferencia)</p>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="border: 1px solid #7c4dff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h4 style="color: #7c4dff; margin-top: 0;">🧪 Bryann Vallejo Luna - Especialista Inferencial</h4>
+            <p style="font-style: italic; font-size: 0.9rem;">Especialista en modelos probabilísticos y validación de hipótesis.</p>
+            <hr style="margin: 10px 0;">
+            <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+            <ul style="font-size: 0.85rem;">
+                <li>Desarrollo de modelos de probabilidad.</li>
+                <li>Cálculo de intervalos de confianza.</li>
+                <li>Ejecución de contrastes de hipótesis.</li>
+                <li>Pruebas de normalidad (Shapiro-Wilk).</li>
+            </ul>
+            <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+            <code>inferencial.py</code></p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        with st.expander("🎨 Leslie Ross Aranibar Pozo", expanded=False):
-            st.markdown("""
-            <div style="border: 1px solid #ff4081; padding: 15px; border-radius: 8px;">
-                <h4 style="color: #ff4081; margin-top: 0;">Analista Descriptivo</h4>
-                <p style="font-style: italic; font-size: 0.9rem;">Especialista en visualización avanzada y modelado de correlación.</p>
-                <hr style="margin: 10px 0;">
-                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
-                <ul style="font-size: 0.85rem;">
-                    <li>Visualizaciones dinámicas Plotly.</li>
-                    <li>Desarrollo del modelo de regresión lineal.</li>
-                    <li>Análisis de correlación COLI-Salario.</li>
-                    <li>Visualizaciones comparativas.</li>
-                </ul>
-                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
-                <code>graficos.py</code>, <code>modelo_regresion.py</code></p>
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="border: 1px solid #ff4081; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h4 style="color: #ff4081; margin-top: 0;">🎨 Leslie Ross Aranibar Pozo - Especialista Descriptivo</h4>
+            <p style="font-style: italic; font-size: 0.9rem;">Especialista en visualización avanzada y modelado de correlación.</p>
+            <hr style="margin: 10px 0;">
+            <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+            <ul style="font-size: 0.85rem;">
+                <li>Visualizaciones dinámicas Plotly.</li>
+                <li>Desarrollo del modelo de regresión lineal.</li>
+                <li>Análisis de correlación COLI-Salario.</li>
+                <li>Visualizaciones comparativas.</li>
+            </ul>
+            <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+            <code>graficos.py</code>, <code>modelo_regresion.py</code></p>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.info("✅ Proyecto consolidado siguiendo los estándares de producción v.2.5.3")
 
