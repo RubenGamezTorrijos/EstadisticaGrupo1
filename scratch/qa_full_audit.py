@@ -3,6 +3,8 @@ import sys
 import pandas as pd
 import numpy as np
 
+# Rubén Gámez Torrijos - QA de Arquitectura v.2.5.3
+
 # Añadir el directorio raíz al path para poder importar los módulos
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
