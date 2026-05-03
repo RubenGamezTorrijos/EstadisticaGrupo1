@@ -5,8 +5,8 @@ Módulo de adquisición de datos oficiales: API del Banco Mundial.
 Obtiene el Price Level Index (PPP) para todos los países del mundo
 en el rango temporal 2020-2023.
 
-Autor: Rubén Torrijos
-Fecha: Abril 2025
+Autor: Rubén Gámez Torrijos
+Fecha: Abril 2026
 """
 
 import requests

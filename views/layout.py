@@ -10,10 +10,17 @@ from analisis.graficos import (
 from analisis.inferencial import realizar_test_hipotesis, calcular_intervalos_confianza
 from analisis.modelo_regresion import ejecutar_regresion_simple
 import config.settings as cfg
+from config.utils import formatear_moneda, formatear_numero_entero, validar_datos_insuficientes, formatear_porcentaje
 
 def render_main_layout(df, opcion, key, sym):
     """Orquesta el renderizado de la sección seleccionada."""
     
+    if df is None or df.empty:
+        st.warning("⚠️ No hay datos disponibles para los filtros seleccionados.")
+        st.info("Por favor, ajusta los filtros en el menú lateral para visualizar los análisis.")
+        render_footer()
+        return
+
     if opcion == "Escritorio General":
         render_escritorio(df, key, sym)
     elif opcion == "Estadísticos Descriptivos":
@@ -61,19 +68,25 @@ def render_escritorio(df, key, sym):
     
     with col_metrics:
         r1_c1, r1_c2 = st.columns(2)
-        r1_c1.metric("👥 Muestra", f"{n_muestra:,}")
-        r1_c2.metric("🏠 Mediana COLI", f"{med_coli:,.2f}")
+        r1_c1.metric("👥 Muestra", f"{n_muestra}")
+        r1_c2.metric("🏠 Mediana COLI", f"{med_coli:.2f}")
         
         r2_c1, r2_c2 = st.columns(2)
         r2_c1.metric("📡 % Remoto", f"{remote_pct:.1f}%")
-        r2_c2.metric("📅 Periodo", años_range)
+        
+        min_year = formatear_numero_entero(df['work_year'].min())
+        max_year = formatear_numero_entero(df['work_year'].max())
+        r2_c2.metric("📅 Periodo", f"{min_year}-{max_year}")
 
     with col_gauge:
         # Gráfico de Aguja para la divisa seleccionada
+        # Configurar el formato del número en el gauge (v.2.5.3)
+        divisa_detectada = "EUR" if sym == "€" else "USD"
+        val_formateado = formatear_moneda(mean_val, divisa_detectada)
+        
         fig = go.Figure(go.Indicator(
-            mode = "gauge+number",
+            mode = "gauge",
             value = mean_val,
-            number = {'prefix': sym, 'valueformat': ",.0f"},
             title = {'text': f"Media Salarial ({sym})", 'font': {'size': 16}},
             gauge = {
                 'axis': {'range': [None, df[key].max() * 1.1]},
@@ -84,6 +97,13 @@ def render_escritorio(df, key, sym):
                 ]
             }
         ))
+        # Sobrescribir el texto del valor para que use el formato de utils.py
+        fig.add_annotation(
+            x=0.5, y=0.15,
+            text=val_formateado,
+            showarrow=False,
+            font=dict(size=32, color="#00d1b2", family="Arial Black")
+        )
         fig.update_layout(height=250, margin=dict(l=20, r=20, t=50, b=20), paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
@@ -97,7 +117,18 @@ def render_estadisticos(df, key, sym):
     st.markdown("### 📊 **Análisis de tendencia central y dispersión**")
     
     stats_df = calcular_estadisticos(df)
-    st.dataframe(stats_df, use_container_width=True, hide_index=True)
+    divisa = "EUR" if sym == "€" else "USD"
+    df_display = stats_df.copy()
+    for col in ['Media', 'Mediana', 'Desviación Típica']:
+        df_display[col] = df_display.apply(
+            lambda row: formatear_porcentaje(row[col], sym == "€") 
+            if "COLI" in str(row['Variable']) 
+            else formatear_moneda(row[col], divisa), 
+            axis=1
+        )
+    df_display['CV%'] = df_display['CV%'].apply(lambda x: formatear_porcentaje(x, sym == "€"))
+    
+    st.dataframe(df_display, use_container_width=True, hide_index=True)
     
     st.markdown("---")
     st.subheader(f"📍 Salarios por Nivel de Experiencia ({sym})")
@@ -113,12 +144,12 @@ def render_visualizaciones(df, key, sym):
     
     # Una gráfica por fila para mayor visibilidad e interacción
     st.markdown("#### 📈 Distribución Salarial")
-    fig_hist = crear_histograma_interactivo(df, key)
+    fig_hist = crear_histograma_interactivo(df, key, sym)
     st.plotly_chart(fig_hist, use_container_width=True)
     
     st.markdown("---")
     st.markdown("#### 📦 Salarios por Experiencia")
-    fig_box = crear_boxplot_interactivo(df, key, 'experience_level')
+    fig_box = crear_boxplot_interactivo(df, key, 'experience_level', sym)
     st.plotly_chart(fig_box, use_container_width=True)
 
     st.markdown("---")
@@ -128,23 +159,23 @@ def render_visualizaciones(df, key, sym):
 
     st.markdown("---")
     st.markdown("#### 🎻 Densidad de Probabilidad (Violin Plot)")
-    fig_violin = crear_violin_interactivo(df, key, 'experience_level')
+    fig_violin = crear_violin_interactivo(df, key, 'experience_level', sym)
     st.plotly_chart(fig_violin, use_container_width=True)
 
 def render_regresion(df, key, sym):
     st.title("📈 Regresión Lineal - Leslie Ross")
     
     # 1. Gráfico de dispersión interactivo
-    fig_reg = crear_scatter_regresion_interactivo(df, cfg.COL_COLI, key)
+    fig_reg = crear_scatter_regresion_interactivo(df, cfg.COL_COLI, key, sym)
     st.plotly_chart(fig_reg, use_container_width=True)
     
     # 2. Métricas del modelo (Rafael/Leslie colaborativo)
     try:
         modelo = ejecutar_regresion_simple(df, cfg.COL_COLI, key)
         c1, c2, c3 = st.columns(3)
-        c1.metric("Coeficiente (Pendiente)", f"{modelo['coeficiente']:.2f}")
-        c2.metric("Intercepción", f"{modelo['intercepto']:,.0f}")
-        c3.metric("R² (Bondad de ajuste)", f"{modelo['r2']:.4f}")
+        c1.metric("Coeficiente (Pendiente)", f"{modelo['coeficiente']:.2f}".replace(".", "," if sym == "€" else "."))
+        c2.metric("Intercepción", formatear_moneda(modelo['intercepto'], sym))
+        c3.metric("R² (Bondad de ajuste)", f"{modelo['r2']:.4f}".replace(".", "," if sym == "€" else "."))
         
         st.info(f"**Interpretación:** {modelo['interpretacion']}")
     except Exception as e:
@@ -153,14 +184,16 @@ def render_regresion(df, key, sym):
 def render_inferencial(df, key, sym):
     st.title("🧪 Estadística Inferencial - Bryann Loza")
     
-    # 1. Intervalo de Confianza
-    st.subheader(f"📍 Estimación por Intervalo (95% Confianza) - {sym}")
+    if not validar_datos_insuficientes(df):
+        st.warning("⚠️ No hay suficientes datos para realizar el análisis inferencial con los filtros actuales.")
+        return
+
     ic = calcular_intervalos_confianza(df, key)
     
     c1, c2, c3 = st.columns(3)
-    c1.metric("Media Muestral", f"{ic['Media']:,.2f} {sym}")
-    c2.metric("Límite Inferior", f"{ic['Límite Inferior']:,.2f} {sym}")
-    c3.metric("Límite Superior", f"{ic['Límite Superior']:,.2f} {sym}")
+    c1.metric("Media Muestral", formatear_moneda(ic['Media'], key))
+    c2.metric("Límite Inferior", formatear_moneda(ic['Límite Inferior'], key))
+    c3.metric("Límite Superior", formatear_moneda(ic['Límite Superior'], key))
     
     st.markdown("---")
     
@@ -177,7 +210,8 @@ def render_inferencial(df, key, sym):
                 st.metric("Test Realizado", res['Test'])
                 st.write(f"**Estadístico:** `{res.get('Estadístico', 0):.4f}`")
             with c2:
-                st.metric("P-Valor", f"{res['P-Valor']:.4e}")
+                p_val_fmt = f"{res['P-Valor']:.4f}".replace(".", "," if sym == "€" else ".")
+                st.metric("P-Valor", p_val_fmt)
                 st.write(f"**Significativo (5%):** {res['Significativo (5%)']}")
             
             if res['P-Valor'] < 0.05:
@@ -195,9 +229,9 @@ def render_inferencial(df, key, sym):
         col_s1, col_s2 = st.columns(2)
         with col_s1:
             st.write(f"**Prueba:** {supuestos['Prueba']}")
-            st.write(f"**P-Valor:** `{supuestos['P-Valor']:.4e}`")
-            
             p_val = supuestos['P-Valor']
+            p_val_fmt = f"{p_val:.4f}".replace(".", "," if sym == "€" else ".")
+            st.write(f"**P-Valor:** `{p_val_fmt}`")
             if p_val < 0.05:
                 st.error("❌ Los datos NO siguen una distribución normal (P < 0.05).")
             else:
@@ -212,57 +246,91 @@ def render_inferencial(df, key, sym):
 
 def render_equipo():
     st.title("👥 Equipo de Desarrollo - Grupo 1")
-    st.subheader("Estructura organizativa y estado de cumplimiento de los objetivos técnicos.")
-    
-    # Estilo de tarjeta para los miembros
-    def member_card(nombre, rol, desc, resp, archivos, estado, icon="✅"):
-        st.markdown(f"""
-        <div style="border: 1px solid #0b84f4; border-radius: 10px; padding: 20px; margin-bottom: 20px; background-color: rgba(11, 132, 244, 0.05);">
-            <h3 style="margin-top: 0;">{icon} {nombre}</h3>
-            <p><b>{rol}</b></p>
-            <p style="font-style: italic; font-size: 0.9rem;">{desc}</p>
-            <hr style="margin: 10px 0; border-color: rgba(11, 132, 244, 0.2);">
-            <p><b>Responsabilidades:</b> {resp}</p>
-            <p><b>Archivos clave:</b> <code>{archivos}</code></p>
-            <div style="text-align: right; font-weight: bold; color: #0b84f4;">Estado: {estado}</div>
-        </div>
-        """, unsafe_allow_html=True)
+    st.subheader("Estructura organizativa y cumplimiento de objetivos técnicos.")
 
     col1, col2 = st.columns(2)
     
     with col1:
-        member_card(
-            "Rubén Gámez Torrijos", "Coordinador y Arquitectura",
-            "Liderazgo técnico, diseño estructural y orquestación del proyecto.",
-            "Diseño de la arquitectura modular de la aplicación, sistema de estilos CSS adaptativos para temas Light/Dark y desarrollo del motor de exportación profesional (PDF/Excel).",
-            "app.py, analisis/exportacion.py, config/styles.py",
-            "FINALIZADO Y VERIFICADO", "👑"
-        )
+        with st.expander("👑 Rubén Gámez Torrijos", expanded=True):
+            st.markdown("""
+            <div style="border: 1px solid #0b84f4; padding: 15px; border-radius: 8px;">
+                <h4 style="color: #0b84f4; margin-top: 0;">Coordinador y Arquitectura</h4>
+                <p style="font-style: italic; font-size: 0.9rem;">Liderazgo técnico, diseño estructural y orquestación del proyecto.</p>
+                <hr style="margin: 10px 0;">
+                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+                <ul style="font-size: 0.85rem;">
+                    <li>Arquitectura modular MVC y controladores.</li>
+                    <li>Motor de exportación profesional PDF/Excel.</li>
+                    <li>Sistema de estilos y gestión de configuración global.</li>
+                    <li>Integración de APIs externas (WorldBank/COLI).</li>
+                </ul>
+                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+                <code>app.py</code>, <code>config/</code>, <code>controllers/</code>, <code>views/</code>, <code>requirements.txt</code>, <code>README.md</code>, <code>GUIA_COLABORACION.md</code></p>
+            </div>
+            """, unsafe_allow_html=True)
         
-        member_card(
-            "Rafael Rodriguez Mengual", "Data Manager",
-            "Especialista en procesamiento, limpieza y análisis descriptivo de datos.",
-            "Implementación del pipeline de limpieza de datos, integración de variables externas (Índice de coste de vida) y desarrollo de la lógica para estadísticos de tendencia central y dispersión.",
-            "analisis/utils.py, analisis/estadisticos.py",
-            "FINALIZADO Y VERIFICADO", "📊"
-        )
+        with st.expander("📊 Rafael Rodriguez Mengual", expanded=False):
+            st.markdown("""
+            <div style="border: 1px solid #00d1b2; padding: 15px; border-radius: 8px;">
+                <h4 style="color: #00d1b2; margin-top: 0;">Data Manager</h4>
+                <p style="font-style: italic; font-size: 0.9rem;">Especialista en procesamiento, limpieza y análisis descriptivo.</p>
+                <hr style="margin: 10px 0;">
+                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+                <ul style="font-size: 0.85rem;">
+                    <li>Pipeline de limpieza y validación de tipos.</li>
+                    <li>Lógica de estadísticos descriptivos.</li>
+                    <li>Gestión y detección de Outliers.</li>
+                    <li>Mapeo de datos internacionales.</li>
+                </ul>
+                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+                <code>estadisticos.py</code>, <code>models/data_loader.py</code>, <code>api_client.py</code></p>
+            </div>
+            """, unsafe_allow_html=True)
 
     with col2:
-        member_card(
-            "Bryann Vallejo Luna", "Analista Inferencial",
-            "Experto en modelos probabilísticos y validación de hipótesis estadísticas.",
-            "Desarrollo de modelos de probabilidad poblacional, cálculo de intervalos de confianza mediante T-Student y ejecución de contrastes de hipótesis paramétricos de una y dos muestras.",
-            "analisis/inferencial.py, app.py (Sección Inferencia)",
-            "FINALIZADO Y VERIFICADO", "🧪"
-        )
+        with st.expander("🧪 Bryann Vallejo Luna", expanded=False):
+            st.markdown("""
+            <div style="border: 1px solid #7c4dff; padding: 15px; border-radius: 8px;">
+                <h4 style="color: #7c4dff; margin-top: 0;">Analista Inferencial</h4>
+                <p style="font-style: italic; font-size: 0.9rem;">Experto en modelos probabilísticos y validación de hipótesis.</p>
+                <hr style="margin: 10px 0;">
+                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+                <ul style="font-size: 0.85rem;">
+                    <li>Desarrollo de modelos de probabilidad.</li>
+                    <li>Cálculo de intervalos de confianza.</li>
+                    <li>Ejecución de contrastes de hipótesis.</li>
+                    <li>Pruebas de normalidad (Shapiro-Wilk).</li>
+                </ul>
+                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+                <code>inferencial.py</code>, <code>app.py</code> (Lógica Inferencia)</p>
+            </div>
+            """, unsafe_allow_html=True)
         
-        member_card(
-            "Leslie Ross Aranibar Pozo", "Analista Descriptivo",
-            "Especialista en visualización avanzada y modelado de correlación lineal.",
-            "Creación del catálogo de visualizaciones gráficas avanzadas (Histogramas, Boxplots y Violin Plots) y desarrollo del modelo de regresión lineal simple para análisis de correlación COLI-Salario.",
-            "analisis/graficos.py, analisis/modelo_regresion.py",
-            "FINALIZADO Y VERIFICADO", "🎨"
-        )
+        with st.expander("🎨 Leslie Ross Aranibar Pozo", expanded=False):
+            st.markdown("""
+            <div style="border: 1px solid #ff4081; padding: 15px; border-radius: 8px;">
+                <h4 style="color: #ff4081; margin-top: 0;">Analista Descriptivo</h4>
+                <p style="font-style: italic; font-size: 0.9rem;">Especialista en visualización avanzada y modelado de correlación.</p>
+                <hr style="margin: 10px 0;">
+                <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
+                <ul style="font-size: 0.85rem;">
+                    <li>Visualizaciones dinámicas Plotly.</li>
+                    <li>Desarrollo del modelo de regresión lineal.</li>
+                    <li>Análisis de correlación COLI-Salario.</li>
+                    <li>Visualizaciones comparativas.</li>
+                </ul>
+                <p style="font-size: 0.85rem;"><strong>Archivos:</strong><br>
+                <code>graficos.py</code>, <code>modelo_regresion.py</code></p>
+            </div>
+            """, unsafe_allow_html=True)
 
+    st.info("✅ Proyecto consolidado siguiendo los estándares de producción v.2.5.3")
+
+def render_footer():
     st.markdown("---")
-    st.caption(f"© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.{cfg.VERSION})")
+    st.markdown(
+        "<div style='text-align: center; color: gray; font-size: 0.8rem;'>"
+        "© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.5.3)"
+        "</div>",
+        unsafe_allow_html=True
+    )

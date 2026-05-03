@@ -10,28 +10,29 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 ## 👥 Equipo y Roles Técnicos (Grupo 1)
 
 ### 👤 Rubén Gámez Torrijos (Coordinador y Arquitectura)
-- [x] **Arquitectura Core**: Diseño modular `analisis/` y orquestación en `app.py`.
-- [x] **Identidad Visual**: Diseño de banners de tareas y pie de página crediticio.
-- [x] **Exportación Pro**: Motor de reportes PDF/Excel con validación de nulidad.
-- [x] **Estado**: ⏳ Pendiente de verificar arquitectura completa.
+- [x] **Arquitectura Core**: Diseño modular MVC y orquestación en `app.py`.
+- [x] **Identidad Visual**: Diseño de la interfaz, estilos y experiencia de usuario (UX).
+- [x] **Exportación Pro**: Motor de reportes PDF/Excel con validación de datos.
+- [x] **Integración**: Consolidación de todos los módulos del grupo.
+- [x] **Estado**: ✅ FINALIZADO (v.2.5.3).
 
 ### 👤 Rafael Rodriguez Mengual (Data Manager)
-- [x] **Limpieza de Datos**: Pipeline de procesamiento en `analisis/utils.py`.
-- [x] **Enriquecimiento**: Integración del Índice de Coste de Vida (COLI).
+- [x] **Limpieza de Datos**: Pipeline de procesamiento en `models/data_loader.py`.
+- [x] **Enriquecimiento**: Integración del Índice de Coste de Vida (COLI) vía API.
 - [x] **Estadística Descriptiva**: Motor de cálculos en `analisis/estadisticos.py`.
 - [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
 ### 👤 Bryann Vallejo Luna (Analista Inferencial)
-- [x] **Intervalos de Confianza**: Implementación de IC 95% (T-Student) en `analisis/inferencial.py`.
-- [x] **Contrastes de Hipótesis**: Tests paramétricos para Experiencia y Modalidad.
-- [x] **Verificación**: Validación de p-valores y conclusiones poblacionales.
+- [x] **Intervalos de Confianza**: Implementación de IC 95% en `analisis/inferencial.py`.
+- [x] **Contrastes de Hipótesis**: Tests paramétricos para categorías críticas.
+- [x] **Validación Normicidad**: Implementación de Shapiro-Wilk y Q-Q plots.
 - [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
 ### 👤 Leslie Ross Aranibar Pozo (Analista Descriptivo)
 - [x] **Visualizaciones**: Catálogo de Histogramas, Boxplots y Violines en `analisis/graficos.py`.
-- [x] **Correlación**: Desarrollo del modelo de regresión lineal simple.
+- [x] **Correlación**: Desarrollo del modelo de regresión lineal simple y R².
 - [x] **Integración**: Ajuste de plots para alta resolución en exportación.
-- [x] **Estado**: ⏳ PENDIENTE LESLIE REFACTORIZAR Y VERIFICAR.
+- [x] **Estado**: ✅ FINALIZADO Y VERIFICADO.
 
 ---
 
@@ -64,7 +65,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 | :--- | :--- | :--- | :--- |
 | **Arquitectura / UI** | Rubén Gámez | `app.py` | ✅ Finalizado |
 | **Motor Exportación** | Rubén Gámez | `analisis/exportacion.py` | ✅ Finalizado |
-| **Procesamiento Datos**| Rafael Rodriguez | `analisis/utils.py` | ✅ Finalizado |
+| **Procesamiento Datos**| Rafael Rodriguez | `config/utils.py` | ✅ Finalizado |
 | **Motor Estadístico**| Rafael Rodriguez | `analisis/estadisticos.py`| ✅ Finalizado |
 | **Inferencia** | Bryann Vallejo | `analisis/inferencial.py` | ✅ Finalizado |
 | **Gráficos y Regresión**| Leslie Ross | `analisis/graficos.py` | ✅ Integrado |

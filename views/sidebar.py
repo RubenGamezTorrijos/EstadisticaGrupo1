@@ -5,7 +5,7 @@ from analisis.exportacion import generar_excel_multipestana, generar_pdf_profesi
 from analisis.estadisticos import calcular_estadisticos
 from analisis.graficos import (
     crear_histograma, crear_boxplot, 
-    crear_scatter_regresion, crear_bar_chart
+    crear_scatter_regresion, crear_bar_chart, crear_violin_plot
 )
 from analisis.inferencial import calcular_intervalos_confianza
 import config.settings as cfg
@@ -121,6 +121,7 @@ def handle_exports(df_filtered, currency_label, current_sym, divisa_key):
         graficos_dict = {
             "Distribución Salarial": crear_histograma(df_filtered, divisa_key),
             "Salario por Experiencia": crear_boxplot(df_filtered, divisa_key, "experience_level"),
+            "Densidad de Probabilidad (Violin)": crear_violin_plot(df_filtered, divisa_key, "experience_level"),
             "Categorías de Empleo": crear_bar_chart(df_filtered, 'job_category'),
             "Regresión COLI": crear_scatter_regresion(df_filtered, cfg.COL_COLI, divisa_key)
         }

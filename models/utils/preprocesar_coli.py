@@ -4,8 +4,8 @@ preprocesar_coli.py
 Script de preprocesamiento: Integración del Índice de Coste de Vida (COLI)
 basado en datos reales de Numbeo 2023 con el dataset principal jobs_in_data.csv.
 
-Autor: Rubén Torrijos (Coordinador de Arquitectura)
-Fecha: Abril 2025
+Autor: Rubén Gámez Torrijos (Coordinador de Arquitectura)
+Fecha: Abril 2026
 Versión: 1.0.0
 
 Flujo:

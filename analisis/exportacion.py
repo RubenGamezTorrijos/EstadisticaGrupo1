@@ -1,167 +1,173 @@
 """
-PROYECTO: Estadística para Ingeniería
-COMPONENTE: Motor de Exportación Profesional (PDF/Excel)
-RESPONSABLE: Rubén Gámez Torrijos (Coordinador)
-
-ESTADO: FINALIZADO Y VERIFICADO (v.2.5.3)
-========================================
-Este módulo gestiona la generación de reportes multiplataforma.
+analisis/exportacion.py
+=======================
+Módulo para la generación de reportes profesionales en PDF y Excel.
 """
 
 import pandas as pd
-import io
 import os
 from fpdf import FPDF
-import tempfile
-from datetime import datetime
-from analisis.graficos import sanitize_pdf_text
+from io import BytesIO
 import config.settings as cfg
+from config.utils import formatear_moneda, formatear_porcentaje
 
-def generar_excel_multipestana(df_filtered, df_stats, df_inferencial, df_regresion):
-    """
-    Genera un archivo Excel con pestañas profesionales.
-    """
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        # Pestaña 1: Datos Listado
-        df_filtered.to_excel(writer, sheet_name='1. Datos Filtrados', index=False)
-        
-        # Pestaña 2: Estadísticos Descriptivos
-        df_stats.to_excel(writer, sheet_name='2. Estadísticos', index=False)
-        
-        # Pestaña 3: Inferencia Estadística
-        if df_inferencial is not None:
-            df_inferencial.to_excel(writer, sheet_name='3. Inferencia', index=True)
-        
-        # Pestaña 4: Regresión Lineal
-        if df_regresion is not None:
-            df_regresion.to_excel(writer, sheet_name='4. Regresión', index=True)
-        
+def sanitize_pdf_text(text):
+    """Limpia caracteres especiales para evitar errores en FPDF."""
+    if text is None: return ""
+    return str(text).encode('latin-1', 'replace').decode('latin-1')
+
+def generar_excel_multipestana(df_full, df_stats, df_inferencial, df_reg):
+    """Genera un archivo Excel con múltiples pestañas."""
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df_full.to_excel(writer, sheet_name='Datos Filtrados', index=False)
+        df_stats.to_excel(writer, sheet_name='Estadísticos Descriptivos', index=False)
+        df_inferencial.to_excel(writer, sheet_name='Análisis Inferencial')
+        if not df_reg.empty:
+            df_reg.to_excel(writer, sheet_name='Modelo Regresión')
     return output.getvalue()
 
-class PDFReport(FPDF):
-    def header(self):
-        # Fondo azul en la cabecera
-        self.set_fill_color(11, 132, 244) # Blue Aesthetic #0b84f4
-        self.rect(0, 0, 210, 35, 'F')
-        
-        self.set_font('Helvetica', 'B', 22)
-        self.set_text_color(255, 255, 255)
-        self.cell(0, 15, sanitize_pdf_text('ESTADÍSTICA Y OPTIMIZACIÓN - INFORME FINAL'), 0, 1, 'C')
-        self.set_font('Helvetica', 'I', 11)
-        self.cell(0, 5, sanitize_pdf_text('GRUPO DE TRABAJO 1: Solución de Producción'), 0, 1, 'C')
-        self.ln(15)
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font('Helvetica', 'I', 8)
-        self.set_text_color(128, 128, 128)
-        self.cell(0, 10, sanitize_pdf_text(f'Generado por Grupo 1 | v.{cfg.VERSION} | Página {self.page_no()}'), 0, 0, 'C')
-
-def generar_pdf_profesional(df, stats_df, equipo, graficos_figs, currency_label):
-    """
-    Genera un informe PDF profesional con tablas y gráficos.
-    """
-    pdf = PDFReport()
+def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label="USD"):
+    """Genera un informe PDF con diseño profesional."""
+    pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
+    
+    # --- PORTADA ---
     pdf.add_page()
+    pdf.set_fill_color(30, 58, 138) # Azul corporativo
+    pdf.rect(0, 0, 210, 297, 'F')
     
-    # --- PORTADA Y EQUIPO ---
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Helvetica', 'B', 24)
+    pdf.ln(60)
+    pdf.cell(0, 20, sanitize_pdf_text('INFORME ESTADÍSTICO'), 0, 1, 'C')
+    pdf.set_font('Helvetica', '', 16)
+    pdf.cell(0, 10, sanitize_pdf_text('Análisis de Salarios y Coste de Vida (COLI)'), 0, 1, 'C')
+    
+    pdf.ln(100)
+    pdf.set_font('Helvetica', 'B', 12)
+    pdf.cell(0, 10, sanitize_pdf_text('Grupo de Trabajo 1'), 0, 1, 'C')
+    pdf.set_font('Helvetica', '', 10)
+    pdf.cell(0, 5, sanitize_pdf_text('v.2.5.3 - Producción'), 0, 1, 'C')
+
+    # --- EQUIPO ---
+    pdf.add_page()
     pdf.set_text_color(30, 58, 138)
     pdf.set_font('Helvetica', 'B', 18)
-    pdf.cell(0, 15, sanitize_pdf_text('1. Miembros del Equipo del Grupo 1'), 0, 1, 'L')
+    pdf.cell(0, 15, sanitize_pdf_text('1. Equipo de Proyecto'), 0, 1, 'L')
+    pdf.ln(5)
     
+    pdf.set_text_color(0, 0, 0)
     pdf.set_font('Helvetica', '', 12)
-    pdf.set_text_color(0, 0, 0)
     for nombre, rol in equipo.items():
-        pdf.cell(10)
-        pdf.cell(0, 8, sanitize_pdf_text(f'* {nombre} - {rol}'), 0, 1, 'L')
-    
+        pdf.set_font('Helvetica', 'B', 11)
+        pdf.cell(60, 8, sanitize_pdf_text(nombre), 0, 0)
+        pdf.set_font('Helvetica', '', 11)
+        pdf.cell(0, 8, sanitize_pdf_text(f"- {rol}"), 0, 1)
+
+    # --- RESUMEN EJECUTIVO ---
     pdf.ln(10)
-    
-    # --- RESUMEN TÉCNICO ---
     pdf.set_text_color(30, 58, 138)
     pdf.set_font('Helvetica', 'B', 18)
-    pdf.cell(0, 15, sanitize_pdf_text('2. Resumen del Análisis'), 0, 1, 'L')
+    pdf.cell(0, 15, sanitize_pdf_text('2. Resumen Ejecutivo'), 0, 1, 'L')
     
-    pdf.set_font('Helvetica', '', 11)
-    pdf.set_text_color(50, 50, 50)
-    pdf.cell(10)
-    pdf.cell(0, 7, sanitize_pdf_text(f'Divisa de Referencia: {currency_label}'), 0, 1, 'L')
-    pdf.cell(10)
-    pdf.cell(0, 7, sanitize_pdf_text(f'Muestra: {len(df)} registros analizados.'), 0, 1, 'L')
-    
-    pdf.ln(10)
-    
-    # --- TABLA DE ESTADÍSTICOS ---
-    pdf.set_text_color(30, 58, 138)
-    pdf.set_font('Helvetica', 'B', 18)
-    pdf.cell(0, 15, sanitize_pdf_text('3. Estadísticos Descriptivos Principales'), 0, 1, 'L')
-    
-    pdf.set_font('Helvetica', 'B', 9)
-    pdf.set_fill_color(220, 235, 255)
     pdf.set_text_color(0, 0, 0)
+    pdf.set_font('Helvetica', '', 11)
+    pdf.multi_cell(0, 8, sanitize_pdf_text(
+        f"Este informe presenta el análisis estadístico detallado sobre una muestra de {len(df)} registros. "
+        f"El análisis se ha centrado en la variable de remuneración utilizando {currency_label} como base monetaria "
+        "y el índice COLI como factor de ajuste económico."
+    ))
+
+    # --- ESTADÍSTICOS ---
+    pdf.add_page()
+    pdf.set_text_color(30, 58, 138)
+    pdf.set_font('Helvetica', 'B', 18)
+    pdf.cell(0, 15, sanitize_pdf_text('3. Estadísticos Descriptivos'), 0, 1, 'L')
     
-    col_widths = [55, 30, 30, 35, 35]
-    headers = ['Variable', 'Media', 'Mediana', 'Desv. Tipica', 'CV%']
+    pdf.set_fill_color(240, 240, 240)
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font('Helvetica', 'B', 10)
+    
+    col_widths = [45, 35, 35, 40, 30]
+    headers = ['Variable', 'Media', 'Mediana', 'Desv. Típica', 'CV%']
+    
     for i, h in enumerate(headers):
-        pdf.cell(col_widths[i], 10, h, 1, 0, 'C', True)
+        pdf.cell(col_widths[i], 10, sanitize_pdf_text(h), 1, 0, 'C', True)
     pdf.ln()
     
     pdf.set_font('Helvetica', '', 8)
+    divisa = currency_label.split(" ")[0]
+    es_euro = divisa == "EUR"
+
     for _, row in stats_df.iterrows():
         pdf.cell(col_widths[0], 8, sanitize_pdf_text(row['Variable']), 1, 0, 'L')
-        pdf.cell(col_widths[1], 8, f"{row['Media']:,.2f}", 1, 0, 'R')
-        pdf.cell(col_widths[2], 8, f"{row['Mediana']:,.2f}", 1, 0, 'R')
-        pdf.cell(col_widths[3], 8, f"{row['Desviación Típica']:,.2f}", 1, 0, 'R')
-        pdf.cell(col_widths[4], 8, f"{row['CV%']:,.2f}%", 1, 1, 'R')
+        
+        is_coli = "COLI" in str(row['Variable'])
+        
+        if is_coli:
+            val_media = formatear_porcentaje(row['Media'], es_euro)
+            val_mediana = formatear_porcentaje(row['Mediana'], es_euro)
+            val_desv = formatear_porcentaje(row['Desviación Típica'], es_euro)
+        else:
+            val_media = formatear_moneda(row['Media'], divisa)
+            val_mediana = formatear_moneda(row['Mediana'], divisa)
+            val_desv = formatear_moneda(row['Desviación Típica'], divisa)
+        
+        pdf.cell(col_widths[1], 8, sanitize_pdf_text(val_media), 1, 0, 'R')
+        pdf.cell(col_widths[2], 8, sanitize_pdf_text(val_mediana), 1, 0, 'R')
+        pdf.cell(col_widths[3], 8, sanitize_pdf_text(val_desv), 1, 0, 'R')
+        pdf.cell(col_widths[4], 8, sanitize_pdf_text(formatear_porcentaje(row['CV%'], es_euro)), 1, 1, 'R')
 
-    # --- SECCIÓN INFERENCIAL ---
-    pdf.add_page()
+    # --- INFERENCIAL ---
+    pdf.ln(10)
     pdf.set_text_color(30, 58, 138)
     pdf.set_font('Helvetica', 'B', 18)
     pdf.cell(0, 15, sanitize_pdf_text('4. Análisis Inferencial'), 0, 1, 'L')
     
-    try:
-        from analisis.inferencial import calcular_intervalos_confianza
-        target_col = cfg.COL_SALARIO_DINAMICO if cfg.COL_SALARIO_DINAMICO in df.columns else cfg.COL_SALARIO_USD
-        ic = calcular_intervalos_confianza(df, target_col)
-        
-        pdf.set_font('Helvetica', 'B', 12)
-        pdf.set_text_color(0, 0, 0)
-        pdf.cell(0, 10, sanitize_pdf_text(f'Estimación Intervalar (95%):'), 0, 1, 'L')
-        
-        pdf.set_font('Helvetica', '', 11)
-        pdf.cell(10)
-        pdf.cell(0, 7, sanitize_pdf_text(f'* Media: {ic["Media"]:,.2f}'), 0, 1, 'L')
-        pdf.cell(10)
-        pdf.cell(0, 7, sanitize_pdf_text(f'* Rango: [{ic["Límite Inferior"]:,.2f} - {ic["Límite Superior"]:,.2f}]'), 0, 1, 'L')
-    except Exception as e:
-        pdf.set_text_color(200, 0, 0)
-        pdf.cell(0, 10, sanitize_pdf_text(f"Error en análisis inferencial: {e}"), 0, 1, 'L')
+    from analisis.inferencial import calcular_intervalos_confianza
+    target_col = cfg.COL_SALARIO_DINAMICO if cfg.COL_SALARIO_DINAMICO in df.columns else cfg.COL_SALARIO_USD
+    ic = calcular_intervalos_confianza(df, target_col)
+    
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font('Helvetica', 'B', 11)
+    pdf.cell(0, 10, sanitize_pdf_text(f'Intervalo de Confianza (95%) para {target_col}:'), 0, 1)
+    pdf.set_font('Helvetica', '', 10)
+    pdf.cell(0, 8, sanitize_pdf_text(f"- Límite Inferior: {formatear_moneda(ic['Límite Inferior'], divisa)}"), 0, 1)
+    pdf.cell(0, 8, sanitize_pdf_text(f"- Límite Superior: {formatear_moneda(ic['Límite Superior'], divisa)}"), 0, 1)
 
-    # --- SECCIÓN DE GRÁFICOS ---
-    pdf.ln(10)
+    # --- VISUALIZACIONES (Incluyendo Violin Plot) ---
+    pdf.add_page()
     pdf.set_text_color(30, 58, 138)
     pdf.set_font('Helvetica', 'B', 18)
-    pdf.cell(0, 15, sanitize_pdf_text('5. Visualizaciones y Gráficos'), 0, 1, 'L')
+    pdf.cell(0, 15, sanitize_pdf_text('5. Visualizaciones Estadísticas'), 0, 1, 'L')
     
-    for i, (nombre_graf, fig) in enumerate(graficos_figs.items()):
-        if fig is None: continue
+    if not os.path.exists("outputs/temp"):
+        os.makedirs("outputs/temp")
+
+    for titulo, fig in graficos_dict.items():
+        if fig is not None:
+            temp_path = f"outputs/temp/{titulo.lower().replace(' ', '_')}.png"
+            fig.savefig(temp_path, dpi=150, bbox_inches='tight')
             
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
-            tmp_path = tmpfile.name
-            fig.savefig(tmp_path, format='png', dpi=100, bbox_inches='tight')
+            # Verificar si cabe en la página o necesita nueva
+            if pdf.get_y() > 200:
+                pdf.add_page()
+                
+            pdf.set_text_color(0, 0, 0)
+            pdf.set_font('Helvetica', 'B', 12)
+            pdf.cell(0, 10, sanitize_pdf_text(titulo), 0, 1, 'C')
+            pdf.image(temp_path, x=20, w=170)
+            pdf.ln(5)
             
-        if pdf.get_y() > 180: pdf.add_page()
-        
-        pdf.set_text_color(100, 100, 100)
-        pdf.set_font('Helvetica', 'B', 11)
-        pdf.cell(0, 10, sanitize_pdf_text(f'Gráfico {i+1}: {nombre_graf}'), 0, 1, 'C')
-        pdf.image(tmp_path, x=15, w=180)
-        pdf.ln(5)
-        
-        try: os.unlink(tmp_path)
-        except: pass
+            # Limpiar temporal
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    # --- PIE DE PÁGINA ---
+    pdf.set_y(-15)
+    pdf.set_font('Helvetica', 'I', 8)
+    pdf.set_text_color(128, 128, 128)
+    pdf.cell(0, 10, sanitize_pdf_text('© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.5.3)'), 0, 0, 'C')
 
     return bytes(pdf.output())

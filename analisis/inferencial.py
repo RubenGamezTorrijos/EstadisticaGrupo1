@@ -20,7 +20,7 @@ def realizar_test_hipotesis(df, variable_num, variable_cat):
     datos_grupos = [g for g in datos_grupos if len(g) > 5]
     
     if len(datos_grupos) < 2:
-        return {"error": "No hay suficientes grupos con datos para el test."}
+        return {"error": "No hay suficientes grupos con datos (mínimo 5 registros por grupo) para realizar el test de hipótesis."}
 
     if len(datos_grupos) == 2:
         # Test de Student
@@ -42,7 +42,18 @@ def realizar_test_hipotesis(df, variable_num, variable_cat):
 def calcular_intervalos_confianza(df, columna, confianza=0.95):
     """BRYANN SKEITH LOZA CACERES - Intervalos de Confianza"""
     data = df[columna].dropna()
+    if data is None or len(data) < 3:
+        return {
+            'Prueba': 'N/A', 'Stat': 0, 'P-Valor': 0, 'Estado': 'ERROR',
+            'error': 'Se requieren al menos 3 registros para validar normalidad.'
+        }
     n = len(data)
+    if n < 2:
+        return {
+            "Variable": cfg.VAR_LABELS.get(columna, columna),
+            "Media": 0, "Error Estándar": 0, "Límite Inferior": 0, "Límite Superior": 0,
+            "error": "Datos insuficientes"
+        }
     media = np.mean(data)
     sem = stats.sem(data)
     intervalo = sem * stats.t.ppf((1 + confianza) / 2., n-1)
@@ -92,6 +103,20 @@ def verificar_supuestos(data):
     
     # --- Tu código aquí ---
 
+    if data is None or len(data) < 3:
+        return {
+            'Prueba': 'N/A', 'Stat': 0, 'P-Valor': 0, 'Estado': 'ERROR',
+            'error': 'Se requieren al menos 3 registros para validar normalidad.'
+        }
+    if len(data) < 3:
+        return {
+            'Prueba': 'N/A',
+            'Stat': 0,
+            'P-Valor': 1.0,
+            'Estado': 'ERROR',
+            'error': 'Datos insuficientes (n < 3)'
+        }
+        
     n = len(data)
 
     # Selección de prueba

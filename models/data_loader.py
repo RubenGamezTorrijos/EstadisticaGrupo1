@@ -34,6 +34,7 @@ def load_processed_data() -> pd.DataFrame:
             
             # Si aún falta alguna columna vital, forzar reconstrucción
             if cfg.COL_SALARIO_EUR in df.columns:
+                df['work_year'] = df['work_year'].astype(str)
                 return df
         
         # 2. Si no existe, construirlo desde cero
@@ -98,6 +99,9 @@ def load_processed_data() -> pd.DataFrame:
             st.error("El dataset resultante está vacío tras aplicar validaciones de seguridad.")
             return pd.DataFrame()
 
+        # Asegurar que el año sea tratado como texto para evitar puntos/comas (Requisito v.2.5.3)
+        df['work_year'] = df['work_year'].astype(str)
+        
         # Guardar para la próxima sesión
         df.to_csv(cfg.ENRIQUECIDO_CSV, index=False)
         return df

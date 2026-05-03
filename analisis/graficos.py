@@ -17,10 +17,16 @@ sns.set_theme(style="darkgrid")
 plt.rcParams['figure.dpi'] = 300
 
 def fmt_es(x, pos):
-    """Formato español profesional"""
+    """Formato español profesional (1.234,56)"""
     return f"{x:,.0f}".replace(",", "@").replace(".", ",").replace("@", ".")
 
-formatter = FuncFormatter(fmt_es)
+def fmt_en(x, pos):
+    """Formato inglés profesional (1,234.56)"""
+    return f"{x:,.0f}"
+
+# Formatter dinámico
+formatter_es = FuncFormatter(fmt_es)
+formatter_en = FuncFormatter(fmt_en)
 
 def guardar_grafico(fig, nombre):
     """LESLIE ROSS ARANIBAR POZO - Guardado centralizado"""
@@ -29,12 +35,13 @@ def guardar_grafico(fig, nombre):
     fig.savefig(ruta, bbox_inches='tight')
     plt.close(fig)
 
-def crear_histograma(df, columna):
+def crear_histograma(df, columna, divisa="EUR"):
     """LESLIE ROSS ARANIBAR POZO - Distribución avanzada"""
+    fmt = formatter_es if "EUR" in divisa.upper() or divisa == "€" else formatter_en
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.histplot(data=df, x=columna, kde=True, ax=ax, color='#00d1b2')
     
-    ax.xaxis.set_major_formatter(formatter)
+    ax.xaxis.set_major_formatter(fmt)
     ax.set_xlabel(cfg.VAR_LABELS.get(columna, columna))
     ax.set_ylabel("Frecuencia (N)")
     ax.set_title(f'Distribución de {cfg.VAR_LABELS.get(columna, columna)}', fontsize=14, pad=15)
@@ -42,12 +49,13 @@ def crear_histograma(df, columna):
     guardar_grafico(fig, f'histograma_{columna}.png')
     return fig
 
-def crear_boxplot(df, num, cat):
+def crear_boxplot(df, num, cat, divisa="EUR"):
     """LESLIE ROSS ARANIBAR POZO - Análisis por categoría"""
+    fmt = formatter_es if "EUR" in divisa.upper() or divisa == "€" else formatter_en
     fig, ax = plt.subplots(figsize=(12, 7))
     sns.boxplot(data=df, x=cat, y=num, ax=ax, palette="viridis")
 
-    ax.yaxis.set_major_formatter(formatter)
+    ax.yaxis.set_major_formatter(fmt)
     ax.set_xlabel(cfg.VAR_LABELS.get(cat, cat))
     ax.set_ylabel(cfg.VAR_LABELS.get(num, num))
     ax.set_title(f'{cfg.VAR_LABELS.get(num, num)} por {cfg.VAR_LABELS.get(cat, cat)}', fontsize=14, pad=15)
@@ -56,12 +64,13 @@ def crear_boxplot(df, num, cat):
     guardar_grafico(fig, f'boxplot_{num}_{cat}.png')
     return fig
 
-def crear_violin_plot(df, num, cat):
+def crear_violin_plot(df, num, cat, divisa="EUR"):
     """LESLIE ROSS ARANIBAR POZO - Densidad de probabilidad"""
+    fmt = formatter_es if "EUR" in divisa.upper() or divisa == "€" else formatter_en
     fig, ax = plt.subplots(figsize=(12, 7))
     sns.violinplot(data=df, x=cat, y=num, ax=ax, palette="muted", inner="quartile")
 
-    ax.yaxis.set_major_formatter(formatter)
+    ax.yaxis.set_major_formatter(fmt)
     ax.set_xlabel(cfg.VAR_LABELS.get(cat, cat))
     ax.set_ylabel(cfg.VAR_LABELS.get(num, num))
     ax.set_title(f'Densidad de {cfg.VAR_LABELS.get(num, num)} por {cfg.VAR_LABELS.get(cat, cat)}', fontsize=14, pad=15)
@@ -70,16 +79,17 @@ def crear_violin_plot(df, num, cat):
     guardar_grafico(fig, f'violin_{num}_{cat}.png')
     return fig
 
-def crear_scatter_regresion(df, x_col, y_col):
+def crear_scatter_regresion(df, x_col, y_col, divisa="EUR"):
     """LESLIE ROSS ARANIBAR POZO - Dispersión y Correlación"""
+    fmt = formatter_es if "EUR" in divisa.upper() or divisa == "€" else formatter_en
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.regplot(data=df, x=x_col, y=y_col, ax=ax, 
                 scatter_kws={'alpha': 0.4, 'color': '#0b84f4'}, 
                 line_kws={'color': 'red'})
 
     corr = df[x_col].corr(df[y_col])
-    ax.yaxis.set_major_formatter(formatter)
-    ax.xaxis.set_major_formatter(formatter)
+    ax.yaxis.set_major_formatter(fmt)
+    ax.xaxis.set_major_formatter(fmt)
 
     ax.set_xlabel(cfg.VAR_LABELS.get(x_col, x_col))
     ax.set_ylabel(cfg.VAR_LABELS.get(y_col, y_col))
@@ -110,7 +120,7 @@ def sanitize_pdf_text(text):
 
 # --- FUNCIONES INTERACTIVAS (PLOTLY) PARA LA WEB ---
 
-def crear_histograma_interactivo(df, columna):
+def crear_histograma_interactivo(df, columna, sym="$"):
     """Versión interactiva para la web."""
     label = cfg.VAR_LABELS.get(columna, columna)
     fig = px.histogram(df, x=columna, nbins=30, marginal="box", 
@@ -118,16 +128,20 @@ def crear_histograma_interactivo(df, columna):
                        labels={columna: label},
                        color_discrete_sequence=['#00d1b2'])
     
+    seps = ",." if sym == "€" else ".,"
     fig.update_layout(
         template="plotly_white",
         xaxis_title=label,
         yaxis_title="Frecuencia",
         hovermode="x unified",
-        bargap=0.1
+        bargap=0.1,
+        separators=seps
     )
+    if "salary" in columna.lower():
+        fig.update_layout(xaxis=dict(tickprefix=sym))
     return fig
 
-def crear_boxplot_interactivo(df, num, cat):
+def crear_boxplot_interactivo(df, num, cat, sym="$"):
     """Versión interactiva para la web."""
     label_num = cfg.VAR_LABELS.get(num, num)
     label_cat = cfg.VAR_LABELS.get(cat, cat)
@@ -137,10 +151,11 @@ def crear_boxplot_interactivo(df, num, cat):
                  labels={num: label_num, cat: label_cat},
                  points="outliers")
     
-    fig.update_layout(template="plotly_white", showlegend=False)
+    seps = ",." if sym == "€" else ".,"
+    fig.update_layout(template="plotly_white", showlegend=False, separators=seps, yaxis=dict(tickprefix=sym))
     return fig
 
-def crear_violin_interactivo(df, num, cat):
+def crear_violin_interactivo(df, num, cat, sym="$"):
     """Versión interactiva para la web."""
     label_num = cfg.VAR_LABELS.get(num, num)
     label_cat = cfg.VAR_LABELS.get(cat, cat)
@@ -149,10 +164,11 @@ def crear_violin_interactivo(df, num, cat):
                     title=f'Densidad de {label_num} por {label_cat}',
                     labels={num: label_num, cat: label_cat})
     
-    fig.update_layout(template="plotly_white", showlegend=False)
+    seps = ",." if sym == "€" else ".,"
+    fig.update_layout(template="plotly_white", showlegend=False, separators=seps, yaxis=dict(tickprefix=sym))
     return fig
 
-def crear_scatter_regresion_interactivo(df, x_col, y_col):
+def crear_scatter_regresion_interactivo(df, x_col, y_col, sym="$"):
     """Versión interactiva con línea de tendencia."""
     label_x = cfg.VAR_LABELS.get(x_col, x_col)
     label_y = cfg.VAR_LABELS.get(y_col, y_col)
@@ -163,7 +179,8 @@ def crear_scatter_regresion_interactivo(df, x_col, y_col):
                      hover_data=['job_title', 'experience_level'],
                      trendline_color_override="red")
     
-    fig.update_layout(template="plotly_white")
+    seps = ",." if sym == "€" else ".,"
+    fig.update_layout(template="plotly_white", separators=seps, yaxis=dict(tickprefix=sym))
     return fig
 
 def crear_bar_chart_interactivo(df, cat):
