@@ -80,8 +80,8 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
     pdf.set_font('Helvetica', '', 11)
     
     # Normalizar etiqueta de divisa para el reporte (v.2.5.3)
-    # Nota: Usamos 'EUR' en lugar del símbolo '€' por limitaciones de las fuentes estándar en PDF
-    curr_display = "Euros (EUR)" if "EUR" in currency_label.upper() else "Dólares ($)"
+    # Nota: El símbolo € será convertido a 'EUR' en sanitize_pdf_text para evitar crashes en el PDF
+    curr_display = "Euros (€)" if "EUR" in currency_label.upper() else "Dólares ($)"
     
     pdf.multi_cell(w_text, 8, sanitize_pdf_text(
         f"Este informe presenta el análisis estadístico detallado sobre una muestra de {len(df)} registros. "
