@@ -14,8 +14,10 @@ from config.utils import formatear_moneda, formatear_porcentaje
 def sanitize_pdf_text(text):
     """Limpia caracteres especiales para evitar errores en FPDF."""
     if text is None: return ""
-    # Usamos cp1252 en lugar de latin-1 para soportar el símbolo del Euro (€)
-    return str(text).encode('cp1252', 'replace').decode('cp1252')
+    # El símbolo € no es soportado por las fuentes estándar (Helvetica/Times) en FPDF2 
+    # sin cargar fuentes Unicode externas (.ttf). Reemplazamos por 'EUR' para evitar crashes.
+    text_safe = str(text).replace('€', 'EUR')
+    return text_safe.encode('latin-1', 'replace').decode('latin-1')
 
 def generar_excel_multipestana(df_full, df_stats, df_inferencial, df_reg):
     """Genera un archivo Excel con múltiples pestañas."""
@@ -78,7 +80,8 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
     pdf.set_font('Helvetica', '', 11)
     
     # Normalizar etiqueta de divisa para el reporte (v.2.5.3)
-    curr_display = "Euros (€)" if "EUR" in currency_label.upper() else "Dólares ($)"
+    # Nota: Usamos 'EUR' en lugar del símbolo '€' por limitaciones de las fuentes estándar en PDF
+    curr_display = "Euros (EUR)" if "EUR" in currency_label.upper() else "Dólares ($)"
     
     pdf.multi_cell(w_text, 8, sanitize_pdf_text(
         f"Este informe presenta el análisis estadístico detallado sobre una muestra de {len(df)} registros. "
