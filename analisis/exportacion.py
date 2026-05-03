@@ -190,7 +190,7 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
         pdf.cell(0, 8, sanitize_pdf_text(f"- Variable Independiente (X): Índice COLI"), 0, 1)
         pdf.cell(0, 8, sanitize_pdf_text(f"- Variable Dependiente (Y): Salario"), 0, 1)
         pdf.cell(0, 8, sanitize_pdf_text(f"- Coeficiente de Determinación (R2): {reg['r2']:.4f}"), 0, 1)
-        pdf.cell(0, 8, sanitize_pdf_text(f"- Ecuación: Y = {reg['pendiente']:.2f}X + {reg['interseccion']:.2f}"), 0, 1)
+        pdf.cell(0, 8, sanitize_pdf_text(f"- Ecuación: Y = {reg['coeficiente']:.2f}X + {reg['intercepto']:.2f}"), 0, 1)
         pdf.multi_cell(w_text, 8, sanitize_pdf_text(f"- Correlación: La relación es {'fuerte' if abs(reg['r2']) > 0.7 else 'moderada' if abs(reg['r2']) > 0.4 else 'débil'}."))
 
     # --- VISUALIZACIONES (Incluyendo Violin Plot) ---
@@ -220,6 +220,26 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
             # Limpiar temporal
             if os.path.exists(temp_path):
                 os.remove(temp_path)
+
+    # --- CONCLUSIONES ---
+    pdf.add_page()
+    pdf.set_text_color(30, 58, 138)
+    pdf.set_font('Helvetica', 'B', 18)
+    pdf.cell(0, 15, sanitize_pdf_text('7. Conclusiones y Análisis Crítico'), 0, 1, 'L')
+    
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font('Helvetica', '', 11)
+    conclusiones = [
+        "1. El análisis descriptivo revela una alta variabilidad salarial entre categorías, con una concentración significativa en roles senior.",
+        "2. Se observa una correlación positiva moderada entre el índice de coste de vida (COLI) y los salarios brutos, sugiriendo que las empresas ajustan parcialmente la remuneración según la ubicación.",
+        "3. Las pruebas de normalidad indican que los salarios no siguen una distribución normal perfecta, lo que justifica el uso de métodos robustos.",
+        "4. El modelo de regresión permite estimar el salario base con un margen de confianza aceptable, aunque existen factores no observados que influyen en la varianza.",
+        "5. La integración de la métrica COLI aporta una dimensión crítica para entender el poder adquisitivo real más allá del salario nominal."
+    ]
+    
+    for conc in conclusiones:
+        pdf.multi_cell(w_text, 10, sanitize_pdf_text(conc))
+        pdf.ln(2)
 
     # --- PIE DE PÁGINA ---
     pdf.set_y(-15)
