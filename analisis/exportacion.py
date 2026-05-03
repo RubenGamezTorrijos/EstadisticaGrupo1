@@ -71,9 +71,11 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
     pdf.set_font('Helvetica', 'B', 18)
     pdf.cell(0, 15, sanitize_pdf_text('2. Resumen Ejecutivo'), 0, 1, 'L')
     
+    w_text = pdf.epw
+    
     pdf.set_text_color(0, 0, 0)
     pdf.set_font('Helvetica', '', 11)
-    pdf.multi_cell(0, 8, sanitize_pdf_text(
+    pdf.multi_cell(w_text, 8, sanitize_pdf_text(
         f"Este informe presenta el análisis estadístico detallado sobre una muestra de {len(df)} registros. "
         f"El análisis se ha centrado en la variable de remuneración utilizando {currency_label} como base monetaria "
         "y el índice COLI como factor de ajuste económico."
@@ -155,8 +157,10 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
         if p < 0.0001 and p > 0: return f"{p:.2e}".replace(".", "," if es_euro else ".")
         return f"{p:.4f}".replace(".", "," if es_euro else ".")
 
-    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- Salario ({sup_salario['Prueba']}): Estadístico={sup_salario['Stat']:.4f}, P-Valor={fmt_pval(sup_salario['P-Valor'])}. {'Sigue' if sup_salario['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
-    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- COLI ({sup_coli['Prueba']}): Estadístico={sup_coli['Stat']:.4f}, P-Valor={fmt_pval(sup_coli['P-Valor'])}. {'Sigue' if sup_coli['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
+    # Asegurar margen izquierdo y ancho efectivo
+    pdf.multi_cell(w_text, 8, sanitize_pdf_text(f"- Salario ({sup_salario['Prueba']}): Estadístico={sup_salario['Stat']:.4f}, P-Valor={fmt_pval(sup_salario['P-Valor'])}. {'Sigue' if sup_salario['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
+    pdf.ln(2)
+    pdf.multi_cell(w_text, 8, sanitize_pdf_text(f"- COLI ({sup_coli['Prueba']}): Estadístico={sup_coli['Stat']:.4f}, P-Valor={fmt_pval(sup_coli['P-Valor'])}. {'Sigue' if sup_coli['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
 
     # 4.3 Contrastes de Hipótesis por Categoría
     pdf.ln(5)
@@ -167,9 +171,9 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
     test_cat = realizar_test_hipotesis(df, target_col, 'experience_level')
     if "error" not in test_cat:
         stat_val = test_cat['Estadístico']
-        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- {test_cat['Test']}: Estadístico={stat_val:.4f}, P-Valor={fmt_pval(test_cat['P-Valor'])}. Diferencia significativa: {test_cat['Significativo (5%)']}."))
+        pdf.multi_cell(w_text, 8, sanitize_pdf_text(f"- {test_cat['Test']}: Estadístico={stat_val:.4f}, P-Valor={fmt_pval(test_cat['P-Valor'])}. Diferencia significativa: {test_cat['Significativo (5%)']}."))
     else:
-        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- {test_cat['error']}"))
+        pdf.multi_cell(w_text, 8, sanitize_pdf_text(f"- {test_cat['error']}"))
 
     # --- REGRESIÓN ---
     pdf.ln(10)
@@ -187,13 +191,13 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
         pdf.cell(0, 8, sanitize_pdf_text(f"- Variable Dependiente (Y): Salario"), 0, 1)
         pdf.cell(0, 8, sanitize_pdf_text(f"- Coeficiente de Determinación (R2): {reg['r2']:.4f}"), 0, 1)
         pdf.cell(0, 8, sanitize_pdf_text(f"- Ecuación: Y = {reg['pendiente']:.2f}X + {reg['interseccion']:.2f}"), 0, 1)
-        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- Correlación: La relación es {'fuerte' if abs(reg['r2']) > 0.7 else 'moderada' if abs(reg['r2']) > 0.4 else 'débil'}."))
+        pdf.multi_cell(w_text, 8, sanitize_pdf_text(f"- Correlación: La relación es {'fuerte' if abs(reg['r2']) > 0.7 else 'moderada' if abs(reg['r2']) > 0.4 else 'débil'}."))
 
     # --- VISUALIZACIONES (Incluyendo Violin Plot) ---
     pdf.add_page()
     pdf.set_text_color(30, 58, 138)
     pdf.set_font('Helvetica', 'B', 18)
-    pdf.cell(0, 15, sanitize_pdf_text('5. Visualizaciones Estadísticas'), 0, 1, 'L')
+    pdf.cell(0, 15, sanitize_pdf_text('6. Visualizaciones Estadísticas'), 0, 1, 'L')
     
     if not os.path.exists("outputs/temp"):
         os.makedirs("outputs/temp")

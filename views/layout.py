@@ -99,12 +99,12 @@ def render_escritorio(df, key, sym):
         ))
         # Sobrescribir el texto del valor para que use el formato de utils.py
         fig.add_annotation(
-            x=0.5, y=0.15,
+            x=0.5, y=0.08, # Bajado de 0.15 a 0.08 para alineación base
             text=val_formateado,
             showarrow=False,
-            font=dict(size=32, color="#00d1b2", family="Arial Black")
+            font=dict(size=38, color="#00d1b2", family="Arial Black") # Aumentado de 32 a 38
         )
-        fig.update_layout(height=250, margin=dict(l=20, r=20, t=50, b=20), paper_bgcolor="rgba(0,0,0,0)")
+        fig.update_layout(height=260, margin=dict(l=20, r=20, t=50, b=10), paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
     st.markdown("---")
@@ -145,6 +145,12 @@ def render_estadisticos(df, key, sym):
     st.markdown("---")
     st.subheader(f"📍 Salarios por Nivel de Experiencia ({sym})")
     cat_stats = calcular_estadisticos_por_categoria(df, key, 'experience_level')
+    # Formatear columnas monetarias en la tabla por categoría (v.2.5.3)
+    divisa_target = "EUR" if sym == "€" else "USD"
+    cols_monetarias = ['Media', 'Mediana', 'Desv. Típica', 'Mínimo', 'Máximo', 'Q1', 'Q3', 'IQR']
+    for col in cols_monetarias:
+        if col in cat_stats.columns:
+            cat_stats[col] = cat_stats[col].apply(lambda x: formatear_moneda(x, divisa_target))
     st.table(cat_stats)
     
     st.subheader("⚠️ Análisis de Outliers")
@@ -194,7 +200,7 @@ def render_regresion(df, key, sym):
         st.error(f"Error al ejecutar el modelo de regresión: {e}")
 
 def render_inferencial(df, key, sym):
-    st.title("🧪 Estadística Inferencial - Bryann Loza")
+    st.title("🧪 Estadística Inferencial - Bryann Vallejo Luna")
     
     if not validar_datos_insuficientes(df):
         st.warning("⚠️ No hay suficientes datos para realizar el análisis inferencial con los filtros actuales.")
@@ -352,12 +358,3 @@ def render_equipo():
         """, unsafe_allow_html=True)
 
     st.info("✅ Proyecto consolidado siguiendo los estándares de producción v.2.5.3")
-
-def render_footer():
-    st.markdown("---")
-    st.markdown(
-        "<div style='text-align: center; color: gray; font-size: 0.8rem;'>"
-        "© 2026 ESTADÍSTICA Y OPTIMIZACIÓN - GRUPO DE TRABAJO 1 (v.2.5.3)"
-        "</div>",
-        unsafe_allow_html=True
-    )
