@@ -42,7 +42,7 @@ ipython_config.py
 # --- Documentación e Informes ---
 documentacion/*.md
 informes/*.md
-plan/**.md
+plan/*.md
 outputs/*.png
 MANUAL_DESARROLLO.md
 
