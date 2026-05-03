@@ -265,7 +265,7 @@ def render_equipo():
     with col1:
         st.markdown("""
         <div style="border: 1px solid #0b84f4; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="color: #0b84f4; margin-top: 0;">👑 Rubén Gámez Torrijos - Coordinador</h4>
+            <h4 style="color: #0b84f4; margin-top: 0;">👑 Rubén Gámez Torrijos - Coordinador Arquitecto Software</h4>
             <p style="font-style: italic; font-size: 0.9rem;">Liderazgo técnico, diseño estructural y orquestación del proyecto.</p>
             <hr style="margin: 10px 0;">
             <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>

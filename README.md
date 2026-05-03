@@ -9,7 +9,7 @@ Este repositorio ha evolucionado a una **Arquitectura Modular Estricta**. El nú
 
 ## 👥 Equipo y Roles Técnicos (Grupo 1)
 
-### 👤 Rubén Gámez Torrijos (Coordinador y Arquitectura)
+### 👤 Rubén Gámez Torrijos (Coordinador Arquitecto Software)
 - [x] **Arquitectura Core**: Diseño modular MVC y orquestación en `app.py`.
 - [x] **Motor de Datos**: Pipeline de procesamiento en `models/data_loader.py` e integración API en `config/api_client.py`.
 - [x] **Exportación Pro**: Motor de reportes PDF/Excel con validación de datos.
