@@ -125,16 +125,64 @@ def generar_pdf_profesional(df, stats_df, equipo, graficos_dict, currency_label=
     pdf.set_font('Helvetica', 'B', 18)
     pdf.cell(0, 15, sanitize_pdf_text('4. Análisis Inferencial'), 0, 1, 'L')
     
-    from analisis.inferencial import calcular_intervalos_confianza
-    target_col = cfg.COL_SALARIO_DINAMICO if cfg.COL_SALARIO_DINAMICO in df.columns else cfg.COL_SALARIO_USD
-    ic = calcular_intervalos_confianza(df, target_col)
+    from analisis.inferencial import calcular_intervalos_confianza, realizar_test_hipotesis, verificar_supuestos
     
+    # 4.1 Intervalos de Confianza
     pdf.set_text_color(0, 0, 0)
     pdf.set_font('Helvetica', 'B', 11)
-    pdf.cell(0, 10, sanitize_pdf_text(f'Intervalo de Confianza (95%) para {target_col}:'), 0, 1)
+    pdf.cell(0, 10, sanitize_pdf_text('4.1 Intervalos de Confianza (95%)'), 0, 1)
     pdf.set_font('Helvetica', '', 10)
-    pdf.cell(0, 8, sanitize_pdf_text(f"- Límite Inferior: {formatear_moneda(ic['Límite Inferior'], divisa)}"), 0, 1)
-    pdf.cell(0, 8, sanitize_pdf_text(f"- Límite Superior: {formatear_moneda(ic['Límite Superior'], divisa)}"), 0, 1)
+    
+    # Salario
+    target_col = cfg.COL_SALARIO_DINAMICO if cfg.COL_SALARIO_DINAMICO in df.columns else cfg.COL_SALARIO_USD
+    ic_salario = calcular_intervalos_confianza(df, target_col)
+    pdf.cell(0, 8, sanitize_pdf_text(f"- Salario: [{formatear_moneda(ic_salario['Límite Inferior'], divisa)} , {formatear_moneda(ic_salario['Límite Superior'], divisa)}]"), 0, 1)
+    
+    # COLI
+    ic_coli = calcular_intervalos_confianza(df, cfg.COL_COLI)
+    pdf.cell(0, 8, sanitize_pdf_text(f"- Índice COLI: [{formatear_porcentaje(ic_coli['Límite Inferior'], es_euro)} , {formatear_porcentaje(ic_coli['Límite Superior'], es_euro)}]"), 0, 1)
+    
+    # 4.2 Pruebas de Normalidad
+    pdf.ln(5)
+    pdf.set_font('Helvetica', 'B', 11)
+    pdf.cell(0, 10, sanitize_pdf_text('4.2 Pruebas de Normalidad (Distribución)'), 0, 1)
+    pdf.set_font('Helvetica', '', 10)
+    
+    sup_salario = verificar_supuestos(df[target_col])
+    sup_coli = verificar_supuestos(df[cfg.COL_COLI])
+    
+    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- Salario ({sup_salario['Prueba']}): P-Valor = {sup_salario['P-Valor']:.4f}. {'Sigue' if sup_salario['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
+    pdf.multi_cell(0, 8, sanitize_pdf_text(f"- COLI ({sup_coli['Prueba']}): P-Valor = {sup_coli['P-Valor']:.4f}. {'Sigue' if sup_coli['P-Valor'] > 0.05 else 'No sigue'} distribución normal."))
+
+    # 4.3 Contrastes de Hipótesis por Categoría
+    pdf.ln(5)
+    pdf.set_font('Helvetica', 'B', 11)
+    pdf.cell(0, 10, sanitize_pdf_text('4.3 Contrastes de Hipótesis (por Nivel de Experiencia)'), 0, 1)
+    pdf.set_font('Helvetica', '', 10)
+    
+    test_cat = realizar_test_hipotesis(df, target_col, 'experience_level')
+    if "error" not in test_cat:
+        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- {test_cat['Test']}: P-Valor = {test_cat['P-Valor']:.4f}. Diferencia significativa: {test_cat['Significativo (5%)']}."))
+    else:
+        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- {test_cat['error']}"))
+
+    # --- REGRESIÓN ---
+    pdf.ln(10)
+    pdf.set_text_color(30, 58, 138)
+    pdf.set_font('Helvetica', 'B', 18)
+    pdf.cell(0, 15, sanitize_pdf_text('5. Modelo de Regresión Lineal'), 0, 1, 'L')
+    
+    from analisis.modelo_regresion import ejecutar_regresion_simple
+    reg = ejecutar_regresion_simple(df, cfg.COL_COLI, target_col)
+    
+    if reg:
+        pdf.set_text_color(0, 0, 0)
+        pdf.set_font('Helvetica', '', 10)
+        pdf.cell(0, 8, sanitize_pdf_text(f"- Variable Independiente (X): Índice COLI"), 0, 1)
+        pdf.cell(0, 8, sanitize_pdf_text(f"- Variable Dependiente (Y): Salario"), 0, 1)
+        pdf.cell(0, 8, sanitize_pdf_text(f"- Coeficiente de Determinación (R2): {reg['r2']:.4f}"), 0, 1)
+        pdf.cell(0, 8, sanitize_pdf_text(f"- Ecuación: Y = {reg['pendiente']:.2f}X + {reg['interseccion']:.2f}"), 0, 1)
+        pdf.multi_cell(0, 8, sanitize_pdf_text(f"- Correlación: La relación es {'fuerte' if abs(reg['r2']) > 0.7 else 'moderada' if abs(reg['r2']) > 0.4 else 'débil'}."))
 
     # --- VISUALIZACIONES (Incluyendo Violin Plot) ---
     pdf.add_page()

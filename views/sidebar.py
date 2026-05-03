@@ -128,9 +128,9 @@ def handle_exports(df_filtered, currency_label, current_sym, divisa_key):
         
         equipo_roles = {
             "Rubén Gámez Torrijos": "Coordinador Arquitecto Software",
-            "Rafael Rodriguez Mengual": "Data Manager",
-            "Bryann Vallejo Luna": "Especialista Inferencial",
-            "Leslie Ross Aranibar Pozo": "Especialista Descriptivo"
+            "Rafael Rodriguez Mengual": "Data Manager Estadísticos",
+            "Bryann Vallejo Luna": "Especialista Estadística Inferencial",
+            "Leslie Ross Aranibar Pozo": "Especialista Gráficas y Regresión"
         }
         
         pdf_bytes = generar_pdf_profesional(df_filtered, df_stats, equipo_roles, graficos_dict, currency_label)

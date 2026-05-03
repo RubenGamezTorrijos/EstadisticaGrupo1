@@ -282,7 +282,7 @@ def render_equipo():
         
         st.markdown("""
         <div style="border: 1px solid #00d1b2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="color: #00d1b2; margin-top: 0;">📊 Rafael Rodriguez Mengual - Data Manager</h4>
+            <h4 style="color: #00d1b2; margin-top: 0;">📊 Rafael Rodriguez Mengual - Data Manager Estadísticos</h4>
             <p style="font-style: italic; font-size: 0.9rem;">Especialista en procesamiento, limpieza y análisis descriptivo.</p>
             <hr style="margin: 10px 0;">
             <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
@@ -300,7 +300,7 @@ def render_equipo():
     with col2:
         st.markdown("""
         <div style="border: 1px solid #7c4dff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="color: #7c4dff; margin-top: 0;">🧪 Bryann Vallejo Luna - Especialista Inferencial</h4>
+            <h4 style="color: #7c4dff; margin-top: 0;">🧪 Bryann Vallejo Luna - Especialista Estadística Inferencial</h4>
             <p style="font-style: italic; font-size: 0.9rem;">Especialista en modelos probabilísticos y validación de hipótesis.</p>
             <hr style="margin: 10px 0;">
             <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
@@ -317,7 +317,7 @@ def render_equipo():
         
         st.markdown("""
         <div style="border: 1px solid #ff4081; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="color: #ff4081; margin-top: 0;">🎨 Leslie Ross Aranibar Pozo - Especialista Descriptivo</h4>
+            <h4 style="color: #ff4081; margin-top: 0;">🎨 Leslie Ross Aranibar Pozo - Especialista Gráficas y Regresión</h4>
             <p style="font-style: italic; font-size: 0.9rem;">Especialista en visualización avanzada y modelado de correlación.</p>
             <hr style="margin: 10px 0;">
             <p style="font-size: 0.9rem;"><strong>Contribución:</strong></p>
