@@ -147,10 +147,14 @@ def render_estadisticos(df, key, sym):
     cat_stats = calcular_estadisticos_por_categoria(df, key, 'experience_level')
     # Formatear columnas monetarias en la tabla por categoría (v.2.5.3)
     divisa_target = "EUR" if sym == "€" else "USD"
-    cols_monetarias = ['Media', 'Mediana', 'Desv. Típica', 'Mínimo', 'Máximo', 'Q1', 'Q3', 'IQR']
-    for col in cols_monetarias:
+    # Añadimos Moda y Rango a la lista de formateo (v.2.5.3)
+    cols_a_formatear = ['Media', 'Mediana', 'Moda', 'Rango', 'Desv. Típica', 'Mínimo', 'Máximo', 'Q1', 'Q3', 'IQR']
+    for col in cols_a_formatear:
         if col in cat_stats.columns:
-            cat_stats[col] = cat_stats[col].apply(lambda x: formatear_moneda(x, divisa_target))
+            if "COLI" in str(key).upper():
+                cat_stats[col] = cat_stats[col].apply(lambda x: formatear_porcentaje(x, sym == "€"))
+            else:
+                cat_stats[col] = cat_stats[col].apply(lambda x: formatear_moneda(x, divisa_target))
     st.table(cat_stats)
     
     st.subheader("⚠️ Análisis de Outliers")

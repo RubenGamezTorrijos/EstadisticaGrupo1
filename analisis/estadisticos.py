@@ -87,12 +87,15 @@ def calcular_estadisticos_por_categoria(df, columna_numerica, columna_categoria)
         ('N', 'count'),
         ('Media', 'mean'),
         ('Mediana', 'median'),
+        ('Moda', lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan),
         ('Desv. Típica', 'std'),
         ('Mínimo', 'min'),
         ('Máximo', 'max'),
         ('Q1', lambda x: x.quantile(0.25)),
         ('Q3', lambda x: x.quantile(0.75))
     ]).reset_index()
+    
+    resultado['Rango'] = resultado['Máximo'] - resultado['Mínimo']
     
     resultado['IQR'] = resultado['Q3'] - resultado['Q1']
     return resultado.round(2)
