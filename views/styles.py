@@ -6,142 +6,131 @@ Estilos CSS profesionales para la aplicación Streamlit.
 
 import streamlit as st
 
+
+def _get_sidebar_colors():
+    """
+    Lee los colores reales del tema de Streamlit para inyectarlos como
+    valores sólidos en el sidebar. Devuelve (color_claro, color_oscuro).
+    """
+    # Intentar leer secondaryBackgroundColor de la config (es el color nativo del sidebar)
+    secondary = st.get_option("theme.secondaryBackgroundColor")
+
+    # Defaults exactos de Streamlit para Light y Dark
+    light_bg = secondary if secondary else "#f0f2f6"
+    dark_bg  = "#262730"  # Streamlit dark sidebar default siempre es este valor
+
+    return light_bg, dark_bg
+
+
 def apply_styles():
-    st.markdown("""
+    light_sidebar, dark_sidebar = _get_sidebar_colors()
+
+    st.markdown(f"""
     <style>
-        /* Estética Adaptativa: Glassmorphism */
-        .stApp {
+        /* Estética Adaptativa */
+        .stApp {{
             background-attachment: fixed;
-        }
-        
-        /* Contenedores de tarjetas y métricas - ADAPTATIVOS */
-        div[data-testid="stMetric"], div[data-testid="stExpander"], div[data-testid="stTable"] {
+        }}
+
+        /* Contenedores de tarjetas y métricas */
+        div[data-testid="stMetric"], div[data-testid="stExpander"], div[data-testid="stTable"] {{
             background: var(--secondary-background-color);
             border: 1px solid var(--primary-color);
             border-radius: 12px;
             padding: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
-        }
-        
-        /* Asegurar que el texto sea siempre legible */
-        p, span, label, .stMarkdown {
-            color: var(--text-color);
-        }
+        }}
 
-        div[data-testid="stMetric"]:hover {
+        /* Texto legible */
+        p, span, label, .stMarkdown {{
+            color: var(--text-color);
+        }}
+
+        div[data-testid="stMetric"]:hover {{
             transform: translateY(-2px);
             box-shadow: 0 6px 20px var(--primary-color);
             opacity: 0.9;
-        }
+        }}
 
-        /* ===== SIDEBAR: FONDO SÓLIDO (TODOS LOS MODOS, INCLUIDO MOBILE) ===== */
-
-        /* Contenedor principal del sidebar - escritorio y mobile */
+        /* ================================================================
+           SIDEBAR: FONDO SÓLIDO — MODO CLARO
+           Inyectamos el color exacto leído de la config de Streamlit.
+           Esto garantiza que el drawer móvil sea 100% opaco.
+        ================================================================ */
         [data-testid="stSidebar"],
-        section[data-testid="stSidebar"] {
-            background-color: var(--secondary-background-color) !important;
-            background-image: none !important;
-            border-right: 1px solid var(--primary-color) !important;
-            opacity: 1 !important;
-        }
-
-        /* Contenedor interno del sidebar (drawer en mobile) */
-        [data-testid="stSidebar"] > div,
-        [data-testid="stSidebar"] > div:first-child,
-        section[data-testid="stSidebar"] > div {
-            background-color: var(--secondary-background-color) !important;
-            background-image: none !important;
-            opacity: 1 !important;
-        }
-
-        /* Contenido del sidebar en mobile (overlay drawer) */
+        section[data-testid="stSidebar"],
         [data-testid="stSidebarContent"],
-        .stSidebar > div,
-        [class*="sidebar"] > div {
-            background-color: var(--secondary-background-color) !important;
-            background-image: none !important;
-        }
-
-        /* Navegación interna del sidebar */
         [data-testid="stSidebarNav"],
         [data-testid="stSidebarNav"] > ul,
-        [data-testid="stSidebarUserContent"] {
-            background-color: var(--secondary-background-color) !important;
+        [data-testid="stSidebarUserContent"],
+        [data-testid="stSidebar"] > div,
+        [data-testid="stSidebar"] > div:first-child {{
+            background-color: {light_sidebar} !important;
+            background:       {light_sidebar} !important;
             background-image: none !important;
             opacity: 1 !important;
-        }
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }}
 
-        /* Fix definitivo para transparencia en mobile: Sólido y Adaptativo (Light/Dark/System) */
-        @media (max-width: 768px) {
-            /* Forzamos el fondo sólido en el contenedor principal y todos sus hijos críticos */
+        /* SIDEBAR: FONDO SÓLIDO — MODO OSCURO (sistema/manual) */
+        @media (prefers-color-scheme: dark) {{
             [data-testid="stSidebar"],
             section[data-testid="stSidebar"],
             [data-testid="stSidebarContent"],
             [data-testid="stSidebarNav"],
+            [data-testid="stSidebarNav"] > ul,
             [data-testid="stSidebarUserContent"],
-            .stSidebar,
-            [class*="sidebar-content"] {
-                background-color: var(--background-color) !important;
-                background: var(--background-color) !important;
+            [data-testid="stSidebar"] > div,
+            [data-testid="stSidebar"] > div:first-child {{
+                background-color: {dark_sidebar} !important;
+                background:       {dark_sidebar} !important;
                 background-image: none !important;
                 opacity: 1 !important;
                 backdrop-filter: none !important;
                 -webkit-backdrop-filter: none !important;
-                z-index: 999999 !important;
-            }
-            
-            /* Asegurar que el contenido del sidebar no sea transparente */
-            [data-testid="stSidebar"] > div:first-child {
-                background-color: var(--background-color) !important;
-                background: var(--background-color) !important;
-                opacity: 1 !important;
-            }
+            }}
+        }}
 
-            /* Sombra para separar del contenido principal */
-            [data-testid="stSidebar"] {
-                box-shadow: 5px 0 25px rgba(0,0,0,0.3) !important;
-            }
-        }
-        
         /* Títulos */
-        h1, h2, h3 {
+        h1, h2, h3 {{
             color: var(--primary-color);
             font-weight: 800;
             padding-bottom: 5px;
             margin-top: 20px;
             letter-spacing: -0.01em;
-        }
+        }}
 
-        /* Botones y Selectores - AZUL CORPORATIVO */
-        .stButton>button {
+        /* Botones — AZUL CORPORATIVO */
+        .stButton>button {{
             border-radius: 8px;
             background-color: #0b84f4 !important;
             color: white !important;
             font-weight: 600;
             border: none;
             transition: all 0.3s ease;
-        }
-        
-        .stButton>button:hover {
+        }}
+
+        .stButton>button:hover {{
             background-color: #0d6efd !important;
             box-shadow: 0 4px 12px rgba(11, 132, 244, 0.3);
-        }
+        }}
 
-        /* Tags multiselect - AZUL CORPORATIVO */
-        span[data-baseweb="tag"] {
+        /* Tags multiselect — AZUL CORPORATIVO */
+        span[data-baseweb="tag"] {{
             background-color: #0b84f4 !important;
             color: white !important;
-        }
+        }}
 
-        /* Selectores de Radio (Divisa y Navegación) - AZUL CORPORATIVO */
-        div[data-testid="stRadio"] label[data-baseweb="radio"] div:first-child div:nth-child(2) {
+        /* Selectores de Radio — AZUL CORPORATIVO */
+        div[data-testid="stRadio"] label[data-baseweb="radio"] div:first-child div:nth-child(2) {{
             background-color: #0b84f4 !important;
-        }
-        
-        div[data-testid="stRadio"] label[aria-checked="true"] p {
+        }}
+
+        div[data-testid="stRadio"] label[aria-checked="true"] p {{
             color: #0b84f4 !important;
             font-weight: bold;
-        }
+        }}
     </style>
     """, unsafe_allow_html=True)
