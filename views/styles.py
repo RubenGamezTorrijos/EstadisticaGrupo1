@@ -72,22 +72,35 @@ def apply_styles():
             opacity: 1 !important;
         }
 
-        /* Fix específico mobile: el sidebar como overlay quita transparencia */
+        /* Fix definitivo para transparencia en mobile: Sólido y Adaptativo (Light/Dark/System) */
         @media (max-width: 768px) {
+            /* Forzamos el fondo sólido en el contenedor principal y todos sus hijos críticos */
             [data-testid="stSidebar"],
-            [data-testid="stSidebar"] > div,
+            section[data-testid="stSidebar"],
             [data-testid="stSidebarContent"],
+            [data-testid="stSidebarNav"],
             [data-testid="stSidebarUserContent"],
-            section[data-testid="stSidebar"] {
-                /* Usamos var(--background-color) porque es SIEMPRE un color sólido (blanco/oscuro) que se adapta al modo que elijas en Streamlit */
-                background: var(--background-color) !important;
+            .stSidebar,
+            [class*="sidebar-content"] {
                 background-color: var(--background-color) !important;
+                background: var(--background-color) !important;
                 background-image: none !important;
+                opacity: 1 !important;
                 backdrop-filter: none !important;
                 -webkit-backdrop-filter: none !important;
-                opacity: 1 !important;
-                box-shadow: 2px 0 15px rgba(0,0,0,0.5) !important;
                 z-index: 999999 !important;
+            }
+            
+            /* Asegurar que el contenido del sidebar no sea transparente */
+            [data-testid="stSidebar"] > div:first-child {
+                background-color: var(--background-color) !important;
+                background: var(--background-color) !important;
+                opacity: 1 !important;
+            }
+
+            /* Sombra para separar del contenido principal */
+            [data-testid="stSidebar"] {
+                box-shadow: 5px 0 25px rgba(0,0,0,0.3) !important;
             }
         }
         
