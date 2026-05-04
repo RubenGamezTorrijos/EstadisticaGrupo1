@@ -35,19 +35,55 @@ def apply_styles():
             opacity: 0.9;
         }
 
-        /* Sidebar Identity - ADAPTATIVO (Fix Transparencia Mobile) */
-        [data-testid="stSidebar"], section[data-testid="stSidebar"] {
+        /* ===== SIDEBAR: FONDO SÓLIDO (TODOS LOS MODOS, INCLUIDO MOBILE) ===== */
+
+        /* Contenedor principal del sidebar - escritorio y mobile */
+        [data-testid="stSidebar"],
+        section[data-testid="stSidebar"] {
             background-color: var(--secondary-background-color) !important;
             background-image: none !important;
-            border-right: 1px solid var(--primary-color);
+            border-right: 1px solid var(--primary-color) !important;
             opacity: 1 !important;
         }
-        
-        /* Asegurar fondo sólido en el contenedor de navegación del sidebar */
-        [data-testid="stSidebarNav"], [data-testid="stSidebarNav"] > ul {
+
+        /* Contenedor interno del sidebar (drawer en mobile) */
+        [data-testid="stSidebar"] > div,
+        [data-testid="stSidebar"] > div:first-child,
+        section[data-testid="stSidebar"] > div {
             background-color: var(--secondary-background-color) !important;
             background-image: none !important;
             opacity: 1 !important;
+        }
+
+        /* Contenido del sidebar en mobile (overlay drawer) */
+        [data-testid="stSidebarContent"],
+        .stSidebar > div,
+        [class*="sidebar"] > div {
+            background-color: var(--secondary-background-color) !important;
+            background-image: none !important;
+        }
+
+        /* Navegación interna del sidebar */
+        [data-testid="stSidebarNav"],
+        [data-testid="stSidebarNav"] > ul,
+        [data-testid="stSidebarUserContent"] {
+            background-color: var(--secondary-background-color) !important;
+            background-image: none !important;
+            opacity: 1 !important;
+        }
+
+        /* Fix específico mobile: el sidebar como overlay quita transparencia */
+        @media (max-width: 768px) {
+            [data-testid="stSidebar"],
+            [data-testid="stSidebar"] > div,
+            [data-testid="stSidebarContent"],
+            [data-testid="stSidebarUserContent"] {
+                background-color: var(--secondary-background-color) !important;
+                background-image: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                opacity: 1 !important;
+            }
         }
         
         /* Títulos */
