@@ -1,0 +1,520 @@
+{
+  "descriptivos": {
+    "salary_dollar_usd": {
+      "Media": {
+        "manual": 157722.15019762845,
+        "app_proxy": 157722.15019762845,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 157722.15019762845,
+          "valor_manual": 157722.15019762845
+        }
+      },
+      "Mediana": {
+        "manual": 150000,
+        "app_proxy": 150000.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 150000.0,
+          "valor_manual": 150000
+        }
+      },
+      "Moda": {
+        "manual": 150000,
+        "app_proxy": 150000,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 150000,
+          "valor_manual": 150000
+        }
+      },
+      "Rango": {
+        "manual": 430000,
+        "app_proxy": 430000,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 430000,
+          "valor_manual": 430000
+        }
+      },
+      "Desviación Típica": {
+        "manual": 62494.0024620837,
+        "app_proxy": 62494.0024620837,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 62494.0024620837,
+          "valor_manual": 62494.0024620837
+        }
+      },
+      "Varianza": {
+        "manual": 3905500343.7309237,
+        "app_proxy": 3905500343.7309237,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 3905500343.7309237,
+          "valor_manual": 3905500343.7309237
+        }
+      },
+      "Q1": {
+        "manual": 113000.0,
+        "app_proxy": 113000.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 113000.0,
+          "valor_manual": 113000.0
+        }
+      },
+      "Q3": {
+        "manual": 195000.0,
+        "app_proxy": 195000.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 195000.0,
+          "valor_manual": 195000.0
+        }
+      },
+      "IQR": {
+        "manual": 82000.0,
+        "app_proxy": 82000.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 82000.0,
+          "valor_manual": 82000.0
+        }
+      },
+      "CV%": {
+        "manual": 39.62284459334195,
+        "app_proxy": 39.62284459334195,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 39.62284459334195,
+          "valor_manual": 39.62284459334195
+        }
+      },
+      "Asimetría": {
+        "manual": 0.7145713561724959,
+        "app_proxy": 0.7150700489493979,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0004986927769019545,
+          "diferencia_relativa_pct": 0.06978908020790735,
+          "valor_app": 0.7150700489493979,
+          "valor_manual": 0.7145713561724959
+        }
+      },
+      "Curtosis": {
+        "manual": 0.6995304272641567,
+        "app_proxy": 0.7034635638660238,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0039331366018671154,
+          "diferencia_relativa_pct": 0.5622538275067603,
+          "valor_app": 0.7034635638660238,
+          "valor_manual": 0.6995304272641567
+        }
+      }
+    },
+    "cost_of_living_index": {
+      "Media": {
+        "manual": 100.0,
+        "app_proxy": 100.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        }
+      },
+      "Mediana": {
+        "manual": 100.0,
+        "app_proxy": 100.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        }
+      },
+      "Moda": {
+        "manual": 100.0,
+        "app_proxy": 100.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        }
+      },
+      "Rango": {
+        "manual": 0.0,
+        "app_proxy": 0.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0.0
+        }
+      },
+      "Desviación Típica": {
+        "manual": 0.0,
+        "app_proxy": 0.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0.0
+        }
+      },
+      "Varianza": {
+        "manual": 0.0,
+        "app_proxy": 0.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0.0
+        }
+      },
+      "Q1": {
+        "manual": 100.0,
+        "app_proxy": 100.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        }
+      },
+      "Q3": {
+        "manual": 100.0,
+        "app_proxy": 100.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        }
+      },
+      "IQR": {
+        "manual": 0.0,
+        "app_proxy": 0.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0.0
+        }
+      },
+      "CV%": {
+        "manual": 0.0,
+        "app_proxy": 0.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0.0
+        }
+      },
+      "Asimetría": {
+        "manual": 0,
+        "app_proxy": 0.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0
+        }
+      },
+      "Curtosis": {
+        "manual": 0,
+        "app_proxy": 0.0,
+        "validacion": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0
+        }
+      }
+    }
+  },
+  "intervalos_confianza": {
+    "salary_dollar_usd": {
+      "manual": {
+        "media": 157722.15019762845,
+        "sem": 952.9138054934728,
+        "t_critico": 1.9605158282060013,
+        "margen": 1868.2025985859682,
+        "limite_inferior": 155853.94759904247,
+        "limite_superior": 159590.35279621443
+      },
+      "app_proxy": {
+        "media": 157722.15019762845,
+        "sem": 952.9138054934728,
+        "t_critico": 1.9605158282060013,
+        "margen": 1868.2025985859682,
+        "limite_inferior": 155853.94759904247,
+        "limite_superior": 159590.35279621443
+      },
+      "validacion": {
+        "media": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 157722.15019762845,
+          "valor_manual": 157722.15019762845
+        },
+        "margen": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 1868.2025985859682,
+          "valor_manual": 1868.2025985859682
+        }
+      }
+    },
+    "cost_of_living_index": {
+      "manual": {
+        "media": 100.0,
+        "sem": 0.0,
+        "t_critico": 1.9605158282060013,
+        "margen": 0.0,
+        "limite_inferior": 100.0,
+        "limite_superior": 100.0
+      },
+      "app_proxy": {
+        "media": 100.0,
+        "sem": 0.0,
+        "t_critico": 1.9605158282060013,
+        "margen": 0.0,
+        "limite_inferior": 100.0,
+        "limite_superior": 100.0
+      },
+      "validacion": {
+        "media": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        },
+        "margen": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0.0
+        }
+      }
+    }
+  },
+  "contrastes_hipotesis": {
+    "experience_level:Senior_vs_Mid-level": {
+      "grupos": {
+        "Senior": 2988,
+        "Mid-level": 866
+      },
+      "manual": {
+        "t_statistic": 16.80863282228111,
+        "df": 1551.779901594848,
+        "p_valor": 2.2307869472223385e-58,
+        "significativo": true,
+        "mean_diff": 35876.19231197305
+      },
+      "app_proxy": {
+        "t_statistic": 16.80863282228111,
+        "p_valor": 2.2307869472223385e-58
+      },
+      "validacion": {
+        "t_statistic": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 16.80863282228111,
+          "valor_manual": 16.80863282228111
+        },
+        "p_valor": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 2.2307869472223385e-58,
+          "valor_manual": 2.2307869472223385e-58
+        }
+      }
+    }
+  },
+  "regresion": {
+    "manual": {
+      "beta_0": 157722.15019762845,
+      "beta_1": 0,
+      "r2": 0.0,
+      "r": null,
+      "ecuacion": "Y = 0.0000X + 157722.1502"
+    },
+    "app_proxy": {
+      "beta_0": 157722.15019762845,
+      "beta_1": 0.0,
+      "r2": 0.0,
+      "r": null
+    },
+    "validacion": {
+      "beta_0": {
+        "coincide": true,
+        "diferencia_absoluta": 0.0,
+        "diferencia_relativa_pct": 0.0,
+        "valor_app": 157722.15019762845,
+        "valor_manual": 157722.15019762845
+      },
+      "beta_1": {
+        "coincide": true,
+        "diferencia_absoluta": 0.0,
+        "diferencia_relativa_pct": 0.0,
+        "valor_app": 0.0,
+        "valor_manual": 0
+      },
+      "r2": {
+        "coincide": true,
+        "diferencia_absoluta": 0.0,
+        "diferencia_relativa_pct": 0.0,
+        "valor_app": 0.0,
+        "valor_manual": 0.0
+      },
+      "r": {
+        "coincide": true,
+        "diferencia": 0,
+        "tipo": "NaN"
+      }
+    }
+  },
+  "outliers": {
+    "salary_dollar_usd": {
+      "manual": {
+        "q1": 113000.0,
+        "q3": 195000.0,
+        "iqr": 82000.0,
+        "limite_inferior": -10000.0,
+        "limite_superior": 318000.0,
+        "n_outliers": 71,
+        "porcentaje_outliers": 1.650778888630551
+      },
+      "app_proxy": {
+        "q1": 113000.0,
+        "q3": 195000.0,
+        "iqr": 82000.0,
+        "limite_inferior": -10000.0,
+        "limite_superior": 318000.0,
+        "n_outliers": 71
+      },
+      "validacion": {
+        "q1": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 113000.0,
+          "valor_manual": 113000.0
+        },
+        "q3": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 195000.0,
+          "valor_manual": 195000.0
+        },
+        "iqr": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 82000.0,
+          "valor_manual": 82000.0
+        },
+        "n_outliers": {
+          "coincide": true,
+          "diferencia_absoluta": 0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 71,
+          "valor_manual": 71
+        }
+      }
+    },
+    "cost_of_living_index": {
+      "manual": {
+        "q1": 100.0,
+        "q3": 100.0,
+        "iqr": 0.0,
+        "limite_inferior": 100.0,
+        "limite_superior": 100.0,
+        "n_outliers": 0,
+        "porcentaje_outliers": 0.0
+      },
+      "app_proxy": {
+        "q1": 100.0,
+        "q3": 100.0,
+        "iqr": 0.0,
+        "limite_inferior": 100.0,
+        "limite_superior": 100.0,
+        "n_outliers": 0
+      },
+      "validacion": {
+        "q1": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        },
+        "q3": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 100.0,
+          "valor_manual": 100.0
+        },
+        "iqr": {
+          "coincide": true,
+          "diferencia_absoluta": 0.0,
+          "diferencia_relativa_pct": 0.0,
+          "valor_app": 0.0,
+          "valor_manual": 0.0
+        },
+        "n_outliers": {
+          "coincide": true,
+          "diferencia_absoluta": 0,
+          "diferencia_relativa_pct": 0,
+          "valor_app": 0,
+          "valor_manual": 0
+        }
+      }
+    }
+  }
+}
