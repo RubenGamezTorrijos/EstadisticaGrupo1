@@ -36,15 +36,18 @@ def apply_styles():
         }
 
         /* Sidebar Identity - ADAPTATIVO (Fix Transparencia Mobile) */
-        [data-testid="stSidebar"] {
+        [data-testid="stSidebar"], section[data-testid="stSidebar"] {
             background-color: var(--secondary-background-color) !important;
+            background-image: none !important;
             border-right: 1px solid var(--primary-color);
             opacity: 1 !important;
         }
         
         /* Asegurar fondo sólido en el contenedor de navegación del sidebar */
-        [data-testid="stSidebarNav"] {
+        [data-testid="stSidebarNav"], [data-testid="stSidebarNav"] > ul {
             background-color: var(--secondary-background-color) !important;
+            background-image: none !important;
+            opacity: 1 !important;
         }
         
         /* Títulos */
