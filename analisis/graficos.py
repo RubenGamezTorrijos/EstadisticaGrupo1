@@ -169,11 +169,18 @@ def crear_violin_interactivo(df, num, cat, sym="$"):
     return fig
 
 def crear_scatter_regresion_interactivo(df, x_col, y_col, sym="$"):
-    """Versión interactiva con línea de tendencia."""
+    """Versión interactiva con línea de tendencia (Optimizado v2.5.3-final)"""
+    # Filtro de seguridad para evitar errores en Streamlit Cloud
+    df_plot = df[[x_col, y_col, 'job_title', 'experience_level']].dropna(subset=[x_col, y_col])
+    df_plot = df_plot[np.isfinite(df_plot[x_col]) & np.isfinite(df_plot[y_col])]
+    
+    if df_plot.empty:
+        return go.Figure().update_layout(title="Sin datos suficientes para regresión")
+
     label_x = cfg.VAR_LABELS.get(x_col, x_col)
     label_y = cfg.VAR_LABELS.get(y_col, y_col)
     
-    fig = px.scatter(df, x=x_col, y=y_col, trendline="ols",
+    fig = px.scatter(df_plot, x=x_col, y=y_col, trendline="ols",
                      title=f'Relación: {label_y} vs {label_x}',
                      labels={x_col: label_x, y_col: label_y},
                      hover_data=['job_title', 'experience_level'],
