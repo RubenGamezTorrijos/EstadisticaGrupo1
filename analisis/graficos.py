@@ -10,6 +10,7 @@ import config.settings as cfg
 import plotly.express as px
 import plotly.graph_objects as go
 import scipy.stats as stats
+import numpy as np
 from matplotlib.ticker import FuncFormatter
 
 # Configuración estética Leslie - Optimizada para v.2.5.3
@@ -169,16 +170,13 @@ def crear_violin_interactivo(df, num, cat, sym="$"):
     return fig
 
 def crear_scatter_regresion_interactivo(df, x_col, y_col, sym="$"):
-    """Versión interactiva con línea de tendencia (Optimizado v2.5.3-final)"""
-    # Filtro de seguridad para evitar errores en Streamlit Cloud
-    df_plot = df[[x_col, y_col, 'job_title', 'experience_level']].dropna(subset=[x_col, y_col])
-    df_plot = df_plot[np.isfinite(df_plot[x_col]) & np.isfinite(df_plot[y_col])]
-    
-    if df_plot.empty:
-        return go.Figure().update_layout(title="Sin datos suficientes para regresión")
-
+    """Versión interactiva con línea de tendencia."""
     label_x = cfg.VAR_LABELS.get(x_col, x_col)
     label_y = cfg.VAR_LABELS.get(y_col, y_col)
+    
+    # Limpieza de datos no finitos para estabilidad en la nube
+    df_plot = df.copy()
+    df_plot = df_plot[np.isfinite(df_plot[x_col]) & np.isfinite(df_plot[y_col])]
     
     fig = px.scatter(df_plot, x=x_col, y=y_col, trendline="ols",
                      title=f'Relación: {label_y} vs {label_x}',
