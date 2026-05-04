@@ -30,14 +30,12 @@ ENV/
 static/
 .node_modules/
 
-<<<<<<< HEAD
 # --- Jupyter & Analytics ---
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 .ipython/
 profile_default/
 ipython_config.py
-=======
 
 # --- Documentación e Informes ---
 documentacion/
@@ -49,6 +47,8 @@ MANUAL_DESARROLLO.md
 # --- Logs y archivos de texto ---
 *.txt
 *.log
+# Excepción crítica: NO ignorar requirements.txt para despliegue web
+!requirements.txt
 
 # --- Datos y Salidas ---
 outputs/
@@ -56,8 +56,6 @@ temp/
 *.tmp
 # Permitir que los archivos de datos se suban a GitHub
 !datos/*.csv
-# Ignorar específicamente el dataset limpio intermedio si lo prefieres
-# datos/dataset_limpio.csv
 
 # --- IDEs & OS ---
 .vscode/
