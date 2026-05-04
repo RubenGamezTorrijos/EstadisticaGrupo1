@@ -35,10 +35,16 @@ def apply_styles():
             opacity: 0.9;
         }
 
-        /* Sidebar Identity - ADAPTATIVO */
-        [data-testid="stSidebar"] {
-            background-color: var(--secondary-background-color);
+        /* Sidebar Identity - SOLIDEZ EN MOBILE */
+        [data-testid="stSidebar"], [data-testid="stSidebarContent"] {
+            background-color: var(--secondary-background-color) !important;
             border-right: 1px solid var(--primary-color);
+            opacity: 1 !important;
+        }
+        
+        /* Fix adicional para la navegación móvil de Streamlit */
+        header[data-testid="stHeader"] {
+            background-color: var(--background-color) !important;
         }
         
         /* Títulos */
