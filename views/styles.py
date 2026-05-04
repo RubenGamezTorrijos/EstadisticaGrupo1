@@ -35,37 +35,16 @@ def apply_styles():
             opacity: 0.9;
         }
 
-        /* Sidebar Identity - ADAPTATIVO */
+        /* Sidebar Identity - ADAPTATIVO (Fix Transparencia Mobile) */
         [data-testid="stSidebar"] {
             background-color: var(--secondary-background-color) !important;
             border-right: 1px solid var(--primary-color);
+            opacity: 1 !important;
         }
-
-        /* =====================================================
-           FIX RESPONSIVE MOBILE: Sidebar Overlay opaco
-           En pantallas pequeñas Streamlit convierte el sidebar
-           en un panel flotante (overlay). Sin fondo explícito
-           queda transparente y se mezcla con el contenido.
-           ===================================================== */
-        @media (max-width: 768px) {
-            /* El contenedor flotante del sidebar en mobile */
-            [data-testid="stSidebar"] {
-                background-color: var(--secondary-background-color) !important;
-                opacity: 1 !important;
-                /* Sombra lateral para destacarlo del contenido */
-                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35) !important;
-            }
-
-            /* Fuerza que el interior del sidebar también tenga fondo sólido */
-            [data-testid="stSidebar"] > div:first-child {
-                background-color: var(--secondary-background-color) !important;
-                height: 100% !important;
-            }
-
-            /* Backdrop semitransparente detrás del sidebar (oscurece el contenido) */
-            [data-testid="stSidebarContent"] {
-                background-color: var(--secondary-background-color) !important;
-            }
+        
+        /* Asegurar fondo sólido en el contenedor de navegación del sidebar */
+        [data-testid="stSidebarNav"] {
+            background-color: var(--secondary-background-color) !important;
         }
         
         /* Títulos */
