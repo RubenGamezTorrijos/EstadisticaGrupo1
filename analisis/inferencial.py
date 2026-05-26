@@ -10,7 +10,7 @@ import config.settings as cfg
 
 def realizar_test_hipotesis(df, variable_num, variable_cat):
     """
-    BRYANN SKEITH LOZA CACERES - Estadística Inferencial
+    BRYANN VALLEJO LUNA - Estadística Inferencial
     Realiza un test T o ANOVA según el número de categorías.
     """
     grupos = df[variable_cat].unique()
@@ -41,7 +41,7 @@ def realizar_test_hipotesis(df, variable_num, variable_cat):
     }
 
 def calcular_intervalos_confianza(df, columna, confianza=0.95):
-    """BRYANN SKEITH LOZA CACERES - Intervalos de Confianza"""
+    """BRYANN VALLEJO LUNA - Intervalos de Confianza"""
     data = df[columna].dropna()
     if data is None or len(data) < 3:
         return {
